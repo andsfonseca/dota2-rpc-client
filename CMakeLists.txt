@@ -4,6 +4,8 @@ project(dota2-rpc-client CXX)
 include(CheckIncludeFileCXX)
 include(FetchContent)
 
+find_package(Git REQUIRED)
+
 check_include_file_cxx(any HAS_ANY)
 check_include_file_cxx(string_view HAS_STRING_VIEW)
 check_include_file_cxx(coroutine HAS_COROUTINE)
@@ -42,13 +44,24 @@ if(NOT EXISTS ${THIRD_PARTY_BASE_DIR}/discord-sdk-src)
 endif()
 
 #[[2. Drogon]]
-# If you include the drogon source code locally in your project, use this method to add drogon 
-# add_subdirectory(drogon) 
-# target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
-#
-# and comment out the following lines
-find_package(Drogon CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
+
+set(DROGON_GIT "https://github.com/drogonframework/drogon.git")
+set(DROGON_GIT_TAG "v1.7.5")
+
+if(NOT EXISTS ${THIRD_PARTY_BASE_DIR}/drogon)
+
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone -b ${DROGON_GIT_TAG} ${DROGON_GIT}
+    WORKING_DIRECTORY ${THIRD_PARTY_BASE_DIR}
+    COMMAND_ERROR_IS_FATAL ANY)
+
+    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+    WORKING_DIRECTORY ${THIRD_PARTY_BASE_DIR}/drogon/
+    COMMAND_ERROR_IS_FATAL ANY)
+
+endif()
+
+add_subdirectory(${THIRD_PARTY_BASE_DIR}/drogon) 
+target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
 
 
 if (CMAKE_CXX_STANDARD LESS 17)
@@ -83,6 +96,7 @@ target_sources(${PROJECT_NAME}
                ${FILTER_SRC}
                ${PLUGIN_SRC}
                ${MODEL_SRC})
+
 # ##############################################################################
 # uncomment the following line for dynamically loading views 
 # set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS ON)
