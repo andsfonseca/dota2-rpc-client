@@ -1,6 +1,7 @@
 #include <iostream>
 #include <drogon/drogon.h>
-#include "../third_party/discord-sdk-src/cpp/discord.h"
+#include "services/DiscordService.cpp"
+
 
 enum ArgumentOptions
 {
@@ -43,24 +44,29 @@ int main(int argc, char *argv[])
         }
     }
 
+    //Discord Inicialization
+    DiscordService *discordService = discordService->getInstance();
+    discordService->Initialize();
+    discordService->Start();
+
+    discordService->UpdateActivity("Playing All Random", "Rubick (10/0/12)");
+
     // Set HTTP listener address and port
     drogon::app().addListener(host, port_number);
-
-    // Load config file
-    // drogon::app().loadConfigFile("../config.json");
 
     // Web Server Messages
     if (host == "0.0.0.0")
     {
-        std::cout << "Listening at http://localhost:" << port_number << " and http://"<< host << ":" << port_number << ".\n";
+        std::cout << "Listening at http://localhost:" << port_number << " and http://" << host << ":" << port_number << ".\n";
     }
     else
     {
-        std::cout << "Listening at http://"<< host << ":" << port_number << ".\n";
+        std::cout << "Listening at http://" << host << ":" << port_number << ".\n";
     }
     std::cout << "Press Ctrl+C to exit.\n";
 
-    // Run HTTP framework,the method will block in the internal event loop
     drogon::app().run();
+
+    discordService->Stop();
     return 0;
 }
