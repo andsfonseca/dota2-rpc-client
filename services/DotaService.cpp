@@ -1,6 +1,8 @@
 #include <iostream>
 #include <json/json.h>
 
+#include "DiscordService.cpp"
+
 enum PlayerStatus
 {
     STAND_BY,
@@ -45,7 +47,7 @@ class DotaService
         return PlayerStatus::PLAYING;
     }
 
-    GameState FindCurrentGameState(Json::Value data)
+    GameState GetCurrentGameState(Json::Value data)
     {
         if (data["map"].isNull())
         {
@@ -82,6 +84,37 @@ class DotaService
         }
     }
 
+    int GetGameTimeElapsed(Json::Value data){
+        if (data["map"].isNull())
+        {
+            return 0;
+        }
+
+        if (data["map"]["clock_time"].isNull())
+        {
+            return 0;
+        }
+
+        int time = data["map"]["clock_time"].asInt();
+
+        return time;
+    }
+
+    int GetMatchTimeElapsed(Json::Value data){
+        if (data["map"].isNull())
+        {
+            return 0;
+        }
+
+        if (data["map"]["game_time"].isNull())
+        {
+            return 0;
+        }
+
+        int time = data["map"]["game_time"].asInt();
+
+        return time;
+    }
 
 public:
     static DotaService *getInstance()
@@ -104,27 +137,23 @@ public:
             break;
         case PlayerStatus::WATCHING:
         {
-            GameState state = FindCurrentGameState(data);
+            GameState state = GetCurrentGameState(data);
+            int gameTime = GetGameTimeElapsed(data);
+            int matchTime = GetMatchTimeElapsed(data);
             switch (state)
             {
             case GameState::HERO_SELECTION:
-                std::cout << "Selecao de Heroi"
-                          << "\n";
-                break;
+                
             case GameState::STRATEGY_TIME:
-                std::cout << "Tempo de estrategia"
-                          << "\n";
-                break;
+                
             case GameState::PRE_GAME:
-                std::cout << "Pre-game"
-                          << "\n";
-                break;
+                
             case GameState::GAME:
-                std::cout << "Partida"
-                          << "\n";
-                break;
+                
             case GameState::NONE:
             default:
+                std::cout << "Game Time: " << gameTime << "\n";
+                std::cout << "Match Time: " << matchTime << "\n";
                 break;
             }
             break;
