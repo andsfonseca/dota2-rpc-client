@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <thread>
 #include "../third_party/discord-sdk-src/cpp/discord.h"
@@ -56,25 +58,24 @@ public:
     void UpdateActivity(std::string details, std::string state)
     {
         discord::Activity activity{};
-        activity.SetDetails(const_cast<char*>(details.c_str()));
-        activity.SetState(const_cast<char*>(state.c_str()));
+        activity.SetDetails(const_cast<char *>(details.c_str()));
+        activity.SetState(const_cast<char *>(state.c_str()));
         activity.GetAssets().SetSmallText("i mage");
         activity.GetAssets().SetLargeText("u mage");
         activity.SetType(discord::ActivityType::Playing);
         this->core->ActivityManager().UpdateActivity(activity, [](discord::Result result)
-                                                     { std::cout << ((result == discord::Result::Ok) ? "Succeeded" : "Failed")
-                                                                 << " updating activity!\n"; });
+                                                     { 
+                                                         if(result != discord::Result::Ok)
+                                                         std::cout << "Failed updating activity!\n"; });
     }
 
     void Start()
     {
-        std::cout << "Starting Discord\n";
         threadHandler = new std::thread(&DiscordService::Loop, this);
     }
 
     void Stop()
     {
-        std::cout << "Stopping Discord\n";
         interrupted = true;
         threadHandler->join();
     }
