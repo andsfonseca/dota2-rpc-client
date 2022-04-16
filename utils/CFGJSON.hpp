@@ -17,6 +17,6 @@ const char *DOTA2_CFG_TEMPLATE =
 "    }\n"
 "    \"auth\"\n"
 "    {\n"
-"        \"token\"         \"testtoken\"\n"
+"        \"token\"         \"518quwZuBDWr\"\n"
 "    }\n"
 "}";
