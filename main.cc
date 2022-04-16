@@ -114,7 +114,7 @@ void resolveDota2GameStateIntegration(std::string host, int port)
             }
 
             std::ofstream outfile(cfg_folder + "/gamestate_integration_rpc.cfg");
-            outfile << cfg_source << std::endl;;
+            outfile << cfg_source << std::endl;
         }
         else
         {
@@ -159,11 +159,6 @@ int main(int argc, char *argv[])
     }
 
     resolveDota2GameStateIntegration(host, port_number);
-    // Discord Inicialization
-    DiscordService *discordService = discordService->getInstance();
-    if(!discordService->Initialize())
-        return 0;
-    discordService->Start();
 
     // Set HTTP listener address and port
     drogon::app().addListener(host, port_number);
@@ -181,6 +176,9 @@ int main(int argc, char *argv[])
 
     drogon::app().run();
 
+    // Stopping Discord Service
+    DiscordService *discordService = discordService->getInstance();
     discordService->Stop();
+
     return 0;
 }

@@ -7,21 +7,38 @@
 class DiscordService
 {
     static DiscordService *instance;
-    discord::Core *core{};
-    volatile bool interrupted{false};
+    std::unique_ptr<discord::Core> core;
+    bool started{false};
     std::thread *threadHandler;
+    volatile bool interrupted{false};
 
     // Private constructor so that no objects can be created.
     DiscordService()
     {
     }
 
+    bool Initialize()
+    {
+        discord::Core *aux{};
+        auto result = discord::Core::Create(963884877428711434, DiscordCreateFlags_NoRequireDiscord, &aux);
+        this->core.reset(aux);
+        if (!this->core)
+        {
+            std::cout << "Failed to instantiate discord core! (err " << static_cast<int>(result)
+                      << ")\n";
+            return false;
+        }
+
+        this->core->SetLogHook(
+            discord::LogLevel::Debug, [](discord::LogLevel level, const char *message)
+            { std::cerr << "Log(" << static_cast<uint32_t>(level) << "): " << message << "\n"; });
+
+        return true;
+    }
+
     void Loop()
     {
-        if (!instance)
-            return;
         do
-
         {
             this->core->RunCallbacks();
 
@@ -37,26 +54,10 @@ public:
         return instance;
     }
 
-    bool Initialize()
-    {
-        auto result = discord::Core::Create(963884877428711434, DiscordCreateFlags_Default, &core);
-
-        if (!this->core)
-        {
-            std::cout << "Failed to instantiate discord core! (err " << static_cast<int>(result)
-                      << ")\n";
-            return false;
-        }
-
-        this->core->SetLogHook(
-            discord::LogLevel::Debug, [](discord::LogLevel level, const char *message)
-            { std::cerr << "Log(" << static_cast<uint32_t>(level) << "): " << message << "\n"; });
-
-        return true;
-    }
-
     void UpdateActivity(std::string details, std::string state)
     {
+        if (!Start())
+            return;
         discord::Activity activity{};
         activity.SetDetails(const_cast<char *>(details.c_str()));
         activity.SetState(const_cast<char *>(state.c_str()));
@@ -69,15 +70,29 @@ public:
                                                          std::cout << "Failed updating activity!\n"; });
     }
 
-    void Start()
+    bool Start()
     {
-        threadHandler = new std::thread(&DiscordService::Loop, this);
+        if (!this->core)
+        {
+            if (!Initialize())
+                return false;
+        }
+        if (!started)
+        {
+            started = true;
+            threadHandler = new std::thread(&DiscordService::Loop, this);
+        }
+        return true;
     }
 
     void Stop()
     {
-        interrupted = true;
-        threadHandler->join();
+        if (started)
+        {
+            interrupted = true;
+            threadHandler->join();
+            interrupted = false;
+        }
     }
 };
 
