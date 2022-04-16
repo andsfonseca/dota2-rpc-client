@@ -3,9 +3,18 @@
 
 enum PlayerStatus
 {
-    STANDBY,
+    STAND_BY,
     PLAYING,
     WATCHING,
+};
+
+enum GameState
+{
+    NONE,
+    HERO_SELECTION,
+    STRATEGY_TIME,
+    PRE_GAME,
+    GAME
 };
 
 class DotaService
@@ -20,13 +29,13 @@ class DotaService
     PlayerStatus IsThePlayerInMatchUp(Json::Value data)
     {
         if (data["player"].isNull())
-            return PlayerStatus::STANDBY;
+            return PlayerStatus::STAND_BY;
 
         if (!data["player"]["team2"].isNull() && !data["player"]["team3"].isNull())
             return PlayerStatus::WATCHING;
 
         if (data["player"]["activity"].isNull())
-            return PlayerStatus::STANDBY;
+            return PlayerStatus::STAND_BY;
 
         std::string activity = data["player"]["activity"].asString();
 
@@ -35,6 +44,44 @@ class DotaService
 
         return PlayerStatus::PLAYING;
     }
+
+    GameState FindCurrentGameState(Json::Value data)
+    {
+        if (data["map"].isNull())
+        {
+            return GameState::NONE;
+        }
+
+        if (data["map"]["game_state"].isNull())
+        {
+            return GameState::NONE;
+        }
+
+        std::string gamestate = data["map"]["game_state"].asString();
+
+        if (gamestate == "DOTA_GAMERULES_STATE_INIT" || gamestate == "DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD" || gamestate == "DOTA_GAMERULES_STATE_HERO_SELECTION")
+        {
+            return GameState::HERO_SELECTION;
+        }
+        else if (gamestate == "DOTA_GAMERULES_STATE_STRATEGY_TIME" || gamestate == "DOTA_GAMERULES_STATE_WAIT_FOR_MAP_TO_LOAD" || gamestate == "DOTA_GAMERULES_STATE_TEAM_SHOWCASE")
+        {
+            return GameState::STRATEGY_TIME;
+        }
+        else if (gamestate == "DOTA_GAMERULES_STATE_PRE_GAME")
+        {
+            return GameState::PRE_GAME;
+        }
+        else if (gamestate == "DOTA_GAMERULES_STATE_GAME_IN_PROGRESS")
+        {
+            return GameState::GAME;
+        }
+        else
+        {
+            std::cout << "Unknown Gamestate: " << gamestate << "\n";
+            return GameState::NONE;
+        }
+    }
+
 
 public:
     static DotaService *getInstance()
@@ -54,14 +101,36 @@ public:
         switch (IsThePlayerInMatchUp(data))
         {
         case PlayerStatus::PLAYING:
-            std::cout << "Playing" << "\n";
             break;
         case PlayerStatus::WATCHING:
-            std::cout << "Watching" << "\n";
+        {
+            GameState state = FindCurrentGameState(data);
+            switch (state)
+            {
+            case GameState::HERO_SELECTION:
+                std::cout << "Selecao de Heroi"
+                          << "\n";
+                break;
+            case GameState::STRATEGY_TIME:
+                std::cout << "Tempo de estrategia"
+                          << "\n";
+                break;
+            case GameState::PRE_GAME:
+                std::cout << "Pre-game"
+                          << "\n";
+                break;
+            case GameState::GAME:
+                std::cout << "Partida"
+                          << "\n";
+                break;
+            case GameState::NONE:
+            default:
+                break;
+            }
             break;
-        case PlayerStatus::STANDBY:
+        }
+        case PlayerStatus::STAND_BY:
         default:
-            std::cout << "StandBy" << "\n";
             break;
         }
 
