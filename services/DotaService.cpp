@@ -78,7 +78,8 @@ class DotaService
         {
             return GameState::GAME;
         }
-        else if (gamestate == "DOTA_GAMERULES_STATE_POST_GAME"){
+        else if (gamestate == "DOTA_GAMERULES_STATE_POST_GAME")
+        {
             return GameState::NONE;
         }
         else
@@ -146,13 +147,69 @@ class DotaService
                 continue;
             radiant = radiant + data["player"]["team2"][player]["kills"].asInt();
         }
-        //Dire
+        // Dire
         for (; i < 10; i++)
         {
             std::string player = "player" + std::to_string(i);
-            if (data["player"]["team3"][player]["kills"].isNull()) continue;
+            if (data["player"]["team3"][player]["kills"].isNull())
+                continue;
             dire = dire + data["player"]["team3"][player]["kills"].asInt();
         }
+    }
+
+    std::string GetHeroName(Json::Value data)
+    {
+        if (data["hero"].isNull())
+        {
+            return "";
+        }
+
+        if (data["hero"]["name"].isNull())
+        {
+            return "";
+        }
+
+        std::string name = data["hero"]["name"].asString();
+
+        return name;
+    }
+
+    int GetHeroLevel(Json::Value data)
+    {
+        if (data["hero"].isNull())
+        {
+            return 1;
+        }
+
+        if (data["hero"]["level"].isNull())
+        {
+            return 1;
+        }
+
+        int level = data["hero"]["level"].asInt();
+
+        return level;
+    }
+
+    void getKillDeathAssists(Json::Value data, int &kill, int &death, int &assist)
+    {
+        kill = 0;
+        death = 0;
+        assist = 0;
+
+        if (data["player"].isNull())
+        {
+            return;
+        }
+
+        if (data["player"]["kills"].isNull() || data["player"]["assists"].isNull() || data["player"]["deaths"].isNull())
+        {
+            return;
+        }
+
+        kill = data["player"]["kills"].asInt();
+        death = data["player"]["deaths"].asInt();
+        assist = data["player"]["assists"].asInt();
     }
 
 public:
@@ -169,7 +226,7 @@ public:
         DiscordService *discordService = discordService->getInstance();
         discord::Activity activity{};
         auto now = std::chrono::system_clock::now();
-        
+
         int gameTime;
         int matchTime;
         int64_t timeToStart;
@@ -177,26 +234,93 @@ public:
         int radiant;
         int dire;
         std::string gamescoreboard;
+        std::string heroname;
+        int level;
+        int kill = -1;
+        int death = -1;
+        int assist = -1;
+        std::string kda;
 
         std::cout << "==================================="
                   << "\n";
-        // std::cout << data << "\n";
+        std::cout << data << "\n";
 
         // Identify In-Game and Outside-Game
         switch (IsThePlayerInMatchUp(data))
         {
         case PlayerStatus::PLAYING:
+        {
+            activity.SetType(discord::ActivityType::Playing);
+
+            GameState state1 = GetCurrentGameState(data);
+
+            gameTime = GetGameTimeElapsed(data);
+            matchTime = GetMatchTimeElapsed(data);
+
+            switch (state1)
+            {
+            case GameState::HERO_SELECTION:
+                activity.SetDetails(const_cast<char *>("Choosing a hero"));
+                activity.SetState(const_cast<char *>("Hero Selection"));
+                break;
+            case GameState::STRATEGY_TIME:
+
+                heroname = "Playing as " + GetHeroName(data);
+
+                activity.SetDetails(const_cast<char *>(heroname.c_str()));
+                activity.SetState(const_cast<char *>("Strategy Time"));
+                break;
+            case GameState::PRE_GAME:
+
+                level = GetHeroLevel(data);
+                getKillDeathAssists(data, kill, death, assist);
+                heroname = "Playing as " + GetHeroName(data) + " - Lvl." + std::to_string(level);
+                kda = std::to_string(kill) + " / " + std::to_string(assist) + " / " + std::to_string(death);
+
+                now += std::chrono::seconds(-gameTime);
+                timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+
+                activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
+                activity.SetDetails(const_cast<char *>(heroname.c_str()));
+                activity.SetState(const_cast<char *>(kda.c_str()));
+                break;
+            case GameState::GAME:
+
+                level = GetHeroLevel(data);
+                getKillDeathAssists(data, kill, death, assist);
+                heroname = "Playing as " + GetHeroName(data) + " - Lvl." + std::to_string(level);
+                kda = std::to_string(kill) + " / " + std::to_string(assist) + " / " + std::to_string(death);
+
+                now += std::chrono::seconds(-gameTime);
+                timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+
+                FindScoreboard(data, radiant, dire);
+                gamescoreboard = "Scoreboard: " + std::to_string(radiant) + " - " + std::to_string(dire);
+
+                activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
+                activity.SetDetails(const_cast<char *>(heroname.c_str()));
+                activity.SetState(const_cast<char *>(kda.c_str()));
+                break;
+            case GameState::NONE:
+            default:
+                std::cout << "Game Time: " << gameTime << "\n";
+                std::cout << "Match Time: " << matchTime << "\n";
+                break;
+            }
+
+            discordService->UpdateActivity(activity);
             break;
+        }
         case PlayerStatus::WATCHING:
         {
             activity.SetDetails(const_cast<char *>("Watching a match"));
             activity.SetType(discord::ActivityType::Watching);
 
             GameState state = GetCurrentGameState(data);
-            
-            gameTime= GetGameTimeElapsed(data);
+
+            gameTime = GetGameTimeElapsed(data);
             matchTime = GetMatchTimeElapsed(data);
-            
+
             switch (state)
             {
             case GameState::HERO_SELECTION:
@@ -219,7 +343,7 @@ public:
 
                 now += std::chrono::seconds(-gameTime);
                 timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
-                
+
                 FindScoreboard(data, radiant, dire);
                 gamescoreboard = "Scoreboard: " + std::to_string(radiant) + " - " + std::to_string(dire);
 
