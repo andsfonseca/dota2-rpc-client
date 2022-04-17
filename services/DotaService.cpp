@@ -166,12 +166,14 @@ public:
     void InterpretJsonFile(trantor::Date requestDate, Json::Value data)
     {
 
+        DiscordService *discordService = discordService->getInstance();
         discord::Activity activity{};
         auto now = std::chrono::system_clock::now();
         
         int gameTime;
         int matchTime;
         int64_t timeToStart;
+        int64_t timeAfterStart;
         int radiant;
         int dire;
         std::string gamescoreboard;
@@ -188,7 +190,7 @@ public:
         case PlayerStatus::WATCHING:
         {
             activity.SetDetails(const_cast<char *>("Watching a match"));
-            activity.SetType(discord::ActivityType::Playing);
+            activity.SetType(discord::ActivityType::Watching);
 
             GameState state = GetCurrentGameState(data);
             
@@ -198,10 +200,10 @@ public:
             switch (state)
             {
             case GameState::HERO_SELECTION:
-                activity.SetDetails(const_cast<char *>("Hero Selection"));
+                activity.SetState(const_cast<char *>("Hero Selection"));
                 break;
             case GameState::STRATEGY_TIME:
-                activity.SetDetails(const_cast<char *>("Strategy Time"));
+                activity.SetState(const_cast<char *>("Strategy Time"));
                 break;
             case GameState::PRE_GAME:
                 now += std::chrono::seconds(-gameTime);
@@ -211,7 +213,7 @@ public:
                 gamescoreboard = "Scoreboard: " + std::to_string(radiant) + " - " + std::to_string(dire);
 
                 activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
-                activity.SetDetails(const_cast<char *>(gamescoreboard.c_str()));
+                activity.SetState(const_cast<char *>(gamescoreboard.c_str()));
                 break;
             case GameState::GAME:
 
@@ -221,8 +223,8 @@ public:
                 FindScoreboard(data, radiant, dire);
                 gamescoreboard = "Scoreboard: " + std::to_string(radiant) + " - " + std::to_string(dire);
 
-                activity.GetTimestamps().SetStart(DiscordTimestamp(timeToStart));
-                activity.SetDetails(const_cast<char *>(gamescoreboard.c_str()));
+                activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
+                activity.SetState(const_cast<char *>(gamescoreboard.c_str()));
                 break;
             case GameState::NONE:
             default:
@@ -230,6 +232,8 @@ public:
                 std::cout << "Match Time: " << matchTime << "\n";
                 break;
             }
+
+            discordService->UpdateActivity(activity);
             break;
         }
         case PlayerStatus::STAND_BY:

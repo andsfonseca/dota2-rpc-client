@@ -30,7 +30,7 @@ class DiscordService
         this->core->SetLogHook(
             discord::LogLevel::Debug, [](discord::LogLevel level, const char *message)
             { std::cerr << "Log(" << static_cast<uint32_t>(level) << "): " << message << "\n"; });
-
+        
         return true;
     }
 
@@ -52,16 +52,10 @@ public:
         return instance;
     }
 
-    void UpdateActivity(std::string details, std::string state)
+    void UpdateActivity(discord::Activity activity)
     {
         if (!Start())
             return;
-        discord::Activity activity{};
-        activity.SetDetails(const_cast<char *>(details.c_str()));
-        activity.SetState(const_cast<char *>(state.c_str()));
-        activity.GetAssets().SetSmallText("i mage");
-        activity.GetAssets().SetLargeText("u mage");
-        activity.SetType(discord::ActivityType::Playing);
         this->core->ActivityManager().UpdateActivity(activity, [](discord::Result result)
                                                      { 
                                                          if(result != discord::Result::Ok)
