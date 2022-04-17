@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include <json/json.h>
 
 #include "DiscordService.cpp"
@@ -77,6 +78,9 @@ class DotaService
         {
             return GameState::GAME;
         }
+        else if (gamestate == "DOTA_GAMERULES_STATE_POST_GAME"){
+            return GameState::NONE;
+        }
         else
         {
             std::cout << "Unknown Gamestate: " << gamestate << "\n";
@@ -84,7 +88,8 @@ class DotaService
         }
     }
 
-    int GetGameTimeElapsed(Json::Value data){
+    int GetGameTimeElapsed(Json::Value data)
+    {
         if (data["map"].isNull())
         {
             return 0;
@@ -100,7 +105,8 @@ class DotaService
         return time;
     }
 
-    int GetMatchTimeElapsed(Json::Value data){
+    int GetMatchTimeElapsed(Json::Value data)
+    {
         if (data["map"].isNull())
         {
             return 0;
@@ -116,6 +122,39 @@ class DotaService
         return time;
     }
 
+    void FindScoreboard(Json::Value data, int &radiant, int &dire)
+    {
+        radiant = 0;
+        dire = 0;
+
+        if (data["player"].isNull())
+        {
+            return;
+        }
+
+        if (data["player"]["team2"].isNull() || data["player"]["team2"].isNull())
+        {
+            return;
+        }
+
+        // Radiant
+        int i = 0;
+        for (i = 0; i < 5; i++)
+        {
+            std::string player = "player" + std::to_string(i);
+            if (data["player"]["team2"][player]["kills"].isNull())
+                continue;
+            radiant = radiant + data["player"]["team2"][player]["kills"].asInt();
+        }
+        //Dire
+        for (; i < 10; i++)
+        {
+            std::string player = "player" + std::to_string(i);
+            if (data["player"]["team3"][player]["kills"].isNull()) continue;
+            dire = dire + data["player"]["team3"][player]["kills"].asInt();
+        }
+    }
+
 public:
     static DotaService *getInstance()
     {
@@ -124,8 +163,19 @@ public:
         return instance;
     }
 
-    void InterpretJsonFile(trantor::Date date, Json::Value data)
+    void InterpretJsonFile(trantor::Date requestDate, Json::Value data)
     {
+
+        discord::Activity activity{};
+        auto now = std::chrono::system_clock::now();
+        
+        int gameTime;
+        int matchTime;
+        int64_t timeToStart;
+        int radiant;
+        int dire;
+        std::string gamescoreboard;
+
         std::cout << "==================================="
                   << "\n";
         // std::cout << data << "\n";
@@ -137,19 +187,43 @@ public:
             break;
         case PlayerStatus::WATCHING:
         {
+            activity.SetDetails(const_cast<char *>("Watching a match"));
+            activity.SetType(discord::ActivityType::Playing);
+
             GameState state = GetCurrentGameState(data);
-            int gameTime = GetGameTimeElapsed(data);
-            int matchTime = GetMatchTimeElapsed(data);
+            
+            gameTime= GetGameTimeElapsed(data);
+            matchTime = GetMatchTimeElapsed(data);
+            
             switch (state)
             {
             case GameState::HERO_SELECTION:
-                
+                activity.SetDetails(const_cast<char *>("Hero Selection"));
+                break;
             case GameState::STRATEGY_TIME:
-                
+                activity.SetDetails(const_cast<char *>("Strategy Time"));
+                break;
             case GameState::PRE_GAME:
-                
+                now += std::chrono::seconds(-gameTime);
+                timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+
+                FindScoreboard(data, radiant, dire);
+                gamescoreboard = "Scoreboard: " + std::to_string(radiant) + " - " + std::to_string(dire);
+
+                activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
+                activity.SetDetails(const_cast<char *>(gamescoreboard.c_str()));
+                break;
             case GameState::GAME:
+
+                now += std::chrono::seconds(-gameTime);
+                timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
                 
+                FindScoreboard(data, radiant, dire);
+                gamescoreboard = "Scoreboard: " + std::to_string(radiant) + " - " + std::to_string(dire);
+
+                activity.GetTimestamps().SetStart(DiscordTimestamp(timeToStart));
+                activity.SetDetails(const_cast<char *>(gamescoreboard.c_str()));
+                break;
             case GameState::NONE:
             default:
                 std::cout << "Game Time: " << gameTime << "\n";

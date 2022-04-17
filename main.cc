@@ -4,8 +4,6 @@
 #include <regex>
 #include <drogon/drogon.h>
 
-#include "services/DiscordService.cpp"
-
 #include "utils/CFGJSON.hpp"
 #include "utils/StringExtensions.cpp"
 
@@ -175,10 +173,6 @@ int main(int argc, char *argv[])
     std::cout << "Press Ctrl+C to exit.\n";
 
     drogon::app().run();
-
-    // Stopping Discord Service
-    DiscordService *discordService = discordService->getInstance();
-    discordService->Stop();
 
     return 0;
 }

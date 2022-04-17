@@ -1,5 +1,3 @@
-#pragma once
-
 #include <iostream>
 #include <thread>
 #include "../third_party/discord-sdk-src/cpp/discord.h"
