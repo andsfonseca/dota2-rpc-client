@@ -172,7 +172,68 @@ class DotaService
 
         std::string name = data["hero"]["name"].asString();
 
-        //Weareables
+        // Weareables
+
+        if (data["wearables"].isNull())
+            return name;
+
+        for (int i = 0;; i++)
+        {
+            std::string key = "wearable" + std::to_string(i);
+
+            if (data["wearables"][key].isNull())
+            {
+                break;
+            }
+
+            int itemId = data["wearables"][key].asInt();
+
+            // Personas First
+            if ((name == "npc_dota_hero_antimage" && itemId == 13783) ||
+                (name == "npc_dota_hero_dragon_knight" && itemId == 18113) ||
+                (name == "npc_dota_hero_mirana" && itemId == 18178) ||
+                (name == "npc_dota_hero_invoker" && itemId == 13042))
+            {
+                return name + "_2";
+            }
+            if (name == "npc_dota_hero_pudge" && itemId == 13786)
+            {
+                return name + "_4";
+            }
+
+            // Arcanas and Prestige Items
+            if ((name == "npc_dota_hero_axe" && itemId == 12964) ||
+                (name == "npc_dota_hero_crystal_maiden" && itemId == 7385) ||
+                (name == "npc_dota_hero_drow_ranger" && itemId == 19090) ||
+                (name == "npc_dota_hero_earthshaker" && itemId == 12692) ||
+                (name == "npc_dota_hero_wisp" && itemId == 9235) ||
+                (name == "npc_dota_hero_juggernaut" && itemId == 9059) ||
+                (name == "npc_dota_hero_legion_commander" && itemId == 5810) ||
+                (name == "npc_dota_hero_lina" && itemId == 4794) ||
+                (name == "npc_dota_hero_monkey_king" && itemId == 9050) ||
+                (name == "npc_dota_hero_ogre_magi" && itemId == 13670) ||
+                (name == "npc_dota_hero_phantom_assassin" && itemId == 7247) ||
+                (name == "npc_dota_hero_pudge" && itemId == 7756) ||
+                (name == "npc_dota_hero_queenofpain" && itemId == 12930) ||
+                (name == "npc_dota_hero_rubick" && itemId == 12451) ||
+                (name == "npc_dota_hero_nevermore" && itemId == 6996) ||
+                (name == "npc_dota_hero_spectre" && itemId == 9662) ||
+                (name == "npc_dota_hero_terrorblade" && itemId == 5957) ||
+                (name == "npc_dota_hero_windrunner" && itemId == 13806) ||
+                (name == "npc_dota_hero_skeleton_king" && itemId == 13456))
+            {
+                // Second Style
+                std::string style = "style" + std::to_string(i);
+                if (!data["wearables"][style].isNull())
+                {
+                    int numberStyle = data["wearables"][style].asInt();
+                    if (numberStyle == 1)
+                        return name + "_3";
+                }
+
+                return name + "_2";
+            }
+        }
 
         return name;
     }
@@ -285,13 +346,13 @@ public:
                 level = GetHeroLevel(data);
                 getKillDeathAssists(data, kill, death, assist);
                 npcName = GetHeroName(data);
-                
+
                 heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
                 kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
 
                 now += std::chrono::seconds(-gameTime);
                 timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
-                
+
                 activity.GetAssets().SetLargeImage(npcName.c_str());
                 activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
                 activity.SetDetails(const_cast<char *>(heroName.c_str()));
