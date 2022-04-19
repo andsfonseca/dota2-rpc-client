@@ -5,7 +5,6 @@
 #include "DiscordService.cpp"
 #include "../utils/NamesDota2.hpp"
 
-
 enum PlayerStatus
 {
     STAND_BY,
@@ -123,40 +122,6 @@ class DotaService
         int time = data["map"]["game_time"].asInt();
 
         return time;
-    }
-
-    void FindScoreboard(Json::Value data, int &radiant, int &dire)
-    {
-        radiant = 0;
-        dire = 0;
-
-        if (data["player"].isNull())
-        {
-            return;
-        }
-
-        if (data["player"]["team2"].isNull() || data["player"]["team2"].isNull())
-        {
-            return;
-        }
-
-        // Radiant
-        int i = 0;
-        for (i = 0; i < 5; i++)
-        {
-            std::string player = "player" + std::to_string(i);
-            if (data["player"]["team2"][player]["kills"].isNull())
-                continue;
-            radiant = radiant + data["player"]["team2"][player]["kills"].asInt();
-        }
-        // Dire
-        for (; i < 10; i++)
-        {
-            std::string player = "player" + std::to_string(i);
-            if (data["player"]["team3"][player]["kills"].isNull())
-                continue;
-            dire = dire + data["player"]["team3"][player]["kills"].asInt();
-        }
     }
 
     std::string GetHeroName(Json::Value data)
@@ -286,23 +251,95 @@ class DotaService
         assist = data["player"]["assists"].asInt();
     }
 
-    std::string GetNeutralNameBasedOnMatchId(Json::Value data){
-
+    long long GetMatchId(Json::Value data)
+    {
         if (data["map"].isNull())
         {
-            return NEUTRAL_NAMES[0];
+            return 0;
         }
 
         if (data["map"]["matchid"].isNull())
         {
-            return NEUTRAL_NAMES[1];
+            return 0;
         }
 
         std::string matchId = data["map"]["matchid"].asString();
+        
+        std::stringstream in;
+        in << matchId;
+        long long i;
+        in >> i;
 
-        long i = atol(matchId.c_str());
+        return i;
+    }
 
-        return NEUTRAL_NAMES[i%35];
+    std::string GetNeutralNameBasedOnMatchId(long long i)
+    {
+        return NEUTRAL_NAMES[i % 35];
+    }
+
+    std::string GetNetWorth(Json::Value data)
+    {
+
+        int radiant = 0;
+        int dire = 0;
+
+         if (data["player"].isNull())
+        {
+            return "⛰️ | 🌋";
+        }
+
+        if (data["player"]["team2"].isNull() || data["player"]["team3"].isNull())
+        {
+            return "⛰️ | 🌋";
+        }
+
+        int i = 0;
+
+        for (;; i++)
+        {
+            std::string player = "player" + std::to_string(i);
+            if (data["player"]["team2"][player].isNull())
+            {
+                break;
+            }
+
+            if (!data["player"]["team2"][player]["net_worth"].isNull())
+            {
+                int count = data["player"]["team2"][player]["net_worth"].asInt();
+                radiant += count;
+            }
+        }
+
+        for (;; i++)
+        {
+            std::string player = "player" + std::to_string(i);
+            if (data["player"]["team3"][player].isNull())
+            {
+                break;
+            }
+
+            if (!data["player"]["team3"][player]["net_worth"].isNull())
+            {
+                int count = data["player"]["team3"][player]["net_worth"].asInt();
+                dire += count;
+            }
+        }
+
+        std::string status;
+        if(radiant > dire){
+            int value = (radiant - dire)/1000;
+            status = "⛰️ "+ std::to_string(value)  +"k | 🌋";
+        }
+        else if (dire > radiant){
+            int value = (dire - radiant)/1000;
+            status = "⛰️ | "+ std::to_string(value)  +"k 🌋";
+        }
+        else{
+            status = "⛰️ | 🌋";
+        }
+        
+        return status;
     }
 
 public:
@@ -324,9 +361,6 @@ public:
         int matchTime;
         int64_t timeToStart;
         int64_t timeAfterStart;
-        int radiant;
-        int dire;
-        std::string gamescoreboard;
         std::string heroName;
         std::string npcName;
         int level;
@@ -334,6 +368,8 @@ public:
         int death = -1;
         int assist = -1;
         std::string kda;
+        std::string matchIdText;
+        std::string net;
 
         // Identify In-Game and Outside-Game
         switch (IsThePlayerInMatchUp(data))
@@ -407,9 +443,10 @@ public:
         }
         case PlayerStatus::WATCHING:
         {
-            npcName = GetNeutralNameBasedOnMatchId(data);
-            std::cout << data << "\n";
-            activity.GetAssets().SetLargeImage(npcName.c_str());
+            long long matchId = GetMatchId(data);
+            npcName = GetNeutralNameBasedOnMatchId(matchId);
+            activity.GetAssets().SetLargeImage(const_cast<char *>("watching_default"));
+
             activity.SetDetails(const_cast<char *>("Watching a match"));
             activity.SetType(discord::ActivityType::Watching);
 
@@ -430,22 +467,26 @@ public:
                 now += std::chrono::seconds(-gameTime);
                 timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 
-                FindScoreboard(data, radiant, dire);
-                gamescoreboard = "Scoreboard: " + std::to_string(radiant) + " - " + std::to_string(dire);
-
+                matchIdText = "Match Id: " + std::to_string(matchId);
+                net = GetNetWorth(data);
+                activity.GetAssets().SetSmallImage(npcName.c_str());
+                activity.GetAssets().SetSmallText(matchIdText.c_str());
                 activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
-                activity.SetState(const_cast<char *>(gamescoreboard.c_str()));
+                activity.SetState(const_cast<char *>(net.c_str()));
                 break;
             case GameState::GAME:
 
                 now += std::chrono::seconds(-gameTime);
                 timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 
-                FindScoreboard(data, radiant, dire);
-                gamescoreboard = "Scoreboard: " + std::to_string(radiant) + " - " + std::to_string(dire);
+                matchIdText = "Match Id: " + std::to_string(matchId);
 
+                net = GetNetWorth(data);
+
+                activity.GetAssets().SetSmallImage(npcName.c_str());
+                activity.GetAssets().SetSmallText(matchIdText.c_str());
                 activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
-                activity.SetState(const_cast<char *>(gamescoreboard.c_str()));
+                activity.SetState(const_cast<char *>(net.c_str()));
                 break;
             case GameState::NONE:
             default:
