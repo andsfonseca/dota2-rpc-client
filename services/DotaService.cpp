@@ -3,6 +3,7 @@
 #include <json/json.h>
 
 #include "DiscordService.cpp"
+#include "../utils/NamesDota2.hpp"
 
 enum PlayerStatus
 {
@@ -171,6 +172,17 @@ class DotaService
 
         std::string name = data["hero"]["name"].asString();
 
+        //Weareables
+
+        return name;
+    }
+
+    std::string ResolveHeroName(std::string name)
+    {
+        if (HERO_NAMES.count(name))
+        {
+            return HERO_NAMES.find(name)->second;
+        }
         return name;
     }
 
@@ -234,7 +246,8 @@ public:
         int radiant;
         int dire;
         std::string gamescoreboard;
-        std::string heroname;
+        std::string heroName;
+        std::string npcName;
         int level;
         int kill = -1;
         int death = -1;
@@ -260,41 +273,44 @@ public:
                 activity.SetState(const_cast<char *>("Hero Selection"));
                 break;
             case GameState::STRATEGY_TIME:
+                npcName = GetHeroName(data);
+                heroName = "Playing as " + ResolveHeroName(npcName);
 
-                heroname = "Playing as " + GetHeroName(data);
-
-                activity.SetDetails(const_cast<char *>(heroname.c_str()));
+                activity.SetDetails(const_cast<char *>(heroName.c_str()));
                 activity.SetState(const_cast<char *>("Strategy Time"));
                 break;
             case GameState::PRE_GAME:
 
                 level = GetHeroLevel(data);
                 getKillDeathAssists(data, kill, death, assist);
-                heroname = "Playing as " + GetHeroName(data) + " - Lvl." + std::to_string(level);
+                npcName = GetHeroName(data);
+
+                heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
                 kda = std::to_string(kill) + " / " + std::to_string(assist) + " / " + std::to_string(death);
 
                 now += std::chrono::seconds(-gameTime);
                 timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 
                 activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
-                activity.SetDetails(const_cast<char *>(heroname.c_str()));
+                activity.SetDetails(const_cast<char *>(heroName.c_str()));
                 activity.SetState(const_cast<char *>(kda.c_str()));
                 break;
             case GameState::GAME:
 
                 level = GetHeroLevel(data);
                 getKillDeathAssists(data, kill, death, assist);
-                heroname = "Playing as " + GetHeroName(data) + " - Lvl." + std::to_string(level);
+                npcName = GetHeroName(data);
+                heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
                 kda = std::to_string(kill) + " / " + std::to_string(assist) + " / " + std::to_string(death);
 
                 now += std::chrono::seconds(-gameTime);
                 timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 
                 activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
-                activity.SetDetails(const_cast<char *>(heroname.c_str()));
+                activity.SetDetails(const_cast<char *>(heroName.c_str()));
                 activity.SetState(const_cast<char *>(kda.c_str()));
                 break;
-            case GameState::NONE:                
+            case GameState::NONE:
             default:
                 return;
             }
