@@ -241,10 +241,6 @@ public:
         int assist = -1;
         std::string kda;
 
-        std::cout << "==================================="
-                  << "\n";
-        std::cout << data << "\n";
-
         // Identify In-Game and Outside-Game
         switch (IsThePlayerInMatchUp(data))
         {
@@ -294,18 +290,13 @@ public:
                 now += std::chrono::seconds(-gameTime);
                 timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 
-                FindScoreboard(data, radiant, dire);
-                gamescoreboard = "Scoreboard: " + std::to_string(radiant) + " - " + std::to_string(dire);
-
                 activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
                 activity.SetDetails(const_cast<char *>(heroname.c_str()));
                 activity.SetState(const_cast<char *>(kda.c_str()));
                 break;
-            case GameState::NONE:
+            case GameState::NONE:                
             default:
-                std::cout << "Game Time: " << gameTime << "\n";
-                std::cout << "Match Time: " << matchTime << "\n";
-                break;
+                return;
             }
 
             discordService->UpdateActivity(activity);
@@ -352,8 +343,7 @@ public:
                 break;
             case GameState::NONE:
             default:
-                std::cout << "Game Time: " << gameTime << "\n";
-                std::cout << "Match Time: " << matchTime << "\n";
+                return;
                 break;
             }
 
@@ -362,10 +352,8 @@ public:
         }
         case PlayerStatus::STAND_BY:
         default:
-            break;
+            discordService->CleanActivity();
         }
-
-        // Update If Not Dota 2 updates
     }
 };
 

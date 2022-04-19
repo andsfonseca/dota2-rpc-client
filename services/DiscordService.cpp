@@ -5,9 +5,10 @@
 class DiscordService
 {
     static DiscordService *instance;
+    std::thread *threadHandler;
+
     std::unique_ptr<discord::Core> core;
     bool started{false};
-    std::thread *threadHandler;
     volatile bool interrupted{false};
 
     // Private constructor so that no objects can be created.
@@ -30,7 +31,7 @@ class DiscordService
         this->core->SetLogHook(
             discord::LogLevel::Debug, [](discord::LogLevel level, const char *message)
             { std::cerr << "Log(" << static_cast<uint32_t>(level) << "): " << message << "\n"; });
-        
+
         return true;
     }
 
@@ -62,6 +63,16 @@ public:
                                                          std::cout << "Failed updating activity!\n"; });
     }
 
+    void CleanActivity()
+    {
+        if (!Start())
+            return;
+        this->core->ActivityManager().ClearActivity([](discord::Result result)
+                                                    { if(result != discord::Result::Ok)
+                                                         std::cout << "Failed updating activity!\n"; });
+        Stop();
+    }
+
     bool Start()
     {
         if (!this->core)
@@ -84,6 +95,8 @@ public:
             interrupted = true;
             threadHandler->join();
             interrupted = false;
+            started = false;
+            this->core.reset();
         }
     }
 };
