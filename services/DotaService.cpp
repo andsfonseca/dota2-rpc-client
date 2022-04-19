@@ -276,6 +276,7 @@ public:
                 npcName = GetHeroName(data);
                 heroName = "Playing as " + ResolveHeroName(npcName);
 
+                activity.GetAssets().SetLargeImage(npcName.c_str());
                 activity.SetDetails(const_cast<char *>(heroName.c_str()));
                 activity.SetState(const_cast<char *>("Strategy Time"));
                 break;
@@ -284,13 +285,14 @@ public:
                 level = GetHeroLevel(data);
                 getKillDeathAssists(data, kill, death, assist);
                 npcName = GetHeroName(data);
-
+                
                 heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
-                kda = std::to_string(kill) + " / " + std::to_string(assist) + " / " + std::to_string(death);
+                kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
 
                 now += std::chrono::seconds(-gameTime);
                 timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
-
+                
+                activity.GetAssets().SetLargeImage(npcName.c_str());
                 activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
                 activity.SetDetails(const_cast<char *>(heroName.c_str()));
                 activity.SetState(const_cast<char *>(kda.c_str()));
@@ -301,11 +303,12 @@ public:
                 getKillDeathAssists(data, kill, death, assist);
                 npcName = GetHeroName(data);
                 heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
-                kda = std::to_string(kill) + " / " + std::to_string(assist) + " / " + std::to_string(death);
+                kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
 
                 now += std::chrono::seconds(-gameTime);
                 timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 
+                activity.GetAssets().SetLargeImage(npcName.c_str());
                 activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
                 activity.SetDetails(const_cast<char *>(heroName.c_str()));
                 activity.SetState(const_cast<char *>(kda.c_str()));
