@@ -558,3 +558,4 @@ FodyWeavers.xsd
 
 #Other
 third_party/*
+resources/*

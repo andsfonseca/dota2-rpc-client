@@ -1,5 +1,5 @@
-#include <map>
 #include <string>
+#include <map>
 
 const std::map<std::string, std::string> HERO_NAMES = {
     {"npc_dota_hero_abaddon", "Abaddon"},
@@ -159,3 +159,39 @@ const std::map<std::string, std::string> HERO_NAMES = {
     {"npc_dota_hero_skeleton_king_3", "Skeleton King"},
     {"npc_dota_hero_zuus", "Zeus"},
     {"npc_dota_hero_zuus_2", "Zeus"}};
+
+const std::string NEUTRAL_NAMES[] = {"npc_dota_neutral_alpha_wolf",
+                                     "npc_dota_neutral_big_thunder_lizard",
+                                     "npc_dota_neutral_black_dragon",
+                                     "npc_dota_neutral_black_drake",
+                                     "npc_dota_neutral_centaur_khan",
+                                     "npc_dota_neutral_centaur_outrunner",
+                                     "npc_dota_neutral_dark_troll",
+                                     "npc_dota_neutral_dark_troll_warlord",
+                                     "npc_dota_neutral_enraged_wildkin",
+                                     "npc_dota_neutral_fel_beast",
+                                     "npc_dota_neutral_forest_troll_berserker",
+                                     "npc_dota_neutral_forest_troll_high_priest",
+                                     "npc_dota_neutral_frostbitten_golem",
+                                     "npc_dota_neutral_ghost",
+                                     "npc_dota_neutral_gnoll_assassin",
+                                     "npc_dota_neutral_granite_golem",
+                                     "npc_dota_neutral_harpy_scout",
+                                     "npc_dota_neutral_harpy_storm",
+                                     "npc_dota_neutral_ice_shaman",
+                                     "npc_dota_neutral_kobold",
+                                     "npc_dota_neutral_kobold_taskmaster",
+                                     "npc_dota_neutral_kobold_tunneler",
+                                     "npc_dota_neutral_mud_golem",
+                                     "npc_dota_neutral_mud_golem_split",
+                                     "npc_dota_neutral_ogre_magi",
+                                     "npc_dota_neutral_ogre_mauler",
+                                     "npc_dota_neutral_polar_furbolg_champion",
+                                     "npc_dota_neutral_polar_furbolg_ursa_warrior",
+                                     "npc_dota_neutral_rock_golem",
+                                     "npc_dota_neutral_satyr_hellcaller",
+                                     "npc_dota_neutral_satyr_soulstealer",
+                                     "npc_dota_neutral_satyr_trickster",
+                                     "npc_dota_neutral_small_thunder_lizard",
+                                     "npc_dota_neutral_warpine_raider",
+                                     "npc_dota_neutral_wildkin"};

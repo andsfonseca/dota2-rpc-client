@@ -5,6 +5,7 @@
 #include "DiscordService.cpp"
 #include "../utils/NamesDota2.hpp"
 
+
 enum PlayerStatus
 {
     STAND_BY,
@@ -264,7 +265,7 @@ class DotaService
         return level;
     }
 
-    void getKillDeathAssists(Json::Value data, int &kill, int &death, int &assist)
+    void GetKillDeathAssists(Json::Value data, int &kill, int &death, int &assist)
     {
         kill = 0;
         death = 0;
@@ -283,6 +284,25 @@ class DotaService
         kill = data["player"]["kills"].asInt();
         death = data["player"]["deaths"].asInt();
         assist = data["player"]["assists"].asInt();
+    }
+
+    std::string GetNeutralNameBasedOnMatchId(Json::Value data){
+
+        if (data["map"].isNull())
+        {
+            return NEUTRAL_NAMES[0];
+        }
+
+        if (data["map"]["matchid"].isNull())
+        {
+            return NEUTRAL_NAMES[1];
+        }
+
+        std::string matchId = data["map"]["matchid"].asString();
+
+        long i = atol(matchId.c_str());
+
+        return NEUTRAL_NAMES[i%35];
     }
 
 public:
@@ -330,8 +350,11 @@ public:
             switch (state1)
             {
             case GameState::HERO_SELECTION:
+                npcName = NEUTRAL_NAMES[2];
+
                 activity.SetDetails(const_cast<char *>("Choosing a hero"));
                 activity.SetState(const_cast<char *>("Hero Selection"));
+                activity.GetAssets().SetLargeImage(npcName.c_str());
                 break;
             case GameState::STRATEGY_TIME:
                 npcName = GetHeroName(data);
@@ -344,7 +367,7 @@ public:
             case GameState::PRE_GAME:
 
                 level = GetHeroLevel(data);
-                getKillDeathAssists(data, kill, death, assist);
+                GetKillDeathAssists(data, kill, death, assist);
                 npcName = GetHeroName(data);
 
                 heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
@@ -361,7 +384,7 @@ public:
             case GameState::GAME:
 
                 level = GetHeroLevel(data);
-                getKillDeathAssists(data, kill, death, assist);
+                GetKillDeathAssists(data, kill, death, assist);
                 npcName = GetHeroName(data);
                 heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
                 kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
@@ -384,6 +407,9 @@ public:
         }
         case PlayerStatus::WATCHING:
         {
+            npcName = GetNeutralNameBasedOnMatchId(data);
+            std::cout << data << "\n";
+            activity.GetAssets().SetLargeImage(npcName.c_str());
             activity.SetDetails(const_cast<char *>("Watching a match"));
             activity.SetType(discord::ActivityType::Watching);
 
