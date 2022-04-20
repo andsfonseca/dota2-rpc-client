@@ -295,12 +295,12 @@ class DotaService
 
         if (data["player"].isNull())
         {
-            return "⛰️ | 🌋";
+            return "⛰️Radiant | Dire🌋";
         }
 
         if (data["player"]["team2"].isNull() || data["player"]["team3"].isNull())
         {
-            return "⛰️ | 🌋";
+            return "⛰️Radiant | Dire🌋";
         }
 
         int i = 0;
@@ -339,16 +339,16 @@ class DotaService
         if (radiant > dire)
         {
             int value = (radiant - dire) / 1000;
-            status = "⛰️ " + std::to_string(value) + "k | 🌋";
+            status = "⛰️Radiant " + std::to_string(value) + "k | Dire🌋";
         }
         else if (dire > radiant)
         {
             int value = (dire - radiant) / 1000;
-            status = "⛰️ | " + std::to_string(value) + "k 🌋";
+            status = "⛰️Radiant | " + std::to_string(value) + "k Dire🌋";
         }
         else
         {
-            status = "⛰️ | 🌋";
+            status = "⛰️Radiant | Dire🌋";
         }
 
         return status;
@@ -379,6 +379,37 @@ class DotaService
         return ItemStatusEffect::WITHOUT_ITEMS;
     }
 
+    void GetPlayerHits(Json::Value data, int &lastHits, int &denies){
+        lastHits = 0;
+        denies = 0;
+
+        if (data["player"].isNull())
+        {
+            return;
+        }
+
+        if (data["player"]["last_hits"].isNull() || data["player"]["denies"].isNull())
+        {
+            return;
+        }
+
+        lastHits = data["player"]["last_hits"].asInt();
+        denies = data["player"]["denies"].asInt();
+    }
+
+    int GetPlayerGold(Json::Value data){
+        if (data["player"].isNull())
+        {
+            return 0;
+        }
+
+        if (data["player"]["gold"].isNull())
+        {
+            return 0;
+        }
+
+        return data["player"]["gold"].asInt();
+    }
 public:
     static DotaService *getInstance()
     {
@@ -449,8 +480,15 @@ public:
 
                 now += std::chrono::seconds(-gameTime);
                 timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+                int lastHits;
+                int denies;
+
+                GetPlayerHits(data, lastHits, denies);
                 
+                std::string imageText = "💰 "+ std::to_string(GetPlayerGold(data)) + " | LH: " + std::to_string(lastHits) + " | DN: " + std::to_string(denies);
+
                 ItemStatusEffect effect = GetItemStatusEffect(data);
+
                 switch (effect)
                 {
                 case ItemStatusEffect::SMOKE:
@@ -473,8 +511,9 @@ public:
                 default:
                     break;
                 }
-
+                
                 activity.GetAssets().SetLargeImage(npcName.c_str());
+                activity.GetAssets().SetLargeText(imageText.c_str());
                 activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
                 activity.SetDetails(const_cast<char *>(heroName.c_str()));
                 activity.SetState(const_cast<char *>(kda.c_str()));
@@ -492,6 +531,12 @@ public:
                 now += std::chrono::seconds(-gameTime);
                 timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 
+                int lastHits;
+                int denies;
+
+                GetPlayerHits(data, lastHits, denies);
+                std::string imageText = "💰 "+ std::to_string(GetPlayerGold(data)) + " | LH: " + std::to_string(lastHits) + " | DN: " + std::to_string(denies);
+
                 ItemStatusEffect effect = GetItemStatusEffect(data);
                 switch (effect)
                 {
@@ -517,6 +562,7 @@ public:
                 }
                 
                 activity.GetAssets().SetLargeImage(npcName.c_str());
+                activity.GetAssets().SetLargeText(imageText.c_str());
                 activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
                 activity.SetDetails(const_cast<char *>(heroName.c_str()));
                 activity.SetState(const_cast<char *>(kda.c_str()));
