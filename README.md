@@ -39,3 +39,7 @@ Feel free to submit issues and enhancement requests.
 3. Do the _commit_ (`git commit -am 'Adding a new resource...'`)
 4. _Push_ (`git push origin my-new-resource`)
 5. Create a new _Pull Request_ 
+
+## Notes
+
+Images, names and any entities related to the DotA 2 are by Valve Corporation. This software only uses the data shared by the game, but it is not related to the original game.
