@@ -2,7 +2,6 @@
 
 #include "../services/DotaService.cpp"
 
-
 void Listener::asyncHandleHttpRequest(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback)
 {
     auto json = *req->getJsonObject();

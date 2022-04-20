@@ -195,3 +195,7 @@ const std::string NEUTRAL_NAMES[] = {"npc_dota_neutral_alpha_wolf",
                                      "npc_dota_neutral_small_thunder_lizard",
                                      "npc_dota_neutral_warpine_raider",
                                      "npc_dota_neutral_wildkin"};
+
+const std::map<std::string, std::string> MAP_NAMES = {
+    {"hero_demo", "Testing a hero"}
+};                                     

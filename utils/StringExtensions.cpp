@@ -2,7 +2,7 @@
 
 namespace Extensions
 {
-    void findAndReplaceAll(std::string &data, std::string toSearch, std::string replaceStr)
+    static void findAndReplaceAll(std::string &data, std::string toSearch, std::string replaceStr)
     {
         // Get the first occurrence
         size_t pos = data.find(toSearch);

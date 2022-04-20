@@ -4,6 +4,7 @@
 
 #include "DiscordService.cpp"
 #include "../utils/NamesDota2.hpp"
+#include "../utils/StringExtensions.cpp"
 
 enum PlayerStatus
 {
@@ -379,7 +380,8 @@ class DotaService
         return ItemStatusEffect::WITHOUT_ITEMS;
     }
 
-    void GetPlayerHits(Json::Value data, int &lastHits, int &denies){
+    void GetPlayerHits(Json::Value data, int &lastHits, int &denies)
+    {
         lastHits = 0;
         denies = 0;
 
@@ -397,7 +399,8 @@ class DotaService
         denies = data["player"]["denies"].asInt();
     }
 
-    int GetPlayerGold(Json::Value data){
+    int GetPlayerGold(Json::Value data)
+    {
         if (data["player"].isNull())
         {
             return 0;
@@ -410,6 +413,37 @@ class DotaService
 
         return data["player"]["gold"].asInt();
     }
+
+    std::string GetMapName(Json::Value data)
+    {
+        if (data["map"].isNull())
+        {
+            return "";
+        }
+
+        if (data["map"]["customgamename"].isNull())
+        {
+            return "";
+        }
+
+        std::string mappath = data["map"]["customgamename"].asString();
+
+        if (mappath == "")
+            return "";
+        
+        Extensions::findAndReplaceAll(mappath, "\\", "/");
+
+        std::string mapName(mappath.substr(mappath.rfind("/") + 1));
+        
+        if (MAP_NAMES.count(mapName))
+        {
+            return MAP_NAMES.find(mapName)->second;
+        }
+
+        return "";
+
+    }
+
 public:
     static DotaService *getInstance()
     {
@@ -476,7 +510,14 @@ public:
                 npcName = GetHeroName(data);
 
                 heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
-                kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
+
+                std::string mapName = GetMapName(data);
+                if(mapName == ""){
+                    kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
+                }
+                else{
+                    kda = mapName;
+                }
 
                 now += std::chrono::seconds(-gameTime);
                 timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
@@ -484,8 +525,8 @@ public:
                 int denies;
 
                 GetPlayerHits(data, lastHits, denies);
-                
-                std::string imageText = "💰 "+ std::to_string(GetPlayerGold(data)) + " | LH: " + std::to_string(lastHits) + " | DN: " + std::to_string(denies);
+
+                std::string imageText = "💰 " + std::to_string(GetPlayerGold(data)) + " | LH: " + std::to_string(lastHits) + " | DN: " + std::to_string(denies);
 
                 ItemStatusEffect effect = GetItemStatusEffect(data);
 
@@ -503,7 +544,7 @@ public:
                     activity.GetAssets().SetSmallImage("aghanims_scepter");
                     activity.GetAssets().SetSmallText("has Aghanim's Scepter");
                     break;
-                 case ItemStatusEffect::SHARD:
+                case ItemStatusEffect::SHARD:
                     activity.GetAssets().SetSmallImage("aghanims_shard");
                     activity.GetAssets().SetSmallText("has Aghanim's Shard");
                     break;
@@ -511,7 +552,7 @@ public:
                 default:
                     break;
                 }
-                
+
                 activity.GetAssets().SetLargeImage(npcName.c_str());
                 activity.GetAssets().SetLargeText(imageText.c_str());
                 activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
@@ -526,7 +567,14 @@ public:
                 GetKillDeathAssists(data, kill, death, assist);
                 npcName = GetHeroName(data);
                 heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
-                kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
+
+                std::string mapName = GetMapName(data);
+                if(mapName == ""){
+                    kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
+                }
+                else{
+                    kda = mapName;
+                }
 
                 now += std::chrono::seconds(-gameTime);
                 timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
@@ -535,7 +583,7 @@ public:
                 int denies;
 
                 GetPlayerHits(data, lastHits, denies);
-                std::string imageText = "💰 "+ std::to_string(GetPlayerGold(data)) + " | LH: " + std::to_string(lastHits) + " | DN: " + std::to_string(denies);
+                std::string imageText = "💰 " + std::to_string(GetPlayerGold(data)) + " | LH: " + std::to_string(lastHits) + " | DN: " + std::to_string(denies);
 
                 ItemStatusEffect effect = GetItemStatusEffect(data);
                 switch (effect)
@@ -552,7 +600,7 @@ public:
                     activity.GetAssets().SetSmallImage("aghanims_scepter");
                     activity.GetAssets().SetSmallText("has Aghanim's Scepter");
                     break;
-                 case ItemStatusEffect::SHARD:
+                case ItemStatusEffect::SHARD:
                     activity.GetAssets().SetSmallImage("aghanims_shard");
                     activity.GetAssets().SetSmallText("has Aghanim's Shard");
                     break;
@@ -560,7 +608,7 @@ public:
                 default:
                     break;
                 }
-                
+
                 activity.GetAssets().SetLargeImage(npcName.c_str());
                 activity.GetAssets().SetLargeText(imageText.c_str());
                 activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
