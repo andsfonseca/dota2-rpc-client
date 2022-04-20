@@ -35,7 +35,6 @@ class DotaService
 {
     static DotaService *instance;
 
-    // Private constructor so that no objects can be created.
     DotaService()
     {
     }

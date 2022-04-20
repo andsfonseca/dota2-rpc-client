@@ -45,7 +45,6 @@ class DiscordService
         {
             std::time_t t = std::time(0);
             double seconds = std::difftime(t, lastUpdate);
-            std::cout << std::to_string(seconds) << "\n";
             if (seconds > 10)
             {
                 breaked = true;
