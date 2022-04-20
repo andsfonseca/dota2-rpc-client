@@ -21,6 +21,15 @@ enum GameState
     GAME
 };
 
+enum ItemStatusEffect
+{
+    WITHOUT_ITEMS,
+    SHARD,
+    SCEPTER,
+    SCEPTER_AND_SHARD,
+    SMOKE
+};
+
 class DotaService
 {
     static DotaService *instance;
@@ -264,7 +273,7 @@ class DotaService
         }
 
         std::string matchId = data["map"]["matchid"].asString();
-        
+
         std::stringstream in;
         in << matchId;
         long long i;
@@ -284,7 +293,7 @@ class DotaService
         int radiant = 0;
         int dire = 0;
 
-         if (data["player"].isNull())
+        if (data["player"].isNull())
         {
             return "⛰️ | 🌋";
         }
@@ -327,19 +336,47 @@ class DotaService
         }
 
         std::string status;
-        if(radiant > dire){
-            int value = (radiant - dire)/1000;
-            status = "⛰️ "+ std::to_string(value)  +"k | 🌋";
+        if (radiant > dire)
+        {
+            int value = (radiant - dire) / 1000;
+            status = "⛰️ " + std::to_string(value) + "k | 🌋";
         }
-        else if (dire > radiant){
-            int value = (dire - radiant)/1000;
-            status = "⛰️ | "+ std::to_string(value)  +"k 🌋";
+        else if (dire > radiant)
+        {
+            int value = (dire - radiant) / 1000;
+            status = "⛰️ | " + std::to_string(value) + "k 🌋";
         }
-        else{
+        else
+        {
             status = "⛰️ | 🌋";
         }
-        
+
         return status;
+    }
+
+    ItemStatusEffect GetItemStatusEffect(Json::Value data)
+    {
+        if (data["hero"].isNull())
+            return ItemStatusEffect::WITHOUT_ITEMS;
+
+        if (data["hero"]["smoked"].isNull() || data["hero"]["aghanims_shard"].isNull() || data["hero"]["aghanims_scepter"].isNull())
+            return ItemStatusEffect::WITHOUT_ITEMS;
+
+        bool smoked = data["hero"]["smoked"].asBool();
+
+        if (smoked)
+            return ItemStatusEffect::SMOKE;
+
+        bool aghanimsShard = data["hero"]["aghanims_shard"].asBool();
+        bool aghanimsScepter = data["hero"]["aghanims_scepter"].asBool();
+
+        if (aghanimsShard && aghanimsScepter)
+            return ItemStatusEffect::SCEPTER_AND_SHARD;
+        else if (aghanimsScepter)
+            return ItemStatusEffect::SCEPTER;
+        else if (aghanimsShard)
+            return ItemStatusEffect::SHARD;
+        return ItemStatusEffect::WITHOUT_ITEMS;
     }
 
 public:
@@ -401,6 +438,7 @@ public:
                 activity.SetState(const_cast<char *>("Strategy Time"));
                 break;
             case GameState::PRE_GAME:
+            {
 
                 level = GetHeroLevel(data);
                 GetKillDeathAssists(data, kill, death, assist);
@@ -411,13 +449,39 @@ public:
 
                 now += std::chrono::seconds(-gameTime);
                 timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+                
+                ItemStatusEffect effect = GetItemStatusEffect(data);
+                switch (effect)
+                {
+                case ItemStatusEffect::SMOKE:
+                    activity.GetAssets().SetSmallImage("smoke_of_deceit");
+                    activity.GetAssets().SetSmallText("Smoked");
+                    break;
+                case ItemStatusEffect::SCEPTER_AND_SHARD:
+                    activity.GetAssets().SetSmallImage("aghanims_scepter_2");
+                    activity.GetAssets().SetSmallText("has Aghanim's Scepter and Shard");
+                    break;
+                case ItemStatusEffect::SCEPTER:
+                    activity.GetAssets().SetSmallImage("aghanims_scepter");
+                    activity.GetAssets().SetSmallText("has Aghanim's Scepter");
+                    break;
+                 case ItemStatusEffect::SHARD:
+                    activity.GetAssets().SetSmallImage("aghanims_shard");
+                    activity.GetAssets().SetSmallText("has Aghanim's Shard");
+                    break;
+                case ItemStatusEffect::WITHOUT_ITEMS:
+                default:
+                    break;
+                }
 
                 activity.GetAssets().SetLargeImage(npcName.c_str());
                 activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
                 activity.SetDetails(const_cast<char *>(heroName.c_str()));
                 activity.SetState(const_cast<char *>(kda.c_str()));
                 break;
+            }
             case GameState::GAME:
+            {
 
                 level = GetHeroLevel(data);
                 GetKillDeathAssists(data, kill, death, assist);
@@ -428,11 +492,36 @@ public:
                 now += std::chrono::seconds(-gameTime);
                 timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 
+                ItemStatusEffect effect = GetItemStatusEffect(data);
+                switch (effect)
+                {
+                case ItemStatusEffect::SMOKE:
+                    activity.GetAssets().SetSmallImage("smoke_of_deceit");
+                    activity.GetAssets().SetSmallText("Smoked");
+                    break;
+                case ItemStatusEffect::SCEPTER_AND_SHARD:
+                    activity.GetAssets().SetSmallImage("aghanims_scepter_2");
+                    activity.GetAssets().SetSmallText("has Aghanim's Scepter and Shard");
+                    break;
+                case ItemStatusEffect::SCEPTER:
+                    activity.GetAssets().SetSmallImage("aghanims_scepter");
+                    activity.GetAssets().SetSmallText("has Aghanim's Scepter");
+                    break;
+                 case ItemStatusEffect::SHARD:
+                    activity.GetAssets().SetSmallImage("aghanims_shard");
+                    activity.GetAssets().SetSmallText("has Aghanim's Shard");
+                    break;
+                case ItemStatusEffect::WITHOUT_ITEMS:
+                default:
+                    break;
+                }
+                
                 activity.GetAssets().SetLargeImage(npcName.c_str());
                 activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
                 activity.SetDetails(const_cast<char *>(heroName.c_str()));
                 activity.SetState(const_cast<char *>(kda.c_str()));
                 break;
+            }
             case GameState::NONE:
             default:
                 return;
