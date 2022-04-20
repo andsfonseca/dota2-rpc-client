@@ -1,6 +1,8 @@
 #include <iostream>
 #include <thread>
 #include "../third_party/discord-sdk-src/cpp/discord.h"
+#include <ctime>
+#include <string>
 
 class DiscordService
 {
@@ -8,8 +10,9 @@ class DiscordService
     std::thread *threadHandler;
 
     std::unique_ptr<discord::Core> core;
-    bool started{false};
+    volatile bool started{false};
     volatile bool interrupted{false};
+    volatile std::time_t lastUpdate;
 
     // Private constructor so that no objects can be created.
     DiscordService()
@@ -37,12 +40,29 @@ class DiscordService
 
     void Loop()
     {
+        bool breaked{false};
         do
         {
-            this->core->RunCallbacks();
+            std::time_t t = std::time(0);
+            double seconds = std::difftime(t, lastUpdate);
+            std::cout << std::to_string(seconds) << "\n";
+            if (seconds > 10)
+            {
+                breaked = true;
+                break;
+            }
 
+            this->core->RunCallbacks();
             std::this_thread::sleep_for(std::chrono::milliseconds(16));
+
         } while (!interrupted);
+
+        if (breaked && !interrupted)
+        {
+            interrupted = false;
+            started = false;
+            this->core.reset();
+        }
     }
 
 public:
@@ -57,8 +77,12 @@ public:
     {
         if (!Start())
             return;
+
+        lastUpdate = std::time(0);
+
         this->core->ActivityManager().UpdateActivity(activity, [](discord::Result result)
                                                      { 
+                                                         
                                                          if(result != discord::Result::Ok)
                                                          std::cout << "Failed updating activity!\n"; });
     }
