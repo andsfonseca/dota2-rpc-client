@@ -130,8 +130,23 @@ endif()
 add_subdirectory(${THIRD_PARTY_BASE_DIR}/drogon) 
 target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
 
-# add_executable(${PROJECT_NAME} main.cc ${DISCORD_SRC_LIST})
 
+#[[3. SrvLib.git]]
+set(SRVLIB_GIT "https://github.com/Tomenz/SrvLib.git")
+
+if(NOT EXISTS ${THIRD_PARTY_BASE_DIR}/SrvLib)
+
+execute_process(COMMAND ${GIT_EXECUTABLE} clone ${SRVLIB_GIT}
+WORKING_DIRECTORY ${THIRD_PARTY_BASE_DIR}
+COMMAND_ERROR_IS_FATAL ANY)
+
+endif()
+
+add_subdirectory(${THIRD_PARTY_BASE_DIR}/SrvLib) 
+
+target_link_libraries(${PROJECT_NAME} PRIVATE srvlib)
+
+# add_executable(${PROJECT_NAME} main.cc ${DISCORD_SRC_LIST})
 if (CMAKE_CXX_STANDARD LESS 17)
 # With C++14, use boost to support any, string_view and filesystem
 message(STATUS "use c++14")
