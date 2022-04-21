@@ -2,28 +2,26 @@
 #include <fstream>
 #include <filesystem>
 #include <regex>
+#include <thread>
 #include <drogon/drogon.h>
+#include <string>
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <Windows.h>
+#pragma comment(lib, "SrvLib.lib")
+#else
+#include <codecvt>
+#include <locale>
+#include <syslog.h>
+#include <unistd.h>
+#endif
+
+#include "third_party/srvlib/Service.h"
 
 #include "utils/CFGJSON.hpp"
 #include "utils/StringExtensions.cpp"
 
 namespace fs = std::filesystem;
-
-enum ArgumentOptions
-{
-    NONE,
-    HOST,
-    PORT,
-};
-
-ArgumentOptions resolveArgumentOption(std::string input)
-{
-    if (input == "-h" || input == "--host")
-        return HOST;
-    if (input == "-p" || input == "--port")
-        return PORT;
-    return NONE;
-}
 
 std::string getDota2CFGPathLocationFromVDFFile(std::string path)
 {
@@ -131,35 +129,12 @@ void resolveDota2GameStateIntegration(std::string host, int port)
     }
 }
 
-int main(int argc, char *argv[])
+void Start()
 {
     std::string host = "127.0.0.1";
     int port_number = 52424;
 
-    if (argc > 1)
-    {
-        for (int i = 1; i < argc;)
-        {
-            switch (resolveArgumentOption(argv[i]))
-            {
-            case HOST:
-                host = argv[i + 1];
-                i = i + 2;
-                break;
-            case PORT:
-                port_number = std::stoi(argv[i + 1]);
-                i = i + 2;
-                break;
-            default:
-                break;
-            }
-        }
-    }
-
     resolveDota2GameStateIntegration(host, port_number);
-
-    // Set HTTP listener address and port
-    drogon::app().addListener(host, port_number);
 
     // Web Server Messages
     if (host == "0.0.0.0")
@@ -170,9 +145,42 @@ int main(int argc, char *argv[])
     {
         std::cout << "Listening at http://" << host << ":" << port_number << ".\n";
     }
-    std::cout << "Press Ctrl+C to exit.\n";
+    std::cout << "Press Ctrl+C twice to exit.\n";
+
+    // Set HTTP listener address and port
+    drogon::app().addListener(host, port_number);
 
     drogon::app().run();
+}
 
-    return 0;
+void Stop()
+{
+    drogon::app().quit();
+}
+
+std::thread *threadDrogon;
+
+int main(int argc, const char *argv[])
+{
+    
+    SrvParam svParam;
+#if defined(_WIN32) || defined(_WIN64)
+    svParam.szDspName = L"Dota 2 RPC Client Service"; // Servicename in Service control manager of windows
+    svParam.szDescrip = L"Dota 2 RPC Client Service"; // Description in Service control manager of windows
+#endif
+    svParam.szSrvName = L"dota2rpc"; // Service name (service id)
+
+    svParam.fnStartCallBack = []()
+    {
+        threadDrogon = new std::thread(&Start);
+    };
+    svParam.fnStopCallBack = []()
+    {
+        Stop();
+        threadDrogon->join();
+    };
+    svParam.fnSignalCallBack = []() {
+    };
+
+    return ServiceMain(argc, argv, svParam);
 }
