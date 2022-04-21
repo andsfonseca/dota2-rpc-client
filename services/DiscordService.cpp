@@ -88,8 +88,8 @@ public:
 
     void CleanActivity()
     {
-        if (!Start())
-            return;
+        if(!started) return;
+
         this->core->ActivityManager().ClearActivity([](discord::Result result)
                                                     { if(result != discord::Result::Ok)
                                                          std::cout << "Failed updating activity!\n"; });
