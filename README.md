@@ -27,13 +27,56 @@ Share real-time information about what happens in your game with everyone.
 
 ## Installation
 
-> Not yet, but will. See Release Page...
+Follow the step-by-step below to install your version of DotA 2 RPC
+
+ * Download the latest software version on the [Releases page](https://github.com/andsfonseca/dota2-rpc-client/releases/);
+ * Unzip the file in a folder of your preference. (There are many files, then be careful!🙃);
+ * Open the file `install.windows.bat` and everything will be ready!
+
+## Uninstallation
+ 
+ * Open the `uninstall.windows.bat` file to remove the installation of your computer;
+ * If you want, you can delete all the files.
+
+## Advanced Users
+ 
+This software is registered as Windows service. If you are looking for other options, here are other ways to use the application.
+ 
+ ```shell
+dota2-rpc-client.exe <flag>
+```
+
+|        Flag               |                                    Description                                    |
+|:-------------------------:|:---------------------------------------------------------------------------------:|
+| `-i`                      | Install the DotA 2 RPC as a service.                                              |
+| `-r`                      | Uninstall the service, if installed.                                              |
+| `-s`                      | If installed, start the service.                                                  |
+| `-e`                      | If installed, stop the service.                                                   |
+| `-f`                      | Execute the DotA 2 RPC like a Console Application.                                |
 
 ## Compilations Instructions
 
 Want to improve the project or compile a version outside the official channel?
 
-> No yet, but will be in a different readme file.
+> See the [Contribution Section](#contribution) to read more instructions or clone this repository.
+
+This project mainly uses 3 libraries to work. Are they:
+
+ * [Discord SDK](https://discord.com/developers/docs/intro) - A Library for Integration with the Discord application;
+ * [Drogon C++](https://github.com/drogonframework/drogon) - A web framework written with C++;
+ * [SrvLib](https://github.com/Tomenz/SrvLib) - A library for creating services in Windows and Linux.
+
+This is a project made with *CMake*, these libraries are downloaded during the first compilation of the software and placed in a folder called `third_party`.
+
+With the repository downloaded, run the command:
+
+```shell
+ cmake --build {folder} --config Debug --target dota2-rpc-client -j {threads}
+```
+ 
+> If you choose not to use automatic compilation and want to download libraries on your own, you can use the `vcpkg` to install the *Discord SDK* and the *Drogon C++*.
+> 
+> An installation guide for the *Drogon C++* dependencies can be found on [this page](https://drogon.docsforge.com/master/installation/).
 
 ## Issues
 
