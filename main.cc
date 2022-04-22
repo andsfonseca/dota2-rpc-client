@@ -182,5 +182,11 @@ int main(int argc, const char *argv[])
     svParam.fnSignalCallBack = []() {
     };
 
+    //No option, run sync
+    if(argc <= 1){
+        const char *args[] = {"", "-f"};
+        return ServiceMain(2, args , svParam);
+    }
+
     return ServiceMain(argc, argv, svParam);
 }
