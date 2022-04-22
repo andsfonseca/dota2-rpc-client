@@ -11,6 +11,7 @@ enum PlayerStatus
     STAND_BY,
     PLAYING,
     WATCHING,
+    COACHING
 };
 
 enum GameState
@@ -49,6 +50,11 @@ class DotaService
 
         if (data["player"]["activity"].isNull())
             return PlayerStatus::STAND_BY;
+
+        if (!data["player"]["team_name"].isNull() && data["player"]["team_name"].asString() == "spectator")
+        {
+            return PlayerStatus::COACHING;
+        }
 
         std::string activity = data["player"]["activity"].asString();
 
@@ -429,18 +435,17 @@ class DotaService
 
         if (mappath == "")
             return "";
-        
+
         Extensions::findAndReplaceAll(mappath, "\\", "/");
 
         std::string mapName(mappath.substr(mappath.rfind("/") + 1));
-        
+
         if (MAP_NAMES.count(mapName))
         {
             return MAP_NAMES.find(mapName)->second;
         }
 
         return "";
-
     }
 
 public:
@@ -453,7 +458,7 @@ public:
 
     void InterpretJsonFile(trantor::Date requestDate, Json::Value data)
     {
-
+        
         DiscordService *discordService = discordService->getInstance();
         discord::Activity activity{};
         auto now = std::chrono::system_clock::now();
@@ -511,10 +516,12 @@ public:
                 heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
 
                 std::string mapName = GetMapName(data);
-                if(mapName == ""){
+                if (mapName == "")
+                {
                     kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
                 }
-                else{
+                else
+                {
                     kda = mapName;
                 }
 
@@ -568,10 +575,12 @@ public:
                 heroName = "Playing as " + ResolveHeroName(npcName) + " - Lvl." + std::to_string(level);
 
                 std::string mapName = GetMapName(data);
-                if(mapName == ""){
+                if (mapName == "")
+                {
                     kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
                 }
-                else{
+                else
+                {
                     kda = mapName;
                 }
 
@@ -669,6 +678,60 @@ public:
                 activity.GetAssets().SetSmallText(matchIdText.c_str());
                 activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
                 activity.SetState(const_cast<char *>(net.c_str()));
+                break;
+            case GameState::NONE:
+            default:
+                return;
+                break;
+            }
+
+            discordService->UpdateActivity(activity);
+            break;
+        }
+        case PlayerStatus::COACHING:
+        {
+            activity.GetAssets().SetLargeImage(const_cast<char *>("coaching_default"));
+            long long matchId = GetMatchId(data);
+            npcName = GetNeutralNameBasedOnMatchId(matchId);
+
+            activity.SetDetails(const_cast<char *>("Coaching a match"));
+            activity.SetType(discord::ActivityType::Watching);
+
+            GameState state = GetCurrentGameState(data);
+
+            gameTime = GetGameTimeElapsed(data);
+            matchTime = GetMatchTimeElapsed(data);
+
+            switch (state)
+            {
+            case GameState::HERO_SELECTION:
+                activity.SetState(const_cast<char *>("Hero Selection"));
+                break;
+            case GameState::STRATEGY_TIME:
+                activity.SetState(const_cast<char *>("Strategy Time"));
+                break;
+            case GameState::PRE_GAME:
+                now += std::chrono::seconds(-gameTime);
+                timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+
+                matchIdText = "Match Id: " + std::to_string(matchId);
+                
+                activity.GetAssets().SetSmallImage(npcName.c_str());
+                activity.GetAssets().SetSmallText(matchIdText.c_str());
+                activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
+                activity.SetState(const_cast<char *>("Pre-Game"));
+                break;
+            case GameState::GAME:
+
+                now += std::chrono::seconds(-gameTime);
+                timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+
+                matchIdText = "Match Id: " + std::to_string(matchId);
+
+                activity.GetAssets().SetSmallImage(npcName.c_str());
+                activity.GetAssets().SetSmallText(matchIdText.c_str());
+                activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
+                activity.SetState(const_cast<char *>("Game in progress"));
                 break;
             case GameState::NONE:
             default:
