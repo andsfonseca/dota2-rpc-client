@@ -1,5 +1,7 @@
 #include "StringExtensions.cpp"
 #include <filesystem>
+#include <fstream>
+#include <vector>
 #include <json/json.h>
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -79,11 +81,11 @@ namespace GlobalStrings
         }
     }
 
-    static std::string Get(std::string key)
+    static Json::Value GetNode(std::string key)
     {
 
         if (key == "")
-            return "";
+            return NULL;
 
         if (LocaleStrings.isNull())
             LoadLanguageJson();
@@ -97,7 +99,7 @@ namespace GlobalStrings
         while (key != "" && token != key)
         {
             if (child[token].isNull())
-                return "";
+                return NULL;
 
             child = child[token];
 
@@ -106,7 +108,34 @@ namespace GlobalStrings
             token = key.substr(0, aux);
             key.erase(0, aux + 1);
         }
+        return child[token];
+    }
 
-        return child[token].asString();
+    static std::string Get(std::string key)
+    {
+        Json::Value child = GetNode(key);
+
+        if (child == NULL || child.isNull())
+            return "";
+
+        return child.asString();
+    }
+
+    static std::vector<std::string> GetArray(std::string key)
+    {
+        Json::Value child = GetNode(key);
+        std::vector<std::string> aux;
+
+        if (child == NULL || child.isNull())
+            return aux;
+
+        int size = child.size();
+
+        for (int i = 0; i < size; i++)
+        {   
+            std::string value = child[i].asString();
+            aux.push_back(value);
+        }
+        return aux;
     }
 }
