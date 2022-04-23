@@ -14,8 +14,8 @@
 
 #include "third_party/srvlib/Service.h"
 
-#include "utils/CFGJSON.hpp"
-#include "utils/GlobalStrings.cpp"
+#include "src/templates/CFGJSON.hpp"
+#include "src/localization/LocalizedStrings.cpp"
 
 
 namespace fs = std::filesystem;
@@ -46,7 +46,7 @@ std::string getDota2CFGPathLocationFromVDFFile(std::string path)
             auto pos1 = line.find("570", 0);
             if (pos1 != std::string::npos)
             {
-                Extensions::findAndReplaceAll(library_path, "\\\\", "/");
+                Extensions::FindAndReplaceAll(library_path, "\\\\", "/");
                 return library_path + "/steamapps/common/dota 2 beta/game/dota/cfg/gamestate_integration";
             }
         }
@@ -58,8 +58,8 @@ std::string getDota2CFGPathLocationFromVDFFile(std::string path)
 std::string makeDota2CFGFile(std::string host, int port)
 {
     std::string dota2_template(DOTA2_CFG_TEMPLATE);
-    Extensions::findAndReplaceAll(dota2_template, "{{host}}", host);
-    Extensions::findAndReplaceAll(dota2_template, "{{port}}", std::to_string(port));
+    Extensions::FindAndReplaceAll(dota2_template, "{{host}}", host);
+    Extensions::FindAndReplaceAll(dota2_template, "{{port}}", std::to_string(port));
 
     return dota2_template;
 }
@@ -117,7 +117,7 @@ void resolveDota2GameStateIntegration(std::string host, int port)
 
     if (!found)
     {
-        std::cout <<  GlobalStrings::Get("APP:ERRORS:CFG_NOT_FOUND") <<"\n\n";
+        std::cout <<  LocalizedStrings::Get("APP:ERRORS:CFG_NOT_FOUND") <<"\n\n";
         std::cout << "=========== gamestate_integration_rpc.cfg ================\n";
         std::cout << cfg_source << "\n";
         std::cout << "==========================================================\n\n";
@@ -133,17 +133,17 @@ void Start()
     // Web Server Messages
     if (host == "0.0.0.0")
     {
-        listeningMessage = GlobalStrings::Get("APP:INFO:SERVER_LISTENING_LOCALHOST");
+        listeningMessage = LocalizedStrings::Get("APP:INFO:SERVER_LISTENING_LOCALHOST");
     }
     else
     {
-        listeningMessage = GlobalStrings::Get("APP:INFO:SERVER_LISTENING");
+        listeningMessage = LocalizedStrings::Get("APP:INFO:SERVER_LISTENING");
     }
 
-    Extensions::findAndReplaceAll(listeningMessage, "{{HOST}}", host);
-    Extensions::findAndReplaceAll(listeningMessage, "{{PORT}}", std::to_string(port_number));
+    Extensions::FindAndReplaceAll(listeningMessage, "{{HOST}}", host);
+    Extensions::FindAndReplaceAll(listeningMessage, "{{PORT}}", std::to_string(port_number));
     std::cout << listeningMessage << "\n";
-    std::cout << GlobalStrings::Get("APP:INFO:SERVER_HOW_TO_EXIT") <<"\n";
+    std::cout << LocalizedStrings::Get("APP:INFO:SERVER_HOW_TO_EXIT") <<"\n";
 
     // Set HTTP listener address and port
     drogon::app().addListener(host, port_number);

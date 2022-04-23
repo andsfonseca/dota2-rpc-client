@@ -1,7 +1,6 @@
-#include "StringExtensions.cpp"
+#include "../extensions/StringExtensions.cpp"
 #include <filesystem>
 #include <fstream>
-#include <vector>
 #include <json/json.h>
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -10,7 +9,7 @@
 #include <unistd.h>
 #endif
 
-namespace GlobalStrings
+namespace LocalizedStrings
 {
     static Json::Value LocaleStrings;
 
@@ -22,11 +21,11 @@ namespace GlobalStrings
         if (LCIDToLocaleName(lcid, localeName, LOCALE_NAME_MAX_LENGTH, 0) == 0)
             return "en-us";
 
-        return Extensions::toLowerCase(Extensions::ConvertWideToUtf8(localeName));
+        return Extensions::ToLowerCase(Extensions::ConvertWideToUtf8(localeName));
 #else
         std::string localeName1 = std::setlocale(LC_ALL, "");
         std::string localeP = localeName1.substr(0, localeName1.find('.'));
-        return Extensions::toLowerCase(localeP);
+        return Extensions::ToLowerCase(localeP);
 #endif
     }
 
@@ -36,7 +35,7 @@ namespace GlobalStrings
 #if defined(_WIN32) || defined(_WIN64)
         char result[MAX_PATH];
         path = std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
-        Extensions::findAndReplaceAll(path, "\\", "/");
+        Extensions::FindAndReplaceAll(path, "\\", "/");
 #else
         char result[PATH_MAX];
         ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);

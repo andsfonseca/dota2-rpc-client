@@ -2,6 +2,7 @@
 #include <codecvt>
 #include <string>
 #include <algorithm>
+#include <vector>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <Windows.h>
@@ -9,7 +10,7 @@
 
 namespace Extensions
 {
-    static void findAndReplaceAll(std::string &data, std::string toSearch, std::string replaceStr)
+    static void FindAndReplaceAll(std::string &data, std::string toSearch, std::string replaceStr)
     {
         // Get the first occurrence
         size_t pos = data.find(toSearch);
@@ -21,6 +22,16 @@ namespace Extensions
             // Get the next occurrence from the current position
             pos = data.find(toSearch, pos + replaceStr.size());
         }
+    }
+
+    static void FindAndReplaceAll(std::string &data, std::vector<std::string> toSearch, std::vector<std::string> replaceStr)
+    {
+        size_t size = toSearch.size();
+        if(size != replaceStr.size()) return;
+
+        for(int i = 0; i < size; i++)
+            FindAndReplaceAll(data, toSearch[i], replaceStr[i]);
+        
     }
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -45,7 +56,7 @@ namespace Extensions
 #pragma warning(pop)
 #endif
 
-    static std::string toLowerCase(std::string data)
+    static std::string ToLowerCase(std::string data)
     {
         std::transform(data.begin(), data.end(), data.begin(),
                        [](unsigned char c)
