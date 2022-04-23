@@ -1,10 +1,6 @@
-#include <iostream>
-#include <fstream>
-#include <filesystem>
 #include <regex>
 #include <thread>
 #include <drogon/drogon.h>
-#include <string>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <Windows.h>
@@ -19,7 +15,8 @@
 #include "third_party/srvlib/Service.h"
 
 #include "utils/CFGJSON.hpp"
-#include "utils/StringExtensions.cpp"
+#include "utils/GlobalStrings.cpp"
+
 
 namespace fs = std::filesystem;
 
@@ -120,9 +117,7 @@ void resolveDota2GameStateIntegration(std::string host, int port)
 
     if (!found)
     {
-        std::cout << "Unable to find DotA 2 files!\n";
-        std::cout << "Please create the following file with the name \"gamestate_integration_rpc.cfg\" and insert it\n";
-        std::cout << "into the folder \"{{STEAM_LIBRARY_PATH}}/dota 2 beta/game/dota/cfg/gamestate_integration/\".\n\n";
+        std::cout <<  GlobalStrings::Get("APP:ERRORS:CFG_NOT_FOUND") <<"\n\n";
         std::cout << "=========== gamestate_integration_rpc.cfg ================\n";
         std::cout << cfg_source << "\n";
         std::cout << "==========================================================\n\n";
@@ -133,19 +128,22 @@ void Start()
 {
     std::string host = "127.0.0.1";
     int port_number = 52424;
-
     resolveDota2GameStateIntegration(host, port_number);
-
+    std::string listeningMessage;
     // Web Server Messages
     if (host == "0.0.0.0")
     {
-        std::cout << "Listening at http://localhost:" << port_number << " and http://" << host << ":" << port_number << ".\n";
+        listeningMessage = GlobalStrings::Get("APP:INFO:SERVER_LISTENING_LOCALHOST");
     }
     else
     {
-        std::cout << "Listening at http://" << host << ":" << port_number << ".\n";
+        listeningMessage = GlobalStrings::Get("APP:INFO:SERVER_LISTENING");
     }
-    std::cout << "Press Ctrl+C twice to exit.\n";
+
+    Extensions::findAndReplaceAll(listeningMessage, "{{HOST}}", host);
+    Extensions::findAndReplaceAll(listeningMessage, "{{PORT}}", std::to_string(port_number));
+    std::cout << listeningMessage << "\n";
+    std::cout << GlobalStrings::Get("APP:INFO:SERVER_HOW_TO_EXIT") <<"\n";
 
     // Set HTTP listener address and port
     drogon::app().addListener(host, port_number);
@@ -162,7 +160,6 @@ std::thread *threadDrogon;
 
 int main(int argc, const char *argv[])
 {
-    
     SrvParam svParam;
 #if defined(_WIN32) || defined(_WIN64)
     svParam.szDspName = L"Dota 2 RPC Client Service"; // Servicename in Service control manager of windows
@@ -182,10 +179,11 @@ int main(int argc, const char *argv[])
     svParam.fnSignalCallBack = []() {
     };
 
-    //No option, run sync
-    if(argc <= 1){
+    // No option, run sync
+    if (argc <= 1)
+    {
         const char *args[] = {"", "-f"};
-        return ServiceMain(2, args , svParam);
+        return ServiceMain(2, args, svParam);
     }
 
     return ServiceMain(argc, argv, svParam);
