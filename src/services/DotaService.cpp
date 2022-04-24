@@ -38,7 +38,7 @@ class DotaService
     {
     }
 
-    PlayerStatus IsThePlayerInMatchUp(Json::Value data)
+    PlayerStatus GetPlayerStatus(Json::Value data)
     {
         if (data["player"].isNull())
             return PlayerStatus::STAND_BY;
@@ -464,158 +464,112 @@ public:
     void InterpretJsonFile(trantor::Date requestDate, Json::Value data)
     {
 
-        DiscordService *discordService = discordService->getInstance();
-        discord::Activity activity{};
+        // Retrieve time at start;
         auto now = std::chrono::system_clock::now();
 
-        int gameTime;
-        int matchTime;
-        int64_t timeToStart;
-        int64_t timeAfterStart;
-        std::string heroName;
-        std::string npcName;
-        int level;
-        int kill = -1;
-        int death = -1;
-        int assist = -1;
-        std::string kda;
-        std::string matchIdText;
-        std::string net;
+        DiscordService *discordService = discordService->getInstance();
+        PlayerStatus playerStatus = GetPlayerStatus(data);
 
-        // Identify In-Game and Outside-Game
-        switch (IsThePlayerInMatchUp(data))
+        if (playerStatus == PlayerStatus::STAND_BY)
+        {
+            discordService->CleanActivity();
+            return;
+        }
+
+        // Retrive Match Informations
+        GameState gameState = GetCurrentGameState(data);
+        int gameTime = GetGameTimeElapsed(data);
+        int matchTime = GetMatchTimeElapsed(data);
+
+        discord::Activity activity{};
+
+        switch (playerStatus)
         {
         case PlayerStatus::PLAYING:
         {
+            // Type Section
             activity.SetType(discord::ActivityType::Playing);
 
-            GameState state1 = GetCurrentGameState(data);
-
-            gameTime = GetGameTimeElapsed(data);
-            matchTime = GetMatchTimeElapsed(data);
-
-            switch (state1)
+            switch (gameState)
             {
             case GameState::HERO_SELECTION:
-                npcName = LocalizedStrings::GetArray("DOTA_2:NEUTRALS")[3];
-
-                activity.SetDetails(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION_ALT").c_str()));
-                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION").c_str()));
-                activity.GetAssets().SetLargeImage(npcName.c_str());
-                break;
-            case GameState::STRATEGY_TIME:
-                npcName = GetHeroName(data);
-                heroName = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO");
-                Extensions::FindAndReplaceAll(heroName, "{{NAME}}", ResolveHeroName(npcName));
-
-                activity.GetAssets().SetLargeImage(npcName.c_str());
-                activity.SetDetails(const_cast<char *>(heroName.c_str()));
-                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:STRATEGY_TIME").c_str()));
-                break;
-            case GameState::PRE_GAME:
             {
-                npcName = GetHeroName(data);
-                level = GetHeroLevel(data);
-                GetKillDeathAssists(data, kill, death, assist);
-                heroName = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO_WITH_LEVEL");
-                Extensions::FindAndReplaceAll(heroName, "{{NAME}}", ResolveHeroName(npcName));
-                Extensions::FindAndReplaceAll(heroName, "{{LEVEL}}", std::to_string(level));
+                // Details Section
+                std::string neutralImageKey = LocalizedStrings::GetArray("DOTA_2:NEUTRALS")[3];
+                activity.SetDetails(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION_ALT").c_str()));
 
-                std::string mapName = GetMapName(data);
-                if (mapName == "")
-                {
-                    kda = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:KDA");
-                    Extensions::FindAndReplaceAll(heroName, "{{KILL}}", std::to_string(kill));
-                    Extensions::FindAndReplaceAll(heroName, "{{DEATH}}", std::to_string(death));
-                    Extensions::FindAndReplaceAll(heroName, "{{ASSIST}}", std::to_string(assist));
-                    kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
-                }
-                else
-                {
-                    kda = mapName;
-                }
+                // State Section
+                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION").c_str()));
 
-                now += std::chrono::seconds(-gameTime);
-                timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
-                int lastHits;
-                int denies;
-
-                GetPlayerHits(data, lastHits, denies);
-                std::string imageText = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:GOLD_LH_DN");
-                Extensions::FindAndReplaceAll(imageText, "{{GOLD}}", std::to_string(GetPlayerGold(data)));
-                Extensions::FindAndReplaceAll(imageText, "{{LH}}", std::to_string(lastHits));
-                Extensions::FindAndReplaceAll(imageText, "{{DN}}", std::to_string(denies));
-
-                ItemStatusEffect effect = GetItemStatusEffect(data);
-
-                switch (effect)
-                {
-                case ItemStatusEffect::SMOKE:
-                    activity.GetAssets().SetSmallImage("smoke_of_deceit");
-                    activity.GetAssets().SetSmallText(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:SMOKED").c_str());
-                    break;
-                case ItemStatusEffect::SCEPTER_AND_SHARD:
-                    activity.GetAssets().SetSmallImage("aghanims_scepter_2");
-                    activity.GetAssets().SetSmallText(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER_AND_SHARD").c_str());
-                    break;
-                case ItemStatusEffect::SCEPTER:
-                    activity.GetAssets().SetSmallImage("aghanims_scepter");
-                    activity.GetAssets().SetSmallText(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER").c_str());
-                    break;
-                case ItemStatusEffect::SHARD:
-                    activity.GetAssets().SetSmallImage("aghanims_shard");
-                    activity.GetAssets().SetSmallText(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SHARD").c_str());
-                    break;
-                case ItemStatusEffect::WITHOUT_ITEMS:
-                default:
-                    break;
-                }
-
-                activity.GetAssets().SetLargeImage(npcName.c_str());
-                activity.GetAssets().SetLargeText(imageText.c_str());
-                activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
-                activity.SetDetails(const_cast<char *>(heroName.c_str()));
-                activity.SetState(const_cast<char *>(kda.c_str()));
+                // Big Image
+                activity.GetAssets().SetLargeImage(neutralImageKey.c_str());
                 break;
             }
+            case GameState::STRATEGY_TIME:
+            {
+                // Details Section
+                std::string heroKey = GetHeroName(data);
+                std::string details = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO");
+                Extensions::FindAndReplaceAll(details, "{{NAME}}", ResolveHeroName(heroKey));
+                activity.SetDetails(const_cast<char *>(details.c_str()));
+
+                // State Section
+                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:STRATEGY_TIME").c_str()));
+
+                // Big Image
+                activity.GetAssets().SetLargeImage(heroKey.c_str());
+                break;
+            }
+            case GameState::PRE_GAME:
             case GameState::GAME:
             {
+                // Details Section
+                int level = GetHeroLevel(data);
+                std::string heroKey = GetHeroName(data);
 
-                level = GetHeroLevel(data);
-                GetKillDeathAssists(data, kill, death, assist);
-                npcName = GetHeroName(data);
+                std::string details = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO_WITH_LEVEL");
+                Extensions::FindAndReplaceAll(details, {"{{NAME}}", "{{LEVEL}}"}, {ResolveHeroName(heroKey), std::to_string(level)});
 
-                heroName = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO_WITH_LEVEL");
-                Extensions::FindAndReplaceAll(heroName, "{{NAME}}", ResolveHeroName(npcName));
-                Extensions::FindAndReplaceAll(heroName, "{{LEVEL}}", std::to_string(level));
-                std::string mapName = GetMapName(data);
+                activity.SetDetails(const_cast<char *>(details.c_str()));
 
-                if (mapName == "")
+                // State Section
+                std::string state = GetMapName(data);
+
+                // If no map was found it means you are playing vanilla, show KDA instead
+                if (state == "")
                 {
-                    kda = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:KDA");
-                    Extensions::FindAndReplaceAll(heroName, "{{KILL}}", std::to_string(kill));
-                    Extensions::FindAndReplaceAll(heroName, "{{DEATH}}", std::to_string(death));
-                    Extensions::FindAndReplaceAll(heroName, "{{ASSIST}}", std::to_string(assist));
-                    kda = std::to_string(kill) + " / " + std::to_string(death) + " / " + std::to_string(assist);
-                }
-                else
-                {
-                    kda = mapName;
+                    int kill, death, assist;
+                    GetKillDeathAssists(data, kill, death, assist);
+
+                    state = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:KDA");
+                    Extensions::FindAndReplaceAll(state, {"{{KILL}}", "{{DEATH}}", "{{ASSIST}}"},
+                                                  {std::to_string(kill), std::to_string(death), std::to_string(assist)});
                 }
 
+                activity.SetState(const_cast<char *>(state.c_str()));
+
+                // Time Section
                 now += std::chrono::seconds(-gameTime);
-                timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+                int64_t time0InMatch = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+                if (gameState == GameState::PRE_GAME)
+                    activity.GetTimestamps().SetEnd(DiscordTimestamp(time0InMatch));
+                else
+                    activity.GetTimestamps().SetStart(DiscordTimestamp(time0InMatch));
 
-                int lastHits;
-                int denies;
-
+                // Big Image
+                int lastHits, denies;
                 GetPlayerHits(data, lastHits, denies);
-                std::string imageText = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:GOLD_LH_DN");
-                Extensions::FindAndReplaceAll(imageText, "{{GOLD}}", std::to_string(GetPlayerGold(data)));
-                Extensions::FindAndReplaceAll(imageText, "{{LH}}", std::to_string(lastHits));
-                Extensions::FindAndReplaceAll(imageText, "{{DN}}", std::to_string(denies));
 
+                std::string bigImageDetails = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:GOLD_LH_DN");
+                Extensions::FindAndReplaceAll(bigImageDetails, {"{{GOLD}}", "{{LH}}", "{{DN}}"},
+                                              {std::to_string(GetPlayerGold(data)), std::to_string(lastHits), std::to_string(denies)});
+
+                activity.GetAssets().SetLargeImage(heroKey.c_str());
+                activity.GetAssets().SetLargeText(bigImageDetails.c_str());
+
+                // Small Image
                 ItemStatusEffect effect = GetItemStatusEffect(data);
+
                 switch (effect)
                 {
                 case ItemStatusEffect::SMOKE:
@@ -639,140 +593,91 @@ public:
                     break;
                 }
 
-                activity.GetAssets().SetLargeImage(npcName.c_str());
-                activity.GetAssets().SetLargeText(imageText.c_str());
-                activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
-                activity.SetDetails(const_cast<char *>(heroName.c_str()));
-                activity.SetState(const_cast<char *>(kda.c_str()));
                 break;
             }
             case GameState::NONE:
             default:
                 return;
             }
-
-            discordService->UpdateActivity(activity);
             break;
         }
         case PlayerStatus::WATCHING:
-        {
-            long long matchId = GetMatchId(data);
-            npcName = GetNeutralNameBasedOnMatchId(matchId);
-            activity.GetAssets().SetLargeImage(const_cast<char *>("watching_default"));
-
-            activity.SetDetails(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:SPECTATOR:WATCH").c_str()));
-            activity.SetType(discord::ActivityType::Watching);
-
-            GameState state = GetCurrentGameState(data);
-
-            gameTime = GetGameTimeElapsed(data);
-            matchTime = GetMatchTimeElapsed(data);
-
-            switch (state)
-            {
-            case GameState::HERO_SELECTION:
-                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION").c_str()));
-                break;
-            case GameState::STRATEGY_TIME:
-                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:STRATEGY_TIME").c_str()));
-                break;
-            case GameState::PRE_GAME:
-                now += std::chrono::seconds(-gameTime);
-                timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
-
-                matchIdText = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:INFO_ID");
-                Extensions::FindAndReplaceAll(matchIdText, "{{ID}}", std::to_string(matchId));
-
-                net = GetNetWorth(data);
-                activity.GetAssets().SetSmallImage(npcName.c_str());
-                activity.GetAssets().SetSmallText(matchIdText.c_str());
-                activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
-                activity.SetState(const_cast<char *>(net.c_str()));
-                break;
-            case GameState::GAME:
-
-                now += std::chrono::seconds(-gameTime);
-                timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
-
-                matchIdText = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:INFO_ID");
-                Extensions::FindAndReplaceAll(matchIdText, "{{ID}}", std::to_string(matchId));
-
-                net = GetNetWorth(data);
-
-                activity.GetAssets().SetSmallImage(npcName.c_str());
-                activity.GetAssets().SetSmallText(matchIdText.c_str());
-                activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
-                activity.SetState(const_cast<char *>(net.c_str()));
-                break;
-            case GameState::NONE:
-            default:
-                return;
-                break;
-            }
-
-            discordService->UpdateActivity(activity);
-            break;
-        }
         case PlayerStatus::COACHING:
         {
-            activity.GetAssets().SetLargeImage(const_cast<char *>("coaching_default"));
-            long long matchId = GetMatchId(data);
-            npcName = GetNeutralNameBasedOnMatchId(matchId);
-
-            activity.SetDetails(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:SPECTATOR:COACH").c_str()));
+            // Type Section
             activity.SetType(discord::ActivityType::Watching);
 
-            GameState state = GetCurrentGameState(data);
+            // Details Section and Big Image Section
+            if (playerStatus == PlayerStatus::WATCHING)
+            {
+                activity.SetDetails(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:SPECTATOR:WATCH").c_str()));
+                activity.GetAssets().SetLargeImage(const_cast<char *>("watching_default"));
+            }
+            else
+            {
+                activity.SetDetails(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:SPECTATOR:COACH").c_str()));
+                activity.GetAssets().SetLargeImage(const_cast<char *>("coaching_default"));
+            }
 
-            gameTime = GetGameTimeElapsed(data);
-            matchTime = GetMatchTimeElapsed(data);
-
-            switch (state)
+            switch (gameState)
             {
             case GameState::HERO_SELECTION:
+                // State Section
                 activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION").c_str()));
                 break;
             case GameState::STRATEGY_TIME:
+                // State Section
                 activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:STRATEGY_TIME").c_str()));
                 break;
             case GameState::PRE_GAME:
-                now += std::chrono::seconds(-gameTime);
-                timeToStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
-
-                matchIdText = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:INFO_ID");
-                Extensions::FindAndReplaceAll(matchIdText, "{{ID}}", std::to_string(matchId));
-                
-                activity.GetAssets().SetSmallImage(npcName.c_str());
-                activity.GetAssets().SetSmallText(matchIdText.c_str());
-                activity.GetTimestamps().SetEnd(DiscordTimestamp(timeToStart));
-                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:PRE_GAME").c_str()));
-                break;
             case GameState::GAME:
+            {
+                // State Section
+                // If watching, show the networth
+                if (playerStatus == PlayerStatus::WATCHING)
+                {
+                    std::string netWorth = GetNetWorth(data);
+                    activity.SetState(const_cast<char *>(netWorth.c_str()));
+                }
+                else
+                {
+                    if (gameState == GameState::PRE_GAME)
+                        activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:PRE_GAME").c_str()));
+                    else
+                        activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:GAME").c_str()));
+                }
 
+                // Time Section
                 now += std::chrono::seconds(-gameTime);
-                timeAfterStart = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+                int64_t time0InMatch = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+                if (gameState == GameState::PRE_GAME)
+                    activity.GetTimestamps().SetEnd(DiscordTimestamp(time0InMatch));
+                else
+                    activity.GetTimestamps().SetStart(DiscordTimestamp(time0InMatch));
 
-                matchIdText = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:INFO_ID");
+                // Small Image Section
+                long long matchId = GetMatchId(data);
+                std::string matchIdText = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:INFO_ID");
                 Extensions::FindAndReplaceAll(matchIdText, "{{ID}}", std::to_string(matchId));
+                std::string neutralImageKey = GetNeutralNameBasedOnMatchId(matchId);
 
-                activity.GetAssets().SetSmallImage(npcName.c_str());
+                activity.GetAssets().SetSmallImage(neutralImageKey.c_str());
                 activity.GetAssets().SetSmallText(matchIdText.c_str());
-                activity.GetTimestamps().SetStart(DiscordTimestamp(timeAfterStart));
-                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:GAME").c_str()));
-                break;
-            case GameState::NONE:
-            default:
-                return;
+
                 break;
             }
+            case GameState::NONE:
+            default:
+            {
+                return;
+            }
+            }
 
-            discordService->UpdateActivity(activity);
             break;
         }
-        case PlayerStatus::STAND_BY:
-        default:
-            discordService->CleanActivity();
         }
+
+        discordService->UpdateActivity(activity);
     }
 };
 
