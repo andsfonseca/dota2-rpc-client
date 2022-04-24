@@ -34,6 +34,8 @@ class DotaService
 {
     static DotaService *instance;
 
+    int64_t currentMatchTime = 0;
+
     DotaService()
     {
     }
@@ -453,6 +455,15 @@ class DotaService
         return LocalizedStrings::Get("DOTA_2:CUSTOM_MAP:hero_demo");
     }
 
+    void FixGameTimeIfNecessary(int64_t &matchTime)
+    {
+        const int64_t TOL = 2;
+        if ((matchTime - TOL) <= currentMatchTime && currentMatchTime <= (matchTime + TOL))
+            matchTime = currentMatchTime;
+        else
+            currentMatchTime = matchTime;
+    }
+
 public:
     static DotaService *getInstance()
     {
@@ -473,6 +484,7 @@ public:
         if (playerStatus == PlayerStatus::STAND_BY)
         {
             discordService->CleanActivity();
+            currentMatchTime = 0;
             return;
         }
 
@@ -551,6 +563,7 @@ public:
                 // Time Section
                 now += std::chrono::seconds(-gameTime);
                 int64_t time0InMatch = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+                FixGameTimeIfNecessary(time0InMatch);
                 if (gameState == GameState::PRE_GAME)
                     activity.GetTimestamps().SetEnd(DiscordTimestamp(time0InMatch));
                 else
@@ -650,6 +663,7 @@ public:
                 // Time Section
                 now += std::chrono::seconds(-gameTime);
                 int64_t time0InMatch = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+                FixGameTimeIfNecessary(time0InMatch);
                 if (gameState == GameState::PRE_GAME)
                     activity.GetTimestamps().SetEnd(DiscordTimestamp(time0InMatch));
                 else
