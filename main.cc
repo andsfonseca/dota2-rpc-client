@@ -14,9 +14,7 @@
 
 #include "third_party/srvlib/Service.h"
 
-#include "src/templates/CFGJSON.hpp"
 #include "src/localization/LocalizedStrings.cpp"
-
 
 namespace fs = std::filesystem;
 
@@ -57,9 +55,9 @@ std::string getDota2CFGPathLocationFromVDFFile(std::string path)
 
 std::string makeDota2CFGFile(std::string host, int port)
 {
-    std::string dota2_template(DOTA2_CFG_TEMPLATE);
-    Extensions::FindAndReplaceAll(dota2_template, "{{host}}", host);
-    Extensions::FindAndReplaceAll(dota2_template, "{{port}}", std::to_string(port));
+    std::string dota2_template;
+    Templates::LoadTemplate("gamestate_integration_rpc.cfg", dota2_template);
+    Extensions::FindAndReplaceAll(dota2_template, {"{{HOST}}", "{{PORT}}"}, {host, std::to_string(port)});
 
     return dota2_template;
 }

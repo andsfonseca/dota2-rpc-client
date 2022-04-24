@@ -1,13 +1,5 @@
-#include "../extensions/StringExtensions.cpp"
-#include <filesystem>
-#include <fstream>
+#include "../templates/Templates.cpp"
 #include <json/json.h>
-
-#if defined(_WIN32) || defined(_WIN64)
-#else
-#include <limits.h>
-#include <unistd.h>
-#endif
 
 namespace LocalizedStrings
 {
@@ -29,51 +21,26 @@ namespace LocalizedStrings
 #endif
     }
 
-    static std::string GetExecutableFolder()
-    {
-        std::string path;
-#if defined(_WIN32) || defined(_WIN64)
-        char result[MAX_PATH];
-        path = std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
-        Extensions::FindAndReplaceAll(path, "\\", "/");
-#else
-        char result[PATH_MAX];
-        ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-        path = std::string(result, (count > 0) ? count : 0);
-#endif
-        size_t last_slash_idx = path.rfind('/');
-        if (std::string::npos != last_slash_idx)
-        {
-            path = path.substr(0, last_slash_idx);
-        }
-        return path;
-    }
-
     static void LoadLanguageJson()
     {
         const std::string LANGUAGE_FOLDER = "/lang/";
         const std::string LANGUAGE_DEFAULT = "en-us";
 
-        std::string folder = GetExecutableFolder();
+        std::string folder = Templates::GetExecutableFolder();
         std::string localeName = GetLocale();
 
-        std::ifstream file(folder + LANGUAGE_FOLDER + localeName + ".json");
-        if (!file)
-        {
-            file = std::ifstream(folder + LANGUAGE_FOLDER + LANGUAGE_DEFAULT + ".json");
-            if (!file)
-            {
+        std::string fileAsString;
+
+        if(!Templates::LoadFile(folder + LANGUAGE_FOLDER + localeName + ".json", fileAsString)){
+            if(!Templates::LoadFile(folder + LANGUAGE_FOLDER + LANGUAGE_DEFAULT + ".json", fileAsString)){
                 std::cerr << "Corrupted Language Files" << std::endl;
                 exit(1);
             }
         }
 
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-
         Json::Reader reader;
 
-        if (!reader.parse(buffer.str(), LocaleStrings))
+        if (!reader.parse(fileAsString, LocaleStrings))
         {
             std::cerr << "Corrupted Language Files" << std::endl;
             exit(1);
