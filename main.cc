@@ -115,7 +115,7 @@ void resolveDota2GameStateIntegration(std::string host, int port)
 
     if (!found)
     {
-        std::cout <<  LocalizedStrings::Get("APP:ERRORS:CFG_NOT_FOUND") <<"\n\n";
+        std::cout << LocalizedStrings::Get("APP:ERRORS:CFG_NOT_FOUND") << "\n\n";
         std::cout << "=========== gamestate_integration_rpc.cfg ================\n";
         std::cout << cfg_source << "\n";
         std::cout << "==========================================================\n\n";
@@ -141,7 +141,7 @@ void Start()
     Extensions::FindAndReplaceAll(listeningMessage, "{{HOST}}", host);
     Extensions::FindAndReplaceAll(listeningMessage, "{{PORT}}", std::to_string(port_number));
     std::cout << listeningMessage << "\n";
-    std::cout << LocalizedStrings::Get("APP:INFO:SERVER_HOW_TO_EXIT") <<"\n";
+    std::cout << LocalizedStrings::Get("APP:INFO:SERVER_HOW_TO_EXIT") << "\n";
 
     // Set HTTP listener address and port
     drogon::app().addListener(host, port_number);
@@ -178,11 +178,11 @@ int main(int argc, const char *argv[])
     };
 
     // No option, run sync
-    if (argc <= 1)
-    {
-        const char *args[] = {"", "-f"};
-        return ServiceMain(2, args, svParam);
-    }
+    // if (argc <= 1)
+    // {
+    //     const char *args[] = {"", "-f"};
+    //     return ServiceMain(2, args, svParam);
+    // }
 
     return ServiceMain(argc, argv, svParam);
 }
