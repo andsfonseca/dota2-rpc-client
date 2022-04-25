@@ -9,7 +9,7 @@ Allows you to observe the status of your DotA 2 (Defense of the Ancients 2) matc
 This is a service that allows you to show your Discord friends information about the matches you play and watch within DotA 2.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/7833466/164252216-de275d6d-dcc3-42db-9a80-de4840a438cb.gif"> 
+  <img src="https://user-images.githubusercontent.com/7833466/165001452-6b3ed84f-6420-45a2-9436-32da80ea9072.gif"> 
 </p>
 
 Share real-time information about what happens in your game with everyone.
@@ -18,12 +18,13 @@ Share real-time information about what happens in your game with everyone.
 
 | Feature | Preview |
 |---------|---------|
-| Check what your friends are watching.       |   <p align="center"><img src="https://user-images.githubusercontent.com/7833466/164255951-10e4536e-4050-4a42-b2d8-68397d8fa33e.gif"></p>      |
-| Show off your heroes with your favorite skins.      | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/164260982-7597cde7-02b3-4c3d-8836-e56796caa12a.gif"></p>        |
+| Check what your friends are watching.       |   <p align="center"><img src="https://user-images.githubusercontent.com/7833466/165001481-8a37881e-802c-4e6a-b40c-e4100b76b82f.gif"></p>      |
+| Show off your heroes with your favorite skins.      | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/165001946-910af221-c945-4a8f-84e0-8b9205627437.gif"><img src="https://user-images.githubusercontent.com/7833466/165001947-b3ea6991-2025-4cb5-b098-88cd9b7d3826.gif"><img src="https://user-images.githubusercontent.com/7833466/165001948-2370210a-2621-4549-af53-3d86d09bb545.gif"></p>        |
 | Show your skills of accumulating money in the game       | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/164261275-7f6ee3cf-a2a6-4c20-8a5f-d1be3b84714a.gif"></p>        |
-| Show your items and your buffs.       | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/164261286-c5f9df38-c542-40ec-afc8-7b8eefeaccaf.gif"><img src="https://user-images.githubusercontent.com/7833466/164261297-1e0628a8-6cbf-435a-883c-c8e113984c3a.gif"><img src="https://user-images.githubusercontent.com/7833466/164261312-f2a747cc-42b8-47a8-83bd-86ad5dd6d337.gif"><img src="https://user-images.githubusercontent.com/7833466/164261328-833cd472-7524-4327-8cb1-61db62c45d35.gif"></p>        |
-| \[Alpha\] Modified map support.       | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/164261343-60a31c39-4737-4ee0-a157-199e97fbb838.gif">        |
-
+| Show your items and your buffs.       | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/165002021-4833bc4d-4ccb-432a-84ec-13b0a36b2c53.gif"><img src="https://user-images.githubusercontent.com/7833466/165002015-58d28c48-6fc1-4e2a-8753-fd6aa47c7c6c.gif"><img src="https://user-images.githubusercontent.com/7833466/165002020-d5c22994-fbff-4ba8-bcfa-992f7f222bd7.gif"><img src="https://user-images.githubusercontent.com/7833466/165002017-b50ccfd8-0e31-40e5-80ee-f8e64e81e1b2.gif"></p>        |
+| Modified map support.       | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/165002085-553f032c-35a9-455e-85aa-859e91ac59db.gif">        |
+ | See your instructors.  | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/165002839-aa520877-e38a-40d5-984c-9bfc8b9dbd65.gif">        |
+| Multiple language support.       | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/165002139-5eb77c4c-e5a7-4bf8-9839-0b8b4cd794f7.gif"><img src="https://user-images.githubusercontent.com/7833466/165002140-78e3af75-ba13-487d-8895-fe60289dedb1.gif">        |
 
 ## Installation
 
@@ -78,6 +79,11 @@ With the repository downloaded, run the command:
 > 
 > An installation guide for the *Drogon C++* dependencies can be found on [this page](https://drogon.docsforge.com/master/installation/).
 
+## Language Contribution
+ 
+Would you like to translate the app into your language? Create a translation file based on the [en-us.json](lang/en-us.json) file. Then create an _issue_ or a _pull request_ to submit your modification.
+ 
+ 
 ## Issues
 
 Feel free to submit issues and enhancement requests.
