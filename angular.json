@@ -59,7 +59,7 @@
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/jquery-scrollify/jquery.scrollify.js",
+              "src/assets/js/@ajlkn-jquery.scrolly.min.js",
               "src/assets/js/@ajlkn-browser.min.js",
               "src/assets/js/@ajlkn-breakpoints.min.js",
               "src/assets/js/util.js",

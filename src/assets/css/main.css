@@ -3222,20 +3222,19 @@ input, select, textarea {
 	}
 
 		#wrapper:before {
-			background-attachment: fixed;
 			
 			background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
-						url("https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react//home/heroes_full.jpg"), 
-						no-repeat;
+			url("https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react//home/heroes_full.jpg");
+			background-attachment: fixed;
 			background-blend-mode: darken;
-			background-position: 40% 0%;
+			background-position: 60% 0%;
 			content: '';
 			display: block;
 			height: 100%;
 			left: 0;
 			position: absolute;
 			top: 0;
-			width: 50vw;
+			width: 100vw;
 			z-index: -1;
 		}
 
@@ -3276,6 +3275,7 @@ input, select, textarea {
 				grid-area: content;
 				max-width: 60rem;
 				position: relative;
+				background-color: white;
 			}
 
 			#wrapper section > footer {
@@ -3291,38 +3291,9 @@ input, select, textarea {
 			position: relative;
 		}
 
-			#wrapper > section > header:before {
-				background: #43d9b8;
-				content: '';
-				display: block;
-				margin-top: 1rem;
-				position: absolute;
-				width: 2px;
-			}
-
 			#wrapper > section > header h1, #wrapper > section > header h2 {
 				position: relative;
 			}
-
-				#wrapper > section > header h1:before, #wrapper > section > header h2:before {
-					background: #43d9b8;
-					content: '';
-					display: block;
-					height: 2px;
-					position: absolute;
-					top: 1rem;
-				}
-
-				#wrapper > section > header h1:after, #wrapper > section > header h2:after {
-					background: #43d9b8;
-					border-radius: 0.5rem;
-					content: '';
-					display: block;
-					height: 0.5rem;
-					position: absolute;
-					top: 0.75rem;
-					width: 0.5rem;
-				}
 
 			#wrapper > section > header h1 {
 				margin-top: -2rem;
@@ -3395,7 +3366,7 @@ input, select, textarea {
 			}
 
 		#wrapper section {
-			margin: 7.5rem 0 0 0;
+			margin: 0 0 0 0;
 		}
 
 			#wrapper section > header {
