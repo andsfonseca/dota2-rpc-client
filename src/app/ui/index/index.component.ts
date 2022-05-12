@@ -23,11 +23,13 @@ export class IndexComponent implements AfterViewInit {
   private scrollingTimeout!: any;
 
   detectIntro() {
-    if (this.isScrolling)
-      return;
-
     let pos = window.scrollY;
 
+    if (this.isScrolling) {
+      this.lastPagePosition = pos;
+      return;
+    }
+    
     //If has scrolling
     if (!(this.lastPagePosition < 0)) {
       if (pos < this.pageSize) {
@@ -35,10 +37,12 @@ export class IndexComponent implements AfterViewInit {
         if (this.lastPagePosition - pos < 0) {
           this.nextElement.nativeElement.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
           this.isScrollingToTop = false;
+          console.log("Pra baixo")
         }
         else {
           this.introElement.nativeElement.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
           this.isScrollingToTop = true;
+          console.log("Pra cima")
         }
         this.isScrolling = true;
       }
@@ -54,10 +58,10 @@ export class IndexComponent implements AfterViewInit {
     }, 100);
   }
 
-  updateIntroClass(){
-    let value = window.scrollY/this.pageSize;
-    let nodeList : NodeListOf<any> = document.querySelectorAll('.content')
-    for(let i = 0, len = nodeList.length; i < len; i++)
+  updateIntroClass() {
+    let value = window.scrollY / this.pageSize;
+    let nodeList: NodeListOf<any> = document.querySelectorAll('.content')
+    for (let i = 0, len = nodeList.length; i < len; i++)
       nodeList[i].style.opacity = value;
   }
 
@@ -73,14 +77,14 @@ export class IndexComponent implements AfterViewInit {
     let pos = window.scrollY;
 
     //Stay on Top
-    if (0 < pos && pos < this.pageSize ){
-      if(this.isScrollingToTop)
+    if (0 < pos && pos < this.pageSize) {
+      if (this.isScrollingToTop)
         this.introElement.nativeElement.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
       else
         this.nextElement.nativeElement.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
       this.isScrolling = true;
     }
-    else{
+    else {
       this.isScrolling = false;
     }
   }
