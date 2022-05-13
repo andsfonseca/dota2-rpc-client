@@ -59,7 +59,7 @@ export class IndexComponent implements AfterViewInit {
 
   updateIntroClass() {
     let value = window.scrollY / this.pageSize;
-    let nodeList: NodeListOf<any> = document.querySelectorAll('.content')
+    let nodeList: NodeListOf<any> = document.querySelectorAll('#wrapper > section > .content')
     for (let i = 0, len = nodeList.length; i < len; i++)
       nodeList[i].style.backgroundColor = 'rgba(255, 255, 255, ' + value + ')'
   }
@@ -99,7 +99,6 @@ export class IndexComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.introContentDOM = this.introElement.nativeElement.querySelector('.content')
-
     this.onResize();
     this.onScrollChange();
   }

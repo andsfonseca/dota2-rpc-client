@@ -31,3 +31,47 @@
     transform: perspective(1100px) rotate3D(0, 1, 0, 30deg);
     filter: drop-shadow(0rem 0rem 1rem #ff6046);
 }
+
+.content-spacer-half {
+    height: 25px;
+}
+
+.content-spacer {
+    height: 50px;
+}
+
+.feature-icons-full li {
+    width: 100%;
+    padding: 0.5rem 4.5rem 0 0;
+}
+
+.feature-icons-full li::before {
+    right: 0;
+    left: auto;
+    top: 50%;
+    transform: translate(0, -25px);
+    color: lightgray;
+}
+
+.img-feature {
+    max-width: 325px;
+    filter: drop-shadow(0.5rem 0.5rem 0.4rem #240500);
+    border-radius: 10px;
+    margin: auto 1.5rem 1.5rem 0;
+}
+
+.feature-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.feature-content > p{
+    margin-right: auto;
+}
+
+.feature-content > blockquote{
+    margin: 0 auto 2rem 0;
+    padding: 0.5rem 0 0.5rem 0.5rem;
+    font-size: 12px;
+}
