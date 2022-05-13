@@ -199,7 +199,7 @@ input, select, textarea {
 	}
 
 	h1, h2, h3, h4, h5, h6 {
-		color: #000000;
+		color: lightgray;
 		font-family: "Reaver", "Raleway", Helvetica, sans-serif;
 		font-weight: 600;
 		letter-spacing: 0.175em;
@@ -1862,11 +1862,11 @@ input, select, textarea {
 		border-radius: 0.325rem;
 		border: 0;
 		box-shadow: inset 0 0 0 2px rgba(144, 144, 144, 0.25);
-		color: #000000 !important;
+		color: lightgray !important;
 		cursor: pointer;
 		display: inline-block;
 		font-family:  "Reaver", "Raleway", Helvetica, sans-serif;
-		font-size: 0.6rem;
+		font-size: 0.8rem;
 		font-weight: 600;
 		height: 3rem;
 		letter-spacing: 0.175em;
@@ -1883,8 +1883,8 @@ input, select, textarea {
 		input[type="button"]:hover,
 		button:hover,
 		.button:hover {
-			box-shadow: inset 0 0 0 2px #2ee4bb;
-			color: #2ee4bb !important;
+			box-shadow: inset 0 0 0 2px #ff6046;
+			color: #ff6046 !important;
 		}
 
 		input[type="submit"]:active,
@@ -1893,8 +1893,8 @@ input, select, textarea {
 		button:active,
 		.button:active {
 			background-color: rgba(73, 252, 212, 0.25);
-			box-shadow: inset 0 0 0 2px #2ee4bb;
-			color: #2ee4bb !important;
+			box-shadow: inset 0 0 0 2px #ff6046;
+			color: #ff6046 !important;
 		}
 
 		input[type="submit"].small,
@@ -2135,7 +2135,7 @@ input, select, textarea {
 		input[type="url"]:focus,
 		select:focus,
 		textarea:focus {
-			border-color: #2ee4bb;
+			border-color: #ff6046;
 		}
 
 	label {
@@ -2626,6 +2626,10 @@ input, select, textarea {
 			vertical-align: middle;
 		}
 
+		ul.actions li > a {
+			color: lightgray;
+		}
+
 		ul.actions.special {
 			-moz-justify-content: center;
 			-webkit-justify-content: center;
@@ -2850,15 +2854,12 @@ input, select, textarea {
 		}
 
 		a.arrow:before {
-			background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' viewBox='0 0 512 512'%3E%3Cpath d='M442.53,346.28L293.65,495.16c-0.33,0.33-0.7,0.62-1.05,0.94c-9.16,9.77-22.15,15.9-36.6,15.9 c-14.44,0-27.43-6.13-36.59-15.88c-0.35-0.33-0.72-0.62-1.06-0.96L69.47,346.28c-19.62-19.62-19.62-51.44,0-71.05 c19.62-19.62,51.43-19.62,71.06,0l65.23,65.23V50.24C205.76,22.5,228.25,0,256,0s50.24,22.5,50.24,50.24v290.21l65.23-65.23 c19.62-19.62,51.43-19.62,71.05,0C462.15,294.84,462.15,326.66,442.53,346.28z' fill='%23000000' /%3E%3C/svg%3E");
-			background-position: center;
-			background-repeat: no-repeat;
-			background-size: contain;
-			content: '';
+			font: var(--fa-font-solid);
+    		content: "\f063";
 			display: inline-block;
 			height: 100%;
 			position: relative;
-			width: 3rem;
+			font-size: 3rem;
 		}
 
 /* Gallery */
@@ -3253,6 +3254,7 @@ input, select, textarea {
 				grid-area: header;
 				justify-self: end;
 				text-align: right;
+				color: lightgray;
 			}
 
 				#wrapper section > header h2 {

@@ -3,6 +3,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
 @Component({
   selector: 'app-root',
   templateUrl: './index.component.html',
+  styleUrls: ['./index.component.scss'],
   host: {
     id: "wrapper"
   }
@@ -37,12 +38,10 @@ export class IndexComponent implements AfterViewInit {
         if (this.lastPagePosition - pos < 0) {
           this.nextElement.nativeElement.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
           this.isScrollingToTop = false;
-          console.log("Pra baixo")
         }
         else {
           this.introElement.nativeElement.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
           this.isScrollingToTop = true;
-          console.log("Pra cima")
         }
         this.isScrolling = true;
       }
@@ -62,7 +61,7 @@ export class IndexComponent implements AfterViewInit {
     let value = window.scrollY / this.pageSize;
     let nodeList: NodeListOf<any> = document.querySelectorAll('.content')
     for (let i = 0, len = nodeList.length; i < len; i++)
-      nodeList[i].style.opacity = value;
+      nodeList[i].style.backgroundColor = 'rgba(255, 255, 255, ' + value + ')'
   }
 
   @HostListener('window:scroll')
@@ -92,6 +91,10 @@ export class IndexComponent implements AfterViewInit {
   @HostListener('window:resize')
   onResize() {
     this.pageSize = window.innerHeight
+  }
+
+  public onClickDown(){
+    this.nextElement.nativeElement.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
   }
 
   ngAfterViewInit() {

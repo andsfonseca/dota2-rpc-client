@@ -1,0 +1,33 @@
+.onCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex-direction: column;
+}
+
+.buttonsAvailable>a {
+    margin: auto 5px;
+}
+
+.imagesAvailable {
+    margin-bottom: 80px;
+    width: 100%;
+}
+
+
+.screenshotBanner {
+    position: relative;
+    transform: perspective(1100px) rotate3D(0, 2, 0, 30deg);
+    filter: drop-shadow(0rem 0rem 1rem #ff6046);
+    margin: 0 auto;
+}
+
+.imageBanner {
+    position: absolute;
+    bottom: 35%;
+    left: 500px;
+    height: auto;
+    transform: perspective(1100px) rotate3D(0, 1, 0, 30deg);
+    filter: drop-shadow(0rem 0rem 1rem #ff6046);
+}

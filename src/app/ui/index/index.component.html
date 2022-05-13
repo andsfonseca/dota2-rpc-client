@@ -1,5 +1,4 @@
   <!-- Wrapper -->
-  <!-- <div id="wrapper"> -->
 
     <!-- Intro -->
     <section class="intro" #intro>
@@ -7,11 +6,20 @@
         <h1>DotA 2 RPC</h1>
         <p>An open source project to display the status of your matches on discord</p>
         <ul class="actions">
-          <li><a href="#first" class="arrow scrolly"><span class="label">Next</span></a></li>
+          <li><a style="cursor: pointer" (click)="onClickDown()" class="arrow scrolly"><span class="label">Next</span></a></li>
         </ul>
       </header>
       <div class="content">
-        <span class="image fill" data-position="center"><img src="images/pic01.jpg" alt="" /></span>
+        <span class="onCenter">
+          <div class="imagesAvailable">
+            <img class="screenshotBanner" src="assets/img/ScreenshotExample.png"/>
+            <img class="imageBanner" src="assets/img/RichPresenceExample.png"/>
+          </div>
+          <div class="buttonsAvailable">
+            <a href="https://github.com/andsfonseca/dota2-rpc-client/releases/latest/download/dota2-rpc-client.zip" class="button icon solid fa-download">Download</a>
+            <a href="https://github.com/andsfonseca/dota2-rpc-client" class="button icon brands fa-github">View Source</a>
+          </div>
+        </span>
       </div>
     </section>
 
@@ -136,7 +144,7 @@
     </section>
 
     <!-- Elements -->
-    <!--
+    
         <section>
           <header>
             <h2>Elements</h2>
@@ -150,7 +158,7 @@
               <div class="content">
                 <p>This is <b>bold</b> and this is <strong>strong</strong>. This is <i>italic</i> and this is <em>emphasized</em>.
                 This is <sup>superscript</sup> text and this is <sub>subscript</sub> text.
-                This is <u>underlined</u> and this is code: <code>for (;;) { ... }</code>. Finally, <a href="#">this is a link</a>.</p>
+                This is <u>underlined</u> and this is code: <code>for (;;) </code>. Finally, <a href="#">this is a link</a>.</p>
                 <hr />
                 <h2>Heading Level 2</h2>
                 <h3>Heading Level 3</h3>
@@ -160,15 +168,7 @@
                 <h5>Blockquote</h5>
                 <blockquote>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan faucibus. Vestibulum ante ipsum primis in faucibus lorem ipsum dolor sit amet nullam adipiscing eu felis.</blockquote>
                 <h5>Preformatted</h5>
-                <pre><code>i = 0;
-
-while (!deck.isInOrder()) {
-print 'Iteration ' + i;
-deck.shuffle();
-i++;
-}
-
-print 'Sorted in ' + i + ' iterations.';</code></pre>
+                <pre><code>;</code></pre>
               </div>
             </section>
 
@@ -401,7 +401,7 @@ print 'Sorted in ' + i + ' iterations.';</code></pre>
 
           </div>
         </section>
-      -->
+      
 
     <!-- Section -->
     <section>
@@ -460,5 +460,3 @@ print 'Sorted in ' + i + ' iterations.';</code></pre>
     <!-- Copyright -->
     <div class="copyright">&copy; Untitled. All rights reserved. Design: <a href="https://html5up.net">HTML5 UP</a>.
     </div>
-
-  <!-- </div> -->
