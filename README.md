@@ -58,7 +58,7 @@ dota2-rpc-client.exe <flag>
 | `-e`                      | If installed, stop the service.                                                   |
 | `-f`                      | Execute the DotA 2 RPC like a Console Application.                                |
 
-## Compilations Instructions
+## Compilation Instructions
 
 Want to improve the project or compile a version outside the official channel?
 
@@ -68,7 +68,7 @@ This project mainly uses 3 libraries to work. Are they:
 
  * [Discord SDK](https://discord.com/developers/docs/intro) - A Library for Integration with the Discord application;
  * [Drogon C++](https://github.com/drogonframework/drogon) - A web framework written with C++;
- * [SrvLib](https://github.com/Tomenz/SrvLib) - A library for creating services in Windows and Linux.
+ * [SrvLib](https://github.com/Tomenz/SrvLib) - A library for creating services in Windows and Linux created by [@tomenz](https://github.com/tomenz).
 
 This is a project made with *CMake*, these libraries are downloaded during the first compilation of the software and placed in a folder called `third_party`.
 
@@ -82,6 +82,23 @@ With the repository downloaded, run the command:
 > 
 > An installation guide for the *Drogon C++* dependencies can be found on [this page](https://drogon.docsforge.com/master/installation/).
 
+## Web Page Compilation Instructions
+
+Would you like to change the project webpage? You can access the files from the `web` directory.
+
+The following frameworks and templates were used:
+
+ * [Angular 13](https://angular.io/) - A component-based framework for building scalable web applications;
+ * [Paradigm Shift](https://html5up.net/paradigm-shift) - A open-source web template created by [@ajlkn](https://github.com/ajlkn)
+
+Instead of using static pages, a framework was used to create the site. So to compile, follow the instructions [available here](https://angular.io/guide/setup-local).
+
+With everything configured, use the command below to run:
+
+```shell
+ ng serve
+```
+ 
 ## Language Contribution
  
 Would you like to translate the app into your language? Create a translation file based on the [en-us.json](lang/en-us.json) file. Then create an _issue_ or a _pull request_ to submit your modification.
