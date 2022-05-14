@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development"
+    "watch": "ng build --watch --configuration development",
+    "build:prod": "ng build --configuration production --base-href https://andsfonseca.github.io/dota2-rpc-client/"
   },
   "private": true,
   "dependencies": {
