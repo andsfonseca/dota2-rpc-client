@@ -1,9 +1,12 @@
 # DotA 2 RPC (dota2-rpc-client)
 
  [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fandsfonseca%2Fdota2-rpc-client&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](#)
+ [![Website](https://img.shields.io/website?label=Website&url=https%3A%2F%2Fandsfonseca.github.io%2Fdota2-rpc-client%2F)](https://andsfonseca.github.io/dota2-rpc-client/)
+ ![GitHub](https://img.shields.io/github/license/andsfonseca/dota2-rpc-client)
 
 Allows you to observe the status of your DotA 2 (Defense of the Ancients 2) match within the Discord, through the Rich Presence service.
 
+You can access the project website by [clicking here](https://andsfonseca.github.io/dota2-rpc-client/).
 ## What is?
 
 This is a service that allows you to show your Discord friends information about the matches you play and watch within DotA 2.
