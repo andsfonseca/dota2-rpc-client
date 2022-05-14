@@ -1,0 +1,107 @@
+.onCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex-direction: column;
+}
+
+.buttonsAvailable>a {
+    margin: auto 5px;
+}
+
+.imagesAvailable {
+    margin-bottom: 80px;
+    width: 100%;
+}
+
+
+.screenshotBanner {
+    position: relative;
+    transform: perspective(1100px) rotate3D(0, 2, 0, 30deg);
+    filter: drop-shadow(0rem 0rem 1rem #ff6046);
+    margin: 0 auto;
+}
+
+.imageBanner {
+    position: absolute;
+    bottom: 35%;
+    left: 500px;
+    height: auto;
+    transform: perspective(1100px) rotate3D(0, 1, 0, 30deg);
+    filter: drop-shadow(0rem 0rem 1rem #ff6046);
+}
+
+.content-spacer-half {
+    height: 25px;
+}
+
+.content-spacer {
+    height: 50px;
+}
+
+.feature-icons-full li {
+    width: 100%;
+    padding: 0.5rem 4.5rem 0 0;
+}
+
+.feature-icons-full li::before {
+    right: 0;
+    left: auto;
+    top: 50%;
+    transform: translate(0, -25px);
+    color: lightgray;
+}
+
+.step li::before {
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 512 512"%3E%3Ccircle cx="256" cy="256" r="255" fill="rgba(144, 144, 144, 0.1)" /%3E%3C/svg%3E');
+}
+
+.img-feature {
+    max-width: 325px;
+    filter: drop-shadow(0.5rem 0.5rem 0.4rem #240500);
+    border-radius: 10px;
+    margin: auto 1.5rem 1.5rem 0;
+}
+
+.feature-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.feature-content>p {
+    margin-right: auto;
+}
+
+.feature-content>blockquote {
+    margin: 0 auto 1.5rem 0;
+    padding: 0.5rem 0 0.5rem 0.5rem;
+    font-size: 12px;
+}
+
+.feature-content>.button {
+    margin-bottom: 1.5rem;
+
+}
+
+@media screen and (max-width: 1152px) {
+    .hide-1152 {
+        display: none !important;
+    }
+
+    .icon,
+    .black-1152 {
+        color: rgb(0, 0, 0) !important;
+    }
+
+    .feature-icons-full li {
+        padding: 0.5rem 0 0 4.5rem;
+    }
+
+    .feature-icons-full li::before {
+        color: rgb(44, 44, 44);
+        right: auto;
+        left: 0;
+    }
+}

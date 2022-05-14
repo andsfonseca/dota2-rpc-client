@@ -1,0 +1,19 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Font-Awesome CSS */
+@import '~@fortawesome/fontawesome-free/css/all.min.css';
+
+/* Dota 2 Reaver Font-Family */
+@font-face {
+  font-family: Reaver;
+  src: url(https://cdn.cloudflare.steamstatic.com/apps/dota2/fonts/Reaver-Regular.woff);
+}
+
+@font-face {
+    font-family: Reaver;
+    src: url(https://cdn.cloudflare.steamstatic.com/apps/dota2/fonts/Reaver-Bold.woff);
+    font-weight: bold;
+}
+
+/* Paradigm Shift CSS*/
+@import url(assets/css/main.css);
