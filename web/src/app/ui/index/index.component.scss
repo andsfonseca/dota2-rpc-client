@@ -11,24 +11,41 @@
 }
 
 .imagesAvailable {
-    margin-bottom: 80px;
     width: 100%;
+    display: flex;
+    margin-bottom: 30px;
+    justify-content: center;
 }
 
 
-.screenshotBanner {
-    position: relative;
+.banner {
+    max-width:700px;
+    max-height:394px;
+    width: auto;
+    height: auto;
+    margin-bottom: 50px;
     transform: perspective(1100px) rotate3D(0, 2, 0, 30deg);
     filter: drop-shadow(0rem 0rem 1rem #ff6046);
-    margin: 0 auto;
 }
 
-.imageBanner {
+.outsideBanner{
     position: absolute;
-    bottom: 35%;
-    left: 500px;
-    height: auto;
-    transform: perspective(1100px) rotate3D(0, 1, 0, 30deg);
+    top: 0;
+    width: 110%;
+    height: 110%;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+    padding-left: 339px;
+    padding-top: 50px;
+}
+
+.rpc {
+    // max-width:301px;
+    // max-height:337px;
+    // width: auto;
+    // height: auto;
+    transform: perspective(1100px) rotate3D(0, 1, 0, 20deg);
     filter: drop-shadow(0rem 0rem 1rem #ff6046);
 }
 
@@ -82,7 +99,6 @@
 
 .feature-content>.button {
     margin-bottom: 1.5rem;
-
 }
 
 @media screen and (max-width: 1152px) {
@@ -104,4 +120,38 @@
         right: auto;
         left: 0;
     }
+
+    .intro > .content {
+        height: auto !important;
+    }
+}
+
+@media screen and (max-width: 736px) {
+
+    .banner > .screenshot{
+        width: 100%;
+    }
+
+    .outsideBanner{
+        padding-left: 50%;
+        padding-top: 30%;
+    }
+
+    .outsideBanner > .rpc{
+        width: 100%; 
+    }
+
+    .buttonsAvailable{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .buttonsAvailable > a{
+        margin-bottom: 5px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+
+
 }

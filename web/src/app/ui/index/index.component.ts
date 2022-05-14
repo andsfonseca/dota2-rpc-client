@@ -58,6 +58,11 @@ export class IndexComponent implements AfterViewInit {
   }
 
   updateIntroClass() {
+    
+    if (window.innerWidth <= 1152) {
+      this.isScrolling = false;
+      return;
+    }
     let value = window.scrollY / this.pageSize;
     let nodeList: NodeListOf<any> = document.querySelectorAll('#wrapper > section > .content')
     for (let i = 0, len = nodeList.length; i < len; i++)
