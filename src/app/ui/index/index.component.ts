@@ -26,11 +26,11 @@ export class IndexComponent implements AfterViewInit {
   detectIntro() {
     let pos = window.scrollY;
 
-    if (this.isScrolling) {
+    if (this.isScrolling || window.innerWidth <= 1152) {
       this.lastPagePosition = pos;
       return;
     }
-    
+
     //If has scrolling
     if (!(this.lastPagePosition < 0)) {
       if (pos < this.pageSize) {
@@ -75,6 +75,11 @@ export class IndexComponent implements AfterViewInit {
 
     let pos = window.scrollY;
 
+    if (window.innerWidth <= 1152) {
+      this.isScrolling = false;
+      return;
+    }
+
     //Stay on Top
     if (0 < pos && pos < this.pageSize) {
       if (this.isScrollingToTop)
@@ -93,7 +98,7 @@ export class IndexComponent implements AfterViewInit {
     this.pageSize = window.innerHeight
   }
 
-  public onClickDown(){
+  public onClickDown() {
     this.nextElement.nativeElement.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
   }
 
@@ -104,13 +109,3 @@ export class IndexComponent implements AfterViewInit {
   }
 
 }
-
-// $(window).scroll(function() {    
-//   var scroll = $(window).scrollTop();
-
-//    //>=, not <=
-//   if (scroll >= 500) {
-//       //clearHeader, not clearheader - caps H
-//       $(".clearHeader").addClass("darkHeader");
-//   }
-// });

@@ -70,17 +70,38 @@
     align-items: center;
 }
 
-.feature-content > p{
+.feature-content>p {
     margin-right: auto;
 }
 
-.feature-content > blockquote{
+.feature-content>blockquote {
     margin: 0 auto 1.5rem 0;
     padding: 0.5rem 0 0.5rem 0.5rem;
     font-size: 12px;
 }
 
-.feature-content > .button{
+.feature-content>.button {
     margin-bottom: 1.5rem;
 
+}
+
+@media screen and (max-width: 1152px) {
+    .hide-1152 {
+        display: none !important;
+    }
+
+    .icon,
+    .black-1152 {
+        color: rgb(0, 0, 0) !important;
+    }
+
+    .feature-icons-full li {
+        padding: 0.5rem 0 0 4.5rem;
+    }
+
+    .feature-icons-full li::before {
+        color: rgb(44, 44, 44);
+        right: auto;
+        left: 0;
+    }
 }
