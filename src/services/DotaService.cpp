@@ -1,4 +1,6 @@
 #include <chrono>
+#include <map>
+#include <regex>
 
 #include "DiscordService.cpp"
 // #include "../utils/StringExtensions.cpp"
@@ -35,7 +37,7 @@ class DotaService
     static DotaService *instance;
 
     int64_t currentMatchTime = 0;
-
+    std::map<std::string, std::string> WorkshopMapsCache;
     DotaService()
     {
     }
@@ -431,6 +433,42 @@ class DotaService
         return data["player"]["gold"].asInt();
     }
 
+    std::string GetWorkshopMapName(std::string path)
+    {
+        if (WorkshopMapsCache.count(path))
+        {
+            return WorkshopMapsCache.find(path)->second;
+        }
+
+        const size_t last_slash_idx = path.rfind('/');
+
+        if (std::string::npos == last_slash_idx)
+            return "";
+
+        std::string directory = path.substr(0, last_slash_idx + 1);
+        std::string file;
+
+        if (Templates::LoadFile(directory + "publish_data.txt", file))
+        {
+            std::regex title_regex("\"(title)\"\\s+\"((\\\"|[^\"])*)\"");
+
+            std::istringstream f(file);
+            std::string line;
+
+            while (std::getline(f, line))
+            {
+                std::smatch sm;
+                std::regex_search(line, sm, title_regex);
+                if (sm[2] != ""){
+                    WorkshopMapsCache.insert({path, sm[2]});
+                    return sm[2];
+                }
+            }
+        }
+
+        return "";
+    }
+
     std::string GetMapName(Json::Value data)
     {
         if (data["map"].isNull())
@@ -448,11 +486,28 @@ class DotaService
         if (mappath == "")
             return "";
 
+        // Try find in custom map string
         Extensions::FindAndReplaceAll(mappath, "\\", "/");
-
         std::string mapName(mappath.substr(mappath.rfind("/") + 1));
 
-        return LocalizedStrings::Get("DOTA_2:CUSTOM_MAP:hero_demo");
+        std::string customMapName = LocalizedStrings::Get("DOTA_2:CUSTOM_MAP:" + mapName);
+
+        if (customMapName != "")
+        {
+            return customMapName;
+        }
+
+        //Try check in Workshop files
+        mapName = GetWorkshopMapName(mappath);
+        
+        if(mapName == ""){
+            return "";
+        }
+
+        customMapName = LocalizedStrings::Get("DOTA_2:CUSTOM_MAP:WORKSHOP");
+
+        Extensions::FindAndReplaceAll(customMapName, "{{MAPNAME}}", mapName);
+        return customMapName;
     }
 
     void FixGameTimeIfNecessary(int64_t &matchTime)

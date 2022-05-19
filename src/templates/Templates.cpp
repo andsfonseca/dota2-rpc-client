@@ -1,7 +1,7 @@
 #include <string>
 #include <filesystem>
 #include <fstream>
-
+#include <sstream>
 #include "../extensions/StringExtensions.cpp"
 
 #if defined(_WIN32) || defined(_WIN64)

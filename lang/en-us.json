@@ -202,7 +202,8 @@
             "npc_dota_hero_zuus_2": "Zeus"
         },
         "CUSTOM_MAP":{
-            "hero_demo":"Testing a hero"
+            "hero_demo":"Testing a hero",
+            "WORKSHOP": "Playing {{MAPNAME}}"
         },
         "NEUTRALS": [
             "npc_dota_neutral_alpha_wolf",
