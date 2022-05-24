@@ -6,7 +6,7 @@ labels: ["translation", "enhancement"]
 body:
 - type: checkboxes
   attributes:
-    label: Are you on the latest version??
+    label: Are you on the latest version?
     description: Before proposing a translation, check the version you are using. Always use the latest version found as a reference.
     options:
     - label: I\'m on the latest version
@@ -35,6 +35,6 @@ body:
       Describe the lines you want to modify:
         - (My Text Before -> My Text After)
       
-      Tip: If you want you can modify the [en-us.json](https://github.com/andsfonseca/dota2-rpc-client/blob/master/lang/en-us.json) file and send. You can attach by clicking this area to highlight it and then dragging files in.
+      Tip: If you want, you can modify the [en-us.json](https://github.com/andsfonseca/dota2-rpc-client/blob/master/lang/en-us.json) file and send. You can attach by clicking this area to highlight it and then dragging files in.
   validations:
-    required: false
+    required: true
