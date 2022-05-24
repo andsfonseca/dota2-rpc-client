@@ -1,36 +1,34 @@
-name: Translation proposal
-about: Proposes a translation update in the application
+name: 🅰️ Translation proposal
 description: Proposes a translation update in the application
 title: "[Translation]: "
-assignees: ''
 labels: ["translation", "enhancement"]
   
 body:
-  - type: checkboxes
-    attributes:
-      label: Are you on the latest version??
-      description: Before proposing a translation, check the version you are using. Always use the latest version found as a reference.
-      options:
-      - label: I\'m on the latest version
-        required: true
-  - type: checkboxes
-    attributes:
-      label: Is there a translation fix in progress related to your proposal?
-      description: Please check that there is not a related topic already created previously.
-      options:
-      - label: I have searched the existing issues
-        required: true
-  - type: dropdown
-    id: typeOfTranslation
-    attributes:
-      label: What kind of translation would you like to do?
-      multiple: true
-      options:
-        - Full translation
-        - Fix translation errors
-    validations:
+- type: checkboxes
+  attributes:
+    label: Are you on the latest version??
+    description: Before proposing a translation, check the version you are using. Always use the latest version found as a reference.
+    options:
+    - label: I\'m on the latest version
       required: true
- - type: textarea
+- type: checkboxes
+  attributes:
+    label: Is there a translation fix in progress related to your proposal?
+    description: Please check that there is not a related topic already created previously.
+    options:
+    - label: I have searched the existing issues
+      required: true
+- type: dropdown
+  id: typeOfTranslation
+  attributes:
+    label: What kind of translation would you like to do?
+    multiple: true
+    options:
+      - Full translation
+      - Fix translation errors
+  validations:
+    required: true
+- type: textarea
   attributes:
     label: Describe your changes.
     description: |
