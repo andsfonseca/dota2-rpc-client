@@ -1,0 +1,45 @@
+name: 💡 Feature Request
+description: Suggest an idea for this project
+title: "[Feature]: "
+labels: ["enhancement"]
+  
+body:
+- type: checkboxes
+  attributes:
+    label: Are you on the latest version?
+    description: Before proposing an issue, check the version you are using. Always use the latest version found as a reference.
+    options:
+    - label: I\'m on the latest version
+      required: true
+- type: checkboxes
+  attributes:
+    label: Is there a fix in progress related to your proposal?
+    description: Please check that there is not a related topic already created previously.
+    options:
+    - label: I have searched the existing issues
+      required: true
+- type: textarea
+  attributes:
+    label: Is your feature request related to a problem? Please describe the problem.
+    description: A clear and concise description of what the bug is.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Describe the solution you'd like
+    description: A clear and concise description of what you want to happen. Include any alternative solutions you've considered.
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: Dota 2 Patch
+    description: The current patch version of your DotA 2
+    placeholder: 7.31c
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Anything else?
+    description: If you want to add more details.
+  validations:
+    required: false
