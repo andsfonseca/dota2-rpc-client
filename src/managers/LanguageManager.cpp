@@ -1,107 +1,81 @@
-#include "../templates/Templates.cpp"
-#include <json/json.h>
+#include <managers/LanguageManager.h>
+#include <persistence/JsonLoader.h>
+#include <extensions/StringExtensions.h>
 
-namespace LocalizedStrings
-{
-    static Json::Value LocaleStrings;
-
-    static std::string GetLocale()
-    {
+#include <map>
+#include <iostream>
 #if defined(_WIN32) || defined(_WIN64)
-        LCID lcid = GetThreadLocale();
-        wchar_t localeName[LOCALE_NAME_MAX_LENGTH];
-        if (LCIDToLocaleName(lcid, localeName, LOCALE_NAME_MAX_LENGTH, 0) == 0)
-            return "en-us";
-
-        return Extensions::ToLowerCase(Extensions::ConvertWideToUtf8(localeName));
+#include <Windows.h>
 #else
-        std::string localeName1 = std::setlocale(LC_ALL, "");
-        std::string localeP = localeName1.substr(0, localeName1.find('.'));
-        return Extensions::ToLowerCase(localeP);
+#include <locale>
 #endif
-    }
 
-    static void LoadLanguageJson()
+std::map<std::string, Json::Value> LanguageManager::dictionary = {};
+
+std::string LanguageManager::getSystemLanguage()
+{
+#if defined(_WIN32) || defined(_WIN64)
+    LCID lcid = GetThreadLocale();
+    wchar_t localeName[LOCALE_NAME_MAX_LENGTH];
+    if (LCIDToLocaleName(lcid, localeName, LOCALE_NAME_MAX_LENGTH, 0) == 0)
+        return "en-us";
+
+    return StringExtensions::toLowerCase(StringExtensions::convertWideToUtf8(localeName));
+#else
+    std::string localeName1 = std::setlocale(LC_ALL, "");
+    std::string localeP = localeName1.substr(0, localeName1.find('.'));
+    return Extensions::ToLowerCase(localeP);
+#endif
+}
+
+void LanguageManager::loadLang(const std::string locale, bool exitOnFailure)
+{
+    const std::string LANGUAGE_FOLDER = "/lang/";
+    const std::string APPLICATION_FOLDER = JsonLoader::getApplicationFolder();
+
+    if (dictionary.find(locale) != dictionary.end())
+        return;
+
+    std::cout << "Searching for " + locale + ".json" << std::endl;
+    
+    Json::Value lang;
+
+    if (!JsonLoader::load(APPLICATION_FOLDER + LANGUAGE_FOLDER + locale + ".json", lang))
     {
-        const std::string LANGUAGE_FOLDER = "/lang/";
-        const std::string LANGUAGE_DEFAULT = "en-us";
-
-        std::string folder = Templates::GetExecutableFolder();
-        std::string localeName = GetLocale();
-
-        std::string fileAsString;
-
-        if(!Templates::LoadFile(folder + LANGUAGE_FOLDER + localeName + ".json", fileAsString)){
-            if(!Templates::LoadFile(folder + LANGUAGE_FOLDER + LANGUAGE_DEFAULT + ".json", fileAsString)){
-                std::cerr << "Corrupted Language Files" << std::endl;
-                exit(1);
-            }
-        }
-
-        Json::Reader reader;
-
-        if (!reader.parse(fileAsString, LocaleStrings))
-        {
-            std::cerr << "Corrupted Language Files" << std::endl;
+        if (exitOnFailure)
             exit(1);
-        }
+
+        loadLang();
+
+        // Use en-us instead
+        lang = dictionary["en-us"];
     }
 
-    static Json::Value GetNode(std::string key)
-    {
+    dictionary[locale] = lang;
+}
 
-        if (key == "")
-            return NULL;
+std::string LanguageManager::getString(std::string key, const std::string locale)
+{
+    loadLang(locale, false);
 
-        if (LocaleStrings.isNull())
-            LoadLanguageJson();
+    Json::Value value = JsonLoader::getNode(dictionary[locale], key);
 
-        Json::Value child = LocaleStrings;
-        size_t aux = key.find(':');
-        std::string token = key.substr(0, aux);
-        key.erase(0, aux + 1);
-        std::string lastToken = "";
+    return (value == NULL || value.isNull()) ? "" : value.asString();
+}
 
-        while (key != "" && token != key)
-        {
-            if (child[token].isNull())
-                return NULL;
+std::vector<std::string> LanguageManager::getArray(std::string key, const std::string locale)
+{
+    loadLang(locale, false);
 
-            child = child[token];
+    Json::Value value = JsonLoader::getNode(dictionary[locale], key);
 
-            lastToken = token;
-            aux = key.find(':');
-            token = key.substr(0, aux);
-            key.erase(0, aux + 1);
-        }
-        return child[token];
-    }
+    std::vector<std::string> array;
 
-    static std::string Get(std::string key)
-    {
-        Json::Value child = GetNode(key);
+    if (value == NULL || value.isNull())
+        return array;
 
-        if (child == NULL || child.isNull())
-            return "";
-
-        return child.asString();
-    }
-
-    static std::vector<std::string> GetArray(std::string key)
-    {
-        Json::Value child = GetNode(key);
-        std::vector<std::string> aux;
-
-        if (child == NULL || child.isNull())
-            return aux;
-
-        int size = child.size();
-
-        for (int i = 0; i < size; i++)
-        {   
-            std::string value = child[i].asString();
-            aux.push_back(value);
-        }
-        return aux;
-    }
+    for (unsigned int i = 0; i < static_cast<unsigned int>(value.size()); i++)
+        array.push_back(value[i].asString());
+    
+    return array;
 }
