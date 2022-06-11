@@ -5,6 +5,7 @@
 #include "DiscordService.cpp"
 
 #include <persistence/FileLoader.h>
+#include <managers/ConfigurationManager.h>
 #include <managers/LanguageManager.h>
 #include <extensions/StringExtensions.h>
 
@@ -606,15 +607,27 @@ public:
                 // State Section
                 std::string state = GetMapName(data);
 
-                // If no map was found it means you are playing vanilla, show KDA instead
+                // If no map was found it means you are playing vanilla
                 if (state == "")
                 {
-                    int kill, death, assist;
-                    GetKillDeathAssists(data, kill, death, assist);
+                    // If KDA is enable
+                    if (ConfigurationManager::showKillDeathAssist())
+                    {
+                        int kill, death, assist;
+                        GetKillDeathAssists(data, kill, death, assist);
 
-                    state = LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:KDA", LanguageManager::getSystemLanguage());
-                    StringExtensions::findAndReplaceAll(state, {"{{KILL}}", "{{DEATH}}", "{{ASSIST}}"},
-                                                  {std::to_string(kill), std::to_string(death), std::to_string(assist)});
+                        state = LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:KDA", LanguageManager::getSystemLanguage());
+                        StringExtensions::findAndReplaceAll(state, {"{{KILL}}", "{{DEATH}}", "{{ASSIST}}"},
+                                                            {std::to_string(kill), std::to_string(death), std::to_string(assist)});
+                    }
+                    // Else, show game state
+                    else
+                    {
+                        if (gameState == GameState::PRE_GAME)
+                            state = LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:PRE_GAME", LanguageManager::getSystemLanguage());
+                        else
+                            state = LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:GAME", LanguageManager::getSystemLanguage());
+                    }
                 }
 
                 activity.SetState(const_cast<char *>(state.c_str()));
@@ -629,15 +642,18 @@ public:
                     activity.GetTimestamps().SetStart(DiscordTimestamp(time0InMatch));
 
                 // Big Image
-                int lastHits, denies;
-                GetPlayerHits(data, lastHits, denies);
+                if (ConfigurationManager::showGoldAndLastHit())
+                {
+                    int lastHits, denies;
+                    GetPlayerHits(data, lastHits, denies);
 
-                std::string bigImageDetails = LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:GOLD_LH_DN", LanguageManager::getSystemLanguage());
-                StringExtensions::findAndReplaceAll(bigImageDetails, {"{{GOLD}}", "{{LH}}", "{{DN}}"},
-                                              {std::to_string(GetPlayerGold(data)), std::to_string(lastHits), std::to_string(denies)});
+                    std::string bigImageDetails = LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:GOLD_LH_DN", LanguageManager::getSystemLanguage());
+                    StringExtensions::findAndReplaceAll(bigImageDetails, {"{{GOLD}}", "{{LH}}", "{{DN}}"},
+                                                        {std::to_string(GetPlayerGold(data)), std::to_string(lastHits), std::to_string(denies)});
 
+                    activity.GetAssets().SetLargeText(bigImageDetails.c_str());
+                }
                 activity.GetAssets().SetLargeImage(heroKey.c_str());
-                activity.GetAssets().SetLargeText(bigImageDetails.c_str());
 
                 // Small Image
                 ItemStatusEffect effect = GetItemStatusEffect(data);
@@ -645,20 +661,32 @@ public:
                 switch (effect)
                 {
                 case ItemStatusEffect::SMOKE:
-                    activity.GetAssets().SetSmallImage("smoke_of_deceit");
-                    activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:SMOKED", LanguageManager::getSystemLanguage()).c_str());
+                    if (ConfigurationManager::showSmoke())
+                    {
+                        activity.GetAssets().SetSmallImage("smoke_of_deceit");
+                        activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:SMOKED", LanguageManager::getSystemLanguage()).c_str());
+                    }
                     break;
                 case ItemStatusEffect::SCEPTER_AND_SHARD:
-                    activity.GetAssets().SetSmallImage("aghanims_scepter_2");
-                    activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER_AND_SHARD", LanguageManager::getSystemLanguage()).c_str());
+                    if (ConfigurationManager::showAghanim())
+                    {
+                        activity.GetAssets().SetSmallImage("aghanims_scepter_2");
+                        activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER_AND_SHARD", LanguageManager::getSystemLanguage()).c_str());
+                    }
                     break;
                 case ItemStatusEffect::SCEPTER:
-                    activity.GetAssets().SetSmallImage("aghanims_scepter");
-                    activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER", LanguageManager::getSystemLanguage()).c_str());
+                    if (ConfigurationManager::showAghanim())
+                    {
+                        activity.GetAssets().SetSmallImage("aghanims_scepter");
+                        activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER", LanguageManager::getSystemLanguage()).c_str());
+                    }
                     break;
                 case ItemStatusEffect::SHARD:
-                    activity.GetAssets().SetSmallImage("aghanims_shard");
-                    activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SHARD", LanguageManager::getSystemLanguage()).c_str());
+                    if (ConfigurationManager::showAghanim())
+                    {
+                        activity.GetAssets().SetSmallImage("aghanims_shard");
+                        activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SHARD", LanguageManager::getSystemLanguage()).c_str());
+                    }
                     break;
                 case ItemStatusEffect::WITHOUT_ITEMS:
                 default:

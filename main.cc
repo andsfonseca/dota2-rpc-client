@@ -14,6 +14,7 @@
 
 #include <extensions/StringExtensions.h>
 #include <managers/LanguageManager.h>
+#include <managers/ConfigurationManager.h>
 #include <persistence/TemplateLoader.h>
 #include "third_party/srvlib/Service.h"
 #include <filesystem>
@@ -128,8 +129,8 @@ void resolveDota2GameStateIntegration(std::string host, int port)
 
 void Start()
 {
-    std::string host = "127.0.0.1";
-    int port_number = 52424;
+    std::string host = ConfigurationManager::getHost();
+    unsigned int port_number = ConfigurationManager::getPort();
     resolveDota2GameStateIntegration(host, port_number);
     std::string listeningMessage;
     // Web Server Messages
@@ -182,11 +183,11 @@ int main(int argc, const char *argv[])
     };
 
     // No option, run sync
-    if (argc <= 1)
-    {
-        const char *args[] = {"", "-f"};
-        return ServiceMain(2, args, svParam);
-    }
+    // if (argc <= 1)
+    // {
+    //     const char *args[] = {"", "-f"};
+    //     return ServiceMain(2, args, svParam);
+    // }
 
     return ServiceMain(argc, argv, svParam);
 }

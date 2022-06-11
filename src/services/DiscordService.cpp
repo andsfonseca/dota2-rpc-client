@@ -3,6 +3,7 @@
 #include "../../third_party/discord-sdk-src/cpp/discord.h"
 #include <ctime>
 #include <string>
+#include <managers/ConfigurationManager.h>
 
 class DiscordService
 {
@@ -30,6 +31,9 @@ class DiscordService
                       << ")\n";
             return false;
         }
+
+        //Reload configurations after init
+        ConfigurationManager::load();
 
         this->core->SetLogHook(
             discord::LogLevel::Debug, [](discord::LogLevel level, const char *message)

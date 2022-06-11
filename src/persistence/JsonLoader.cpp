@@ -21,10 +21,12 @@ bool JsonLoader::load(const std::string path, Json::Value &output)
 
 Json::Value JsonLoader::getNode(const Json::Value json, std::string key)
 {
-    if (key == "")
-        return NULL;
 
     Json::Value child = json;
+
+    if (key == "" || child == NULL)
+        return NULL;
+
     size_t aux = key.find(':');
     std::string token = key.substr(0, aux);
     key.erase(0, aux + 1);
