@@ -132,7 +132,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
 
 
 #[[3. SrvLib.git]]
-set(SRVLIB_GIT "https://github.com/Tomenz/SrvLib.git")
+set(SRVLIB_GIT "https://github.com/andsfonseca/SrvLib.git")
 
 if(NOT EXISTS ${THIRD_PARTY_BASE_DIR}/SrvLib)
 
@@ -145,6 +145,12 @@ endif()
 add_subdirectory(${THIRD_PARTY_BASE_DIR}/SrvLib) 
 
 target_link_libraries(${PROJECT_NAME} PRIVATE srvlib)
+
+#Source Files
+
+#Source
+set(CMAKE_INCLUDE_PATH ${CMAKE_CURRENT_LIST_DIR}/include)
+add_subdirectory(src)
 
 # add_executable(${PROJECT_NAME} main.cc ${DISCORD_SRC_LIST})
 if (CMAKE_CXX_STANDARD LESS 17)
@@ -171,6 +177,7 @@ ${CMAKE_CURRENT_BINARY_DIR})
 
 target_include_directories(${PROJECT_NAME}
 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+${CMAKE_INCLUDE_PATH}
 ${CMAKE_CURRENT_SOURCE_DIR}/models)
 target_sources(${PROJECT_NAME}
             PRIVATE
