@@ -2,10 +2,6 @@
 #include <managers/ConfigurationManager.h>
 
 #include <iostream>
-// #include <thread>
-// #include "../../third_party/discord-sdk-src/cpp/discord.h"
-// #include <ctime>
-// #include <string>
 
 DiscordService *DiscordService::instance = nullptr;
 
