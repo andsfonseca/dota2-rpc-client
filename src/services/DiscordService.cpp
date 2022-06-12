@@ -1,131 +1,150 @@
-#include <iostream>
-#include <thread>
-#include "../../third_party/discord-sdk-src/cpp/discord.h"
-#include <ctime>
-#include <string>
+#include <services/DiscordService.h>
 #include <managers/ConfigurationManager.h>
 
-class DiscordService
+#include <iostream>
+// #include <thread>
+// #include "../../third_party/discord-sdk-src/cpp/discord.h"
+// #include <ctime>
+// #include <string>
+
+DiscordService *DiscordService::instance = nullptr;
+
+DiscordService::DiscordService() {}
+
+bool DiscordService::initialize()
 {
-    static DiscordService *instance;
-    std::thread *threadHandler;
+    // Instatiante Discord
+    discord::Core *aux{};
+    auto result = discord::Core::Create(963884877428711434, DiscordCreateFlags_NoRequireDiscord, &aux);
 
-    std::unique_ptr<discord::Core> core;
-    volatile bool started{false};
-    volatile bool interrupted{false};
-    volatile std::time_t lastUpdate;
-
-    // Private constructor so that no objects can be created.
-    DiscordService()
+    // Update reference
+    this->core.reset(aux);
+    if (!this->core)
     {
+        std::cout << "Failed to instantiate discord core! (err " << static_cast<int>(result)
+                  << ")" << std::endl;
+        return false;
     }
 
-    bool Initialize()
+    // Reload configurations after init
+    ConfigurationManager::load();
+
+    // Error Log
+    this->core->SetLogHook(
+        discord::LogLevel::Debug, [](discord::LogLevel level, const char *message)
+        { std::cerr << "Log(" << static_cast<uint32_t>(level) << "): " << message << std::endl; });
+
+    return true;
+}
+
+void DiscordService::loop()
+{
+    bool breaked{false};
+
+    // Loop
+    do
     {
-        discord::Core *aux{};
-        auto result = discord::Core::Create(963884877428711434, DiscordCreateFlags_NoRequireDiscord, &aux);
-        this->core.reset(aux);
-        if (!this->core)
+        std::time_t t = std::time(0);
+        double seconds = std::difftime(t, lastUpdate);
+
+        // With no updates in 10 seconds
+        if (seconds > 10)
         {
-            std::cout << "Failed to instantiate discord core! (err " << static_cast<int>(result)
-                      << ")\n";
-            return false;
+            breaked = true;
+            break;
         }
 
-        //Reload configurations after init
-        ConfigurationManager::load();
+        this->core->RunCallbacks();
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
 
-        this->core->SetLogHook(
-            discord::LogLevel::Debug, [](discord::LogLevel level, const char *message)
-            { std::cerr << "Log(" << static_cast<uint32_t>(level) << "): " << message << "\n"; });
+    } while (!interrupted);
 
-        return true;
-    }
-
-    void Loop()
+    // If Stopped reset the values
+    if (breaked && !interrupted)
     {
-        bool breaked{false};
-        do
-        {
-            std::time_t t = std::time(0);
-            double seconds = std::difftime(t, lastUpdate);
-            if (seconds > 10)
-            {
-                breaked = true;
-                break;
-            }
-
-            this->core->RunCallbacks();
-            std::this_thread::sleep_for(std::chrono::milliseconds(16));
-
-        } while (!interrupted);
-
-        if (breaked && !interrupted)
-        {
-            interrupted = false;
-            started = false;
-            this->core.reset();
-        }
+        interrupted = false;
+        started = false;
+        this->core.reset();
     }
+}
 
-public:
-    static DiscordService *getInstance()
-    {
-        if (!instance)
-            instance = new DiscordService;
-        return instance;
-    }
+DiscordService *DiscordService::getInstance()
+{
+    if (!instance)
+        instance = new DiscordService;
+    return instance;
+}
 
-    void UpdateActivity(discord::Activity activity)
-    {
-        if (!Start())
-            return;
+void DiscordService::updateActivity(discord::Activity activity)
+{
+    if (!start())
+        return;
 
-        lastUpdate = std::time(0);
+    lastUpdate = std::time(0);
 
-        this->core->ActivityManager().UpdateActivity(activity, [](discord::Result result)
-                                                     { 
-                                                         
+    this->core->ActivityManager().UpdateActivity(activity, [](discord::Result result)
+                                                 {
                                                          if(result != discord::Result::Ok)
+                                                         std::cout << "Failed updating activity!" << std::endl; });
+}
+
+void DiscordService::cleanActivity()
+{
+    if (!started)
+        return;
+
+    // Remove the activity
+    this->core->ActivityManager().ClearActivity([](discord::Result result)
+                                                { if(result != discord::Result::Ok)
                                                          std::cout << "Failed updating activity!\n"; });
-    }
+    // Stop the instance
+    stop();
+}
 
-    void CleanActivity()
+bool DiscordService::start()
+{
+    // Initialize
+    if (!this->core)
     {
-        if(!started) return;
-
-        this->core->ActivityManager().ClearActivity([](discord::Result result)
-                                                    { if(result != discord::Result::Ok)
-                                                         std::cout << "Failed updating activity!\n"; });
-        Stop();
+        if (!initialize())
+            return false;
     }
-
-    bool Start()
+    // Start if not started
+    if (!started)
     {
-        if (!this->core)
-        {
-            if (!Initialize())
-                return false;
-        }
-        if (!started)
-        {
-            started = true;
-            threadHandler = new std::thread(&DiscordService::Loop, this);
-        }
-        return true;
+        started = true;
+        threadHandler = new std::thread(&DiscordService::loop, this);
     }
+    return true;
+}
 
-    void Stop()
+void DiscordService::stop()
+{
+    // If start, can stop
+    if (started)
     {
-        if (started)
-        {
-            interrupted = true;
-            threadHandler->join();
-            interrupted = false;
-            started = false;
-            this->core.reset();
-        }
-    }
-};
+        // Send interrupted signal
+        interrupted = true;
+        threadHandler->join();
 
-DiscordService *DiscordService::instance = 0;
+        // Reset the values
+        interrupted = false;
+        started = false;
+        this->core.reset();
+    }
+}
+
+std::string DiscordService::getLanguage(){
+    // Initialize
+    if (!this->core)
+    {
+        if (!initialize())
+            return "";
+    }
+
+    char locale[128];
+
+    this->core->ApplicationManager().GetCurrentLocale(locale);
+
+    return std::string(locale);
+}

@@ -24,7 +24,7 @@ std::string LanguageManager::getSystemLanguage()
 #else
     std::string localeName1 = std::setlocale(LC_ALL, "");
     std::string localeP = localeName1.substr(0, localeName1.find('.'));
-    return Extensions::ToLowerCase(localeP);
+    return StringExtensions::toLowerCase(localeP);
 #endif
 }
 

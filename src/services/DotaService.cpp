@@ -2,12 +2,12 @@
 #include <map>
 #include <regex>
 
-#include "DiscordService.cpp"
 
 #include <persistence/FileLoader.h>
 #include <managers/ConfigurationManager.h>
 #include <managers/LanguageManager.h>
 #include <extensions/StringExtensions.h>
+#include <services/DiscordService.h>
 
 enum PlayerStatus
 {
@@ -543,7 +543,7 @@ public:
 
         if (playerStatus == PlayerStatus::STAND_BY)
         {
-            discordService->CleanActivity();
+            discordService->cleanActivity();
             currentMatchTime = 0;
             return;
         }
@@ -778,7 +778,7 @@ public:
         }
         }
 
-        discordService->UpdateActivity(activity);
+        discordService->updateActivity(activity);
     }
 };
 
