@@ -133,3 +133,18 @@ void DiscordService::stop()
         this->core.reset();
     }
 }
+
+std::string DiscordService::getLanguage(){
+    // Initialize
+    if (!this->core)
+    {
+        if (!initialize())
+            return "";
+    }
+
+    char locale[128];
+
+    this->core->ApplicationManager().GetCurrentLocale(locale);
+
+    return std::string(locale);
+}

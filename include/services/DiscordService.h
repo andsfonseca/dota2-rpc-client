@@ -1,6 +1,7 @@
 #pragma once
 
 #include <thread>
+#include <string>
 
 #include "../../third_party/discord-sdk-src/cpp/discord.h"
 
@@ -23,4 +24,6 @@ public:
     void cleanActivity();
     bool start();
     void stop();
+    std::string getLanguage();
+
 };
