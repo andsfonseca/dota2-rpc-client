@@ -12,9 +12,14 @@
 #include <unistd.h>
 #endif
 
+#include <extensions/StringExtensions.h>
+#include <managers/LanguageManager.h>
+#include <managers/ConfigurationManager.h>
+#include <persistence/TemplateLoader.h>
 #include "third_party/srvlib/Service.h"
-
-#include "src/localization/LocalizedStrings.cpp"
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 
 namespace fs = std::filesystem;
 
@@ -44,7 +49,7 @@ std::string getDota2CFGPathLocationFromVDFFile(std::string path)
             auto pos1 = line.find("570", 0);
             if (pos1 != std::string::npos)
             {
-                Extensions::FindAndReplaceAll(library_path, "\\\\", "/");
+                StringExtensions::findAndReplaceAll(library_path, "\\\\", "/");
                 return library_path + "/steamapps/common/dota 2 beta/game/dota/cfg/gamestate_integration";
             }
         }
@@ -56,8 +61,8 @@ std::string getDota2CFGPathLocationFromVDFFile(std::string path)
 std::string makeDota2CFGFile(std::string host, int port)
 {
     std::string dota2_template;
-    Templates::LoadTemplate("gamestate_integration_rpc.cfg", dota2_template);
-    Extensions::FindAndReplaceAll(dota2_template, {"{{HOST}}", "{{PORT}}"}, {host, std::to_string(port)});
+    TemplateLoader::load("gamestate_integration_rpc.cfg", dota2_template);
+    StringExtensions::findAndReplaceAll(dota2_template, {"{{HOST}}", "{{PORT}}"}, {host, std::to_string(port)});
 
     return dota2_template;
 }
@@ -115,7 +120,7 @@ void resolveDota2GameStateIntegration(std::string host, int port)
 
     if (!found)
     {
-        std::cout << LocalizedStrings::Get("APP:ERRORS:CFG_NOT_FOUND") << "\n\n";
+        std::cout << LanguageManager::getString("APP:ERRORS:CFG_NOT_FOUND", LanguageManager::getSystemLanguage()) << "\n\n";
         std::cout << "=========== gamestate_integration_rpc.cfg ================\n";
         std::cout << cfg_source << "\n";
         std::cout << "==========================================================\n\n";
@@ -124,24 +129,24 @@ void resolveDota2GameStateIntegration(std::string host, int port)
 
 void Start()
 {
-    std::string host = "127.0.0.1";
-    int port_number = 52424;
+    std::string host = ConfigurationManager::getHost();
+    unsigned int port_number = ConfigurationManager::getPort();
     resolveDota2GameStateIntegration(host, port_number);
     std::string listeningMessage;
     // Web Server Messages
     if (host == "0.0.0.0")
     {
-        listeningMessage = LocalizedStrings::Get("APP:INFO:SERVER_LISTENING_LOCALHOST");
+        listeningMessage = LanguageManager::getString("APP:INFO:SERVER_LISTENING_LOCALHOST", LanguageManager::getSystemLanguage());
     }
     else
     {
-        listeningMessage = LocalizedStrings::Get("APP:INFO:SERVER_LISTENING");
+        listeningMessage = LanguageManager::getString("APP:INFO:SERVER_LISTENING", LanguageManager::getSystemLanguage());
     }
 
-    Extensions::FindAndReplaceAll(listeningMessage, "{{HOST}}", host);
-    Extensions::FindAndReplaceAll(listeningMessage, "{{PORT}}", std::to_string(port_number));
+    StringExtensions::findAndReplaceAll(listeningMessage, "{{HOST}}", host);
+    StringExtensions::findAndReplaceAll(listeningMessage, "{{PORT}}", std::to_string(port_number));
     std::cout << listeningMessage << "\n";
-    std::cout << LocalizedStrings::Get("APP:INFO:SERVER_HOW_TO_EXIT") << "\n";
+    std::cout << LanguageManager::getString("APP:INFO:SERVER_HOW_TO_EXIT", LanguageManager::getSystemLanguage()) << "\n";
 
     // Set HTTP listener address and port
     drogon::app().addListener(host, port_number);

@@ -3,8 +3,11 @@
 #include <regex>
 
 #include "DiscordService.cpp"
-// #include "../utils/StringExtensions.cpp"
-#include "../localization/LocalizedStrings.cpp"
+
+#include <persistence/FileLoader.h>
+#include <managers/ConfigurationManager.h>
+#include <managers/LanguageManager.h>
+#include <extensions/StringExtensions.h>
 
 enum PlayerStatus
 {
@@ -62,8 +65,8 @@ class DotaService
 
         if (activity != "playing")
         {
-            std::string message = LocalizedStrings::Get("APP:ERRORS:UNKNOWN_ACTIVITY");
-            Extensions::FindAndReplaceAll(message, "{{ACTIVITY}}", activity);
+            std::string message = LanguageManager::getString("APP:ERRORS:UNKNOWN_ACTIVITY", LanguageManager::getSystemLanguage());
+            StringExtensions::findAndReplaceAll(message, "{{ACTIVITY}}", activity);
             std::cout << message << "\n";
         }
 
@@ -106,8 +109,8 @@ class DotaService
         }
         else
         {
-            std::string message = LocalizedStrings::Get("APP:ERRORS:UNKNOWN_GAMESTATE");
-            Extensions::FindAndReplaceAll(message, "{{GAMESTATE}}", gamestate);
+            std::string message = LanguageManager::getString("APP:ERRORS:UNKNOWN_GAMESTATE", LanguageManager::getSystemLanguage());
+            StringExtensions::findAndReplaceAll(message, "{{GAMESTATE}}", gamestate);
             std::cout << message << "\n";
             return GameState::NONE;
         }
@@ -229,7 +232,7 @@ class DotaService
 
     std::string ResolveHeroName(std::string key)
     {
-        std::string name = LocalizedStrings::Get("DOTA_2:HEROES:" + key);
+        std::string name = LanguageManager::getString("DOTA_2:HEROES:" + key, LanguageManager::getSystemLanguage());
 
         if (name == "")
             return key;
@@ -299,7 +302,7 @@ class DotaService
 
     std::string GetNeutralNameBasedOnMatchId(long long i)
     {
-        auto neutralNames = LocalizedStrings::GetArray("DOTA_2:NEUTRALS");
+        auto neutralNames = LanguageManager::getArray("DOTA_2:NEUTRALS", LanguageManager::getSystemLanguage());
         size_t size = neutralNames.size();
         return neutralNames[i % size];
     }
@@ -312,12 +315,12 @@ class DotaService
 
         if (data["player"].isNull())
         {
-            return LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH");
+            return LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH", LanguageManager::getSystemLanguage());
         }
 
         if (data["player"]["team2"].isNull() || data["player"]["team3"].isNull())
         {
-            return LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH");
+            return LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH", LanguageManager::getSystemLanguage());
         }
 
         int i = 0;
@@ -357,19 +360,19 @@ class DotaService
         if (radiant > dire)
         {
             value = (radiant - dire) / 1000;
-            status = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH_RADIANT");
+            status = LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH_RADIANT", LanguageManager::getSystemLanguage());
         }
         else if (dire > radiant)
         {
             value = (dire - radiant) / 1000;
-            status = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH_DIRE");
+            status = LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH_DIRE", LanguageManager::getSystemLanguage());
         }
         else
         {
-            status = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH");
+            status = LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH", LanguageManager::getSystemLanguage());
         }
 
-        Extensions::FindAndReplaceAll(status, "{{VALUE}}", std::to_string(value));
+        StringExtensions::findAndReplaceAll(status, "{{VALUE}}", std::to_string(value));
 
         return status;
     }
@@ -448,7 +451,7 @@ class DotaService
         std::string directory = path.substr(0, last_slash_idx + 1);
         std::string file;
 
-        if (Templates::LoadFile(directory + "publish_data.txt", file))
+        if (FileLoader::load(directory + "publish_data.txt", file))
         {
             std::regex title_regex("\"(title)\"\\s+\"((\\\"|[^\"])*)\"");
 
@@ -459,7 +462,8 @@ class DotaService
             {
                 std::smatch sm;
                 std::regex_search(line, sm, title_regex);
-                if (sm[2] != ""){
+                if (sm[2] != "")
+                {
                     WorkshopMapsCache.insert({path, sm[2]});
                     return sm[2];
                 }
@@ -487,26 +491,27 @@ class DotaService
             return "";
 
         // Try find in custom map string
-        Extensions::FindAndReplaceAll(mappath, "\\", "/");
+        StringExtensions::findAndReplaceAll(mappath, "\\", "/");
         std::string mapName(mappath.substr(mappath.rfind("/") + 1));
 
-        std::string customMapName = LocalizedStrings::Get("DOTA_2:CUSTOM_MAP:" + mapName);
+        std::string customMapName = LanguageManager::getString("DOTA_2:CUSTOM_MAP:" + mapName, LanguageManager::getSystemLanguage());
 
         if (customMapName != "")
         {
             return customMapName;
         }
 
-        //Try check in Workshop files
+        // Try check in Workshop files
         mapName = GetWorkshopMapName(mappath);
-        
-        if(mapName == ""){
+
+        if (mapName == "")
+        {
             return "";
         }
 
-        customMapName = LocalizedStrings::Get("DOTA_2:CUSTOM_MAP:WORKSHOP");
+        customMapName = LanguageManager::getString("DOTA_2:CUSTOM_MAP:WORKSHOP", LanguageManager::getSystemLanguage());
 
-        Extensions::FindAndReplaceAll(customMapName, "{{MAPNAME}}", mapName);
+        StringExtensions::findAndReplaceAll(customMapName, "{{MAPNAME}}", mapName);
         return customMapName;
     }
 
@@ -562,11 +567,11 @@ public:
             case GameState::HERO_SELECTION:
             {
                 // Details Section
-                std::string neutralImageKey = LocalizedStrings::GetArray("DOTA_2:NEUTRALS")[3];
-                activity.SetDetails(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION_ALT").c_str()));
+                std::string neutralImageKey = LanguageManager::getArray("DOTA_2:NEUTRALS", LanguageManager::getSystemLanguage())[3];
+                activity.SetDetails(const_cast<char *>(LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION_ALT", LanguageManager::getSystemLanguage()).c_str()));
 
                 // State Section
-                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION").c_str()));
+                activity.SetState(const_cast<char *>(LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION", LanguageManager::getSystemLanguage()).c_str()));
 
                 // Big Image
                 activity.GetAssets().SetLargeImage(neutralImageKey.c_str());
@@ -576,12 +581,12 @@ public:
             {
                 // Details Section
                 std::string heroKey = GetHeroName(data);
-                std::string details = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO");
-                Extensions::FindAndReplaceAll(details, "{{NAME}}", ResolveHeroName(heroKey));
+                std::string details = LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO", LanguageManager::getSystemLanguage());
+                StringExtensions::findAndReplaceAll(details, "{{NAME}}", ResolveHeroName(heroKey));
                 activity.SetDetails(const_cast<char *>(details.c_str()));
 
                 // State Section
-                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:STRATEGY_TIME").c_str()));
+                activity.SetState(const_cast<char *>(LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:STRATEGY_TIME", LanguageManager::getSystemLanguage()).c_str()));
 
                 // Big Image
                 activity.GetAssets().SetLargeImage(heroKey.c_str());
@@ -594,23 +599,35 @@ public:
                 int level = GetHeroLevel(data);
                 std::string heroKey = GetHeroName(data);
 
-                std::string details = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO_WITH_LEVEL");
-                Extensions::FindAndReplaceAll(details, {"{{NAME}}", "{{LEVEL}}"}, {ResolveHeroName(heroKey), std::to_string(level)});
+                std::string details = LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO_WITH_LEVEL", LanguageManager::getSystemLanguage());
+                StringExtensions::findAndReplaceAll(details, {"{{NAME}}", "{{LEVEL}}"}, {ResolveHeroName(heroKey), std::to_string(level)});
 
                 activity.SetDetails(const_cast<char *>(details.c_str()));
 
                 // State Section
                 std::string state = GetMapName(data);
 
-                // If no map was found it means you are playing vanilla, show KDA instead
+                // If no map was found it means you are playing vanilla
                 if (state == "")
                 {
-                    int kill, death, assist;
-                    GetKillDeathAssists(data, kill, death, assist);
+                    // If KDA is enable
+                    if (ConfigurationManager::showKillDeathAssist())
+                    {
+                        int kill, death, assist;
+                        GetKillDeathAssists(data, kill, death, assist);
 
-                    state = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:KDA");
-                    Extensions::FindAndReplaceAll(state, {"{{KILL}}", "{{DEATH}}", "{{ASSIST}}"},
-                                                  {std::to_string(kill), std::to_string(death), std::to_string(assist)});
+                        state = LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:KDA", LanguageManager::getSystemLanguage());
+                        StringExtensions::findAndReplaceAll(state, {"{{KILL}}", "{{DEATH}}", "{{ASSIST}}"},
+                                                            {std::to_string(kill), std::to_string(death), std::to_string(assist)});
+                    }
+                    // Else, show game state
+                    else
+                    {
+                        if (gameState == GameState::PRE_GAME)
+                            state = LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:PRE_GAME", LanguageManager::getSystemLanguage());
+                        else
+                            state = LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:GAME", LanguageManager::getSystemLanguage());
+                    }
                 }
 
                 activity.SetState(const_cast<char *>(state.c_str()));
@@ -625,15 +642,18 @@ public:
                     activity.GetTimestamps().SetStart(DiscordTimestamp(time0InMatch));
 
                 // Big Image
-                int lastHits, denies;
-                GetPlayerHits(data, lastHits, denies);
+                if (ConfigurationManager::showGoldAndLastHit())
+                {
+                    int lastHits, denies;
+                    GetPlayerHits(data, lastHits, denies);
 
-                std::string bigImageDetails = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:GOLD_LH_DN");
-                Extensions::FindAndReplaceAll(bigImageDetails, {"{{GOLD}}", "{{LH}}", "{{DN}}"},
-                                              {std::to_string(GetPlayerGold(data)), std::to_string(lastHits), std::to_string(denies)});
+                    std::string bigImageDetails = LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:GOLD_LH_DN", LanguageManager::getSystemLanguage());
+                    StringExtensions::findAndReplaceAll(bigImageDetails, {"{{GOLD}}", "{{LH}}", "{{DN}}"},
+                                                        {std::to_string(GetPlayerGold(data)), std::to_string(lastHits), std::to_string(denies)});
 
+                    activity.GetAssets().SetLargeText(bigImageDetails.c_str());
+                }
                 activity.GetAssets().SetLargeImage(heroKey.c_str());
-                activity.GetAssets().SetLargeText(bigImageDetails.c_str());
 
                 // Small Image
                 ItemStatusEffect effect = GetItemStatusEffect(data);
@@ -641,20 +661,32 @@ public:
                 switch (effect)
                 {
                 case ItemStatusEffect::SMOKE:
-                    activity.GetAssets().SetSmallImage("smoke_of_deceit");
-                    activity.GetAssets().SetSmallText(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:SMOKED").c_str());
+                    if (ConfigurationManager::showSmoke())
+                    {
+                        activity.GetAssets().SetSmallImage("smoke_of_deceit");
+                        activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:SMOKED", LanguageManager::getSystemLanguage()).c_str());
+                    }
                     break;
                 case ItemStatusEffect::SCEPTER_AND_SHARD:
-                    activity.GetAssets().SetSmallImage("aghanims_scepter_2");
-                    activity.GetAssets().SetSmallText(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER_AND_SHARD").c_str());
+                    if (ConfigurationManager::showAghanim())
+                    {
+                        activity.GetAssets().SetSmallImage("aghanims_scepter_2");
+                        activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER_AND_SHARD", LanguageManager::getSystemLanguage()).c_str());
+                    }
                     break;
                 case ItemStatusEffect::SCEPTER:
-                    activity.GetAssets().SetSmallImage("aghanims_scepter");
-                    activity.GetAssets().SetSmallText(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER").c_str());
+                    if (ConfigurationManager::showAghanim())
+                    {
+                        activity.GetAssets().SetSmallImage("aghanims_scepter");
+                        activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER", LanguageManager::getSystemLanguage()).c_str());
+                    }
                     break;
                 case ItemStatusEffect::SHARD:
-                    activity.GetAssets().SetSmallImage("aghanims_shard");
-                    activity.GetAssets().SetSmallText(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SHARD").c_str());
+                    if (ConfigurationManager::showAghanim())
+                    {
+                        activity.GetAssets().SetSmallImage("aghanims_shard");
+                        activity.GetAssets().SetSmallText(LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:HAS_SHARD", LanguageManager::getSystemLanguage()).c_str());
+                    }
                     break;
                 case ItemStatusEffect::WITHOUT_ITEMS:
                 default:
@@ -678,12 +710,12 @@ public:
             // Details Section and Big Image Section
             if (playerStatus == PlayerStatus::WATCHING)
             {
-                activity.SetDetails(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:SPECTATOR:WATCH").c_str()));
+                activity.SetDetails(const_cast<char *>(LanguageManager::getString("APP:ACTIVITY_MESSAGES:SPECTATOR:WATCH", LanguageManager::getSystemLanguage()).c_str()));
                 activity.GetAssets().SetLargeImage(const_cast<char *>("watching_default"));
             }
             else
             {
-                activity.SetDetails(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:SPECTATOR:COACH").c_str()));
+                activity.SetDetails(const_cast<char *>(LanguageManager::getString("APP:ACTIVITY_MESSAGES:SPECTATOR:COACH", LanguageManager::getSystemLanguage()).c_str()));
                 activity.GetAssets().SetLargeImage(const_cast<char *>("coaching_default"));
             }
 
@@ -691,11 +723,11 @@ public:
             {
             case GameState::HERO_SELECTION:
                 // State Section
-                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION").c_str()));
+                activity.SetState(const_cast<char *>(LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION", LanguageManager::getSystemLanguage()).c_str()));
                 break;
             case GameState::STRATEGY_TIME:
                 // State Section
-                activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:STRATEGY_TIME").c_str()));
+                activity.SetState(const_cast<char *>(LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:STRATEGY_TIME", LanguageManager::getSystemLanguage()).c_str()));
                 break;
             case GameState::PRE_GAME:
             case GameState::GAME:
@@ -710,9 +742,9 @@ public:
                 else
                 {
                     if (gameState == GameState::PRE_GAME)
-                        activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:PRE_GAME").c_str()));
+                        activity.SetState(const_cast<char *>(LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:PRE_GAME", LanguageManager::getSystemLanguage()).c_str()));
                     else
-                        activity.SetState(const_cast<char *>(LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:GAMESTATES:GAME").c_str()));
+                        activity.SetState(const_cast<char *>(LanguageManager::getString("APP:ACTIVITY_MESSAGES:GAMESTATES:GAME", LanguageManager::getSystemLanguage()).c_str()));
                 }
 
                 // Time Section
@@ -726,8 +758,8 @@ public:
 
                 // Small Image Section
                 long long matchId = GetMatchId(data);
-                std::string matchIdText = LocalizedStrings::Get("APP:ACTIVITY_MESSAGES:MATCH:INFO_ID");
-                Extensions::FindAndReplaceAll(matchIdText, "{{ID}}", std::to_string(matchId));
+                std::string matchIdText = LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:INFO_ID", LanguageManager::getSystemLanguage());
+                StringExtensions::findAndReplaceAll(matchIdText, "{{ID}}", std::to_string(matchId));
                 std::string neutralImageKey = GetNeutralNameBasedOnMatchId(matchId);
 
                 activity.GetAssets().SetSmallImage(neutralImageKey.c_str());

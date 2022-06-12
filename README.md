@@ -42,6 +42,40 @@ Follow the step-by-step below to install your version of DotA 2 RPC
  * Open the `uninstall.windows.bat` file to remove the installation of your computer;
  * If you want, you can delete all the files.
 
+## Settings
+
+You can choose what can be displayed and other application settings.
+
+Just modify the [config.json](src/templates/config/config.json) file.
+
+```json
+{
+    "HOST": "127.0.0.1",
+    "PORT" : 52424,
+    "DISPLAY_OPTIONS":
+    {
+        "AGHANIM" : true,
+        "GOLD_AND_LAST_HIT": true,
+        "KILL_DEATH_ASSIST" : true,
+        "SMOKE": true
+    }
+}
+```
+
+Below is a brief description of each property.
+
+|        Property                      |                                    Description                                    |
+|:------------------------------------ |:----------------------------------------------------------------------------------|
+| `HOST`                               | The url the application will use. (Default: `127.0.0.1`)                          |
+| `PORT`                               | The port the application will listen on. (Default: `52424`)                       |
+| `DISPLAY_OPTIONS`                    | Discord display options.                                                          |
+| `DISPLAY_OPTIONS:AGHANIM`            | Whether or not to display the Aghanim effect (Default: `true`)                    |
+| `DISPLAY_OPTIONS:GOLD_AND_LAST_HIT`  | Whether or not to display the Gold, last hits and denies (Default: `true`)        |
+| `DISPLAY_OPTIONS:KILL_DEATH_ASSIST`  | Whether or not to display the K/D/A (Default: `true`)                             |
+| `DISPLAY_OPTIONS:SMOKE`              | Whether or not to display the smoke effect (Default: `true`)                      |
+
+> If you installed the cfg file manually, when changing the `host` and `port` you will need to change them also in the `gamestate_integration_rpc.cfg` file. See this [issue #1](/../../issues/1).
+
 ## Advanced Users
  
 This software is registered as Windows service. If you are looking for other options, here are other ways to use the application.
