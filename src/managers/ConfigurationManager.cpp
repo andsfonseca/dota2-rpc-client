@@ -1,5 +1,8 @@
 #include <managers/ConfigurationManager.h>
+#include <managers/LanguageManager.h>
+#include <extensions/StringExtensions.h>
 #include <persistence/JsonLoader.h>
+#include <services/DiscordService.h>
 
 #include <iostream>
 
@@ -107,4 +110,28 @@ bool ConfigurationManager::showSmoke()
         return true;
 
     return value.asBool();
+}
+
+std::string ConfigurationManager::getLocale()
+{
+    if (configurations == NULL)
+        load();
+
+    Json::Value value = JsonLoader::getNode(configurations, "LOCALE");
+
+    std::string lang("System");
+
+    if (value != NULL)
+        lang = value.asString();
+
+    lang = StringExtensions::toLowerCase(lang);
+
+    //Update Settings
+    if (lang == "system" && configurations != NULL)
+    {
+        lang = LanguageManager::getSystemLanguage();
+        configurations["LOCALE"] = lang; 
+    }
+
+    return lang;
 }

@@ -52,6 +52,7 @@ Just modify the [config.json](src/templates/config/config.json) file.
 {
     "HOST": "127.0.0.1",
     "PORT" : 52424,
+    "LOCALE" : "System",
     "DISPLAY_OPTIONS":
     {
         "AEGIS" : true,
@@ -69,7 +70,9 @@ Below is a brief description of each property.
 |:------------------------------------ |:----------------------------------------------------------------------------------|
 | `HOST`                               | The url the application will use. (Default: `127.0.0.1`)                          |
 | `PORT`                               | The port the application will listen on. (Default: `52424`)                       |
+| `LOCALE`                             | Language used. (Default: `System`, Avaiable options : [LocaleString](lang/), `System` and `Discord` ) |
 | `DISPLAY_OPTIONS`                    | Discord display options.                                                          |
+| `DISPLAY_OPTIONS:AEGIS`              | Whether or not to display the Aegis effect (Default: `true`)                    |
 | `DISPLAY_OPTIONS:AGHANIM`            | Whether or not to display the Aghanim effect (Default: `true`)                    |
 | `DISPLAY_OPTIONS:GOLD_AND_LAST_HIT`  | Whether or not to display the Gold, last hits and denies (Default: `true`)        |
 | `DISPLAY_OPTIONS:KILL_DEATH_ASSIST`  | Whether or not to display the K/D/A (Default: `true`)                             |

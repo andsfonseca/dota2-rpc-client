@@ -8,6 +8,7 @@ class ConfigurationManager
 {
 public:
     static std::string getHost();
+    static std::string getLocale();
     static unsigned int getPort();
     static bool showAegis();
     static bool showAghanim();
