@@ -212,10 +212,10 @@ void DotaService::getKillDeathAssists(Json::Value data, int &kill, int &death, i
 long long DotaService::getMatchId(Json::Value data)
 {
     if (data["map"].isNull())
-        return 0;
+        return -1;
 
     if (data["map"]["matchid"].isNull())
-        return 0;
+        return -1;
 
     std::string matchId = data["map"]["matchid"].asString();
 
@@ -491,6 +491,23 @@ void DotaService::interpretJson(Json::Value data)
                 LanguageManager::getSystemLanguage());
 
             StringExtensions::findAndReplaceAll(details, "{{NAME}}", resolveHeroName(heroKey));
+
+            long long matchId = getMatchId(data);
+
+            // BotMatch
+            if (matchId == 0)
+            {
+                std::string botPrefix = LanguageManager::getString(
+                    "APP:ACTIVITY_MESSAGES:MATCH:BOT_PREFIX",
+                    LanguageManager::getSystemLanguage());
+
+                StringExtensions::findAndReplaceAll(botPrefix,
+                                                    "{{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
+                                                    details);
+
+                details = botPrefix;
+            }
+
             activity.SetDetails(const_cast<char *>(details.c_str()));
 
             // State Section
@@ -516,6 +533,22 @@ void DotaService::interpretJson(Json::Value data)
             StringExtensions::findAndReplaceAll(details,
                                                 {"{{NAME}}", "{{LEVEL}}"},
                                                 {resolveHeroName(heroKey), std::to_string(level)});
+
+            long long matchId = getMatchId(data);
+
+            // BotMatch
+            if (matchId == 0)
+            {
+                std::string botPrefix = LanguageManager::getString(
+                    "APP:ACTIVITY_MESSAGES:MATCH:BOT_PREFIX",
+                    LanguageManager::getSystemLanguage());
+
+                StringExtensions::findAndReplaceAll(botPrefix,
+                                                    "{{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
+                                                    details);
+
+                details = botPrefix;
+            }
 
             activity.SetDetails(const_cast<char *>(details.c_str()));
 

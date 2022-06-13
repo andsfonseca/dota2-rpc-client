@@ -10,6 +10,7 @@
                 "STRATEGY_TIME": "Стратегічна стадія"
             },
             "MATCH":{
+                "BOT_PREFIX": "Bots: {{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
                 "INFO_ID" : "ID Матчу: {{ID}}",
                 "NET_WORTH": "⛰️Світло | Темряви🌋",
                 "NET_WORTH_DIRE": "⛰️Світло | {{VALUE}}k Темряви🌋",
