@@ -54,6 +54,7 @@ Just modify the [config.json](src/templates/config/config.json) file.
     "PORT" : 52424,
     "DISPLAY_OPTIONS":
     {
+        "AEGIS" : true,
         "AGHANIM" : true,
         "GOLD_AND_LAST_HIT": true,
         "KILL_DEATH_ASSIST" : true,

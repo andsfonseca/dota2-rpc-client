@@ -27,7 +27,8 @@ enum class ItemStatusEffect
     SHARD,
     SCEPTER,
     SCEPTER_AND_SHARD,
-    SMOKE
+    SMOKE,
+    AEGIS
 };
 
 class DotaService
@@ -50,6 +51,7 @@ private:
     void getPlayerHits(Json::Value data, int &lastHits, int &denies);
     PlayerStatus getPlayerStatus(Json::Value data);
     std::string getWorkshopMapName(const std::string path);
+    bool playerHasAegis(Json::Value data);
     std::string resolveHeroName(std::string key);
 private:
     static DotaService *instance;
