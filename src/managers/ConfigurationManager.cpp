@@ -42,6 +42,19 @@ unsigned int ConfigurationManager::getPort()
     return value.asUInt();
 }
 
+bool ConfigurationManager::showAegis()
+{
+    if (configurations == NULL)
+        load();
+
+    Json::Value value = JsonLoader::getNode(configurations, "DISPLAY_OPTIONS:AEGIS");
+
+    if (value == NULL)
+        return true;
+
+    return value.asBool();
+}
+
 bool ConfigurationManager::showAghanim()
 {
     if (configurations == NULL)
