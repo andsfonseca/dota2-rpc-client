@@ -17,6 +17,7 @@
                 "NET_WORTH_RADIANT": "⛰️Radiant {{VALUE}}k | Dire🌋"
             },
             "PLAYER":{
+                "AEGIS": "Égide do Imortal",
                 "GOLD_LH_DN": "💰 {{GOLD}} | FIN: {{LH}} | NEG: {{DN}}",
                 "HAS_SCEPTER":"Cetro de Aghanim",
                 "HAS_SCEPTER_AND_SHARD":"Cetro e fragmento de Aghanim ",

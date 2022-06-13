@@ -294,18 +294,45 @@ std::string DotaService::getNetWorth(Json::Value data)
     return status;
 }
 
+bool  DotaService::playerHasAegis(Json::Value data)
+{
+    if(data["items"].isNull())
+        return false;
+    
+    for (int i = 0;; i++)
+    {
+        std::string key = "slot" + std::to_string(i);
+
+        if (data["items"][key].isNull())
+            break;
+        
+        if(!data["items"][key]["name"].isNull())
+        {
+            if(data["items"][key]["name"].asString() == "item_aegis")
+                return true;
+        } 
+    }
+
+    return false;
+}
+
 ItemStatusEffect DotaService::getItemStatusEffect(Json::Value data)
 {
     if (data["hero"].isNull())
         return ItemStatusEffect::WITHOUT_ITEMS;
 
-    if (data["hero"]["smoked"].isNull() || data["hero"]["aghanims_shard"].isNull() || data["hero"]["aghanims_scepter"].isNull())
+    if (data["hero"]["smoked"].isNull() ||
+        data["hero"]["aghanims_shard"].isNull() || 
+        data["hero"]["aghanims_scepter"].isNull())
         return ItemStatusEffect::WITHOUT_ITEMS;
 
     bool smoked = data["hero"]["smoked"].asBool();
 
     if (smoked)
         return ItemStatusEffect::SMOKE;
+
+    if (playerHasAegis(data))
+        return ItemStatusEffect::AEGIS;
 
     bool aghanimsShard = data["hero"]["aghanims_shard"].asBool();
     bool aghanimsScepter = data["hero"]["aghanims_scepter"].asBool();
@@ -628,6 +655,13 @@ void DotaService::interpretJson(Json::Value data)
                                                           LanguageManager::getSystemLanguage())
                                                           .c_str());
                 }
+                break;
+            case ItemStatusEffect::AEGIS:
+                    activity.GetAssets().SetSmallImage("aegis_of_the_immortal");
+                    activity.GetAssets().SetSmallText(LanguageManager::getString(
+                                                          "APP:ACTIVITY_MESSAGES:PLAYER:AEGIS",
+                                                          LanguageManager::getSystemLanguage())
+                                                          .c_str());
                 break;
             case ItemStatusEffect::SCEPTER_AND_SHARD:
                 if (ConfigurationManager::showAghanim())

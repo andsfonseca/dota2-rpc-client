@@ -17,6 +17,7 @@
                 "NET_WORTH_RADIANT": "⛰️Свет {{VALUE}}k | Тьма🌋"
             },
             "PLAYER":{
+                "AEGIS": "имеет Aegis of the Immortal",
                 "GOLD_LH_DN": "💰 {{GOLD}} | ДОБ: {{LH}} | НО: {{DN}}",
                 "HAS_SCEPTER":"имеет Aghanim's Scepter",
                 "HAS_SCEPTER_AND_SHARD":"имеет Aghanim's Scepter и Shard",

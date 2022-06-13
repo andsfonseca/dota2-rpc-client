@@ -17,6 +17,7 @@
                 "NET_WORTH_RADIANT": "⛰️Radiant {{VALUE}}k | Dire🌋"
             },
             "PLAYER":{
+                "AEGIS": "has Aegis of the Immortal",
                 "GOLD_LH_DN": "💰 {{GOLD}} | LH: {{LH}} | DN: {{DN}}",
                 "HAS_SCEPTER":"has Aghanim's scepter",
                 "HAS_SCEPTER_AND_SHARD":"has Aghanim's scepter and shard",
