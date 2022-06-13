@@ -328,21 +328,25 @@ ItemStatusEffect DotaService::getItemStatusEffect(Json::Value data)
 
     bool smoked = data["hero"]["smoked"].asBool();
 
-    if (smoked)
+    if (ConfigurationManager::showSmoke() && smoked)
         return ItemStatusEffect::SMOKE;
 
-    if (playerHasAegis(data))
+    if (ConfigurationManager::showAegis() && playerHasAegis(data))
         return ItemStatusEffect::AEGIS;
 
     bool aghanimsShard = data["hero"]["aghanims_shard"].asBool();
     bool aghanimsScepter = data["hero"]["aghanims_scepter"].asBool();
 
-    if (aghanimsShard && aghanimsScepter)
-        return ItemStatusEffect::SCEPTER_AND_SHARD;
-    else if (aghanimsScepter)
-        return ItemStatusEffect::SCEPTER;
-    else if (aghanimsShard)
-        return ItemStatusEffect::SHARD;
+    if (ConfigurationManager::showAghanim())
+    {
+        if (aghanimsShard && aghanimsScepter)
+            return ItemStatusEffect::SCEPTER_AND_SHARD;
+        else if (aghanimsScepter)
+            return ItemStatusEffect::SCEPTER;
+        else if (aghanimsShard)
+            return ItemStatusEffect::SHARD;
+    }
+
     return ItemStatusEffect::WITHOUT_ITEMS;
 }
 
@@ -647,54 +651,39 @@ void DotaService::interpretJson(Json::Value data)
             switch (effect)
             {
             case ItemStatusEffect::SMOKE:
-                if (ConfigurationManager::showSmoke())
-                {
-                    activity.GetAssets().SetSmallImage("smoke_of_deceit");
-                    activity.GetAssets().SetSmallText(LanguageManager::getString(
-                                                          "APP:ACTIVITY_MESSAGES:PLAYER:SMOKED",
-                                                          LanguageManager::getSystemLanguage())
-                                                          .c_str());
-                }
+                activity.GetAssets().SetSmallImage("smoke_of_deceit");
+                activity.GetAssets().SetSmallText(LanguageManager::getString(
+                                                      "APP:ACTIVITY_MESSAGES:PLAYER:SMOKED",
+                                                      LanguageManager::getSystemLanguage())
+                                                      .c_str());
                 break;
             case ItemStatusEffect::AEGIS:
-                if (ConfigurationManager::showAegis())
-                {
-                    activity.GetAssets().SetSmallImage("aegis_of_the_immortal");
-                    activity.GetAssets().SetSmallText(LanguageManager::getString(
-                                                          "APP:ACTIVITY_MESSAGES:PLAYER:AEGIS",
-                                                          LanguageManager::getSystemLanguage())
-                                                          .c_str());
-                }
+                activity.GetAssets().SetSmallImage("aegis_of_the_immortal");
+                activity.GetAssets().SetSmallText(LanguageManager::getString(
+                                                      "APP:ACTIVITY_MESSAGES:PLAYER:AEGIS",
+                                                      LanguageManager::getSystemLanguage())
+                                                      .c_str());
                 break;
             case ItemStatusEffect::SCEPTER_AND_SHARD:
-                if (ConfigurationManager::showAghanim())
-                {
-                    activity.GetAssets().SetSmallImage("aghanims_scepter_2");
-                    activity.GetAssets().SetSmallText(LanguageManager::getString(
-                                                          "APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER_AND_SHARD",
-                                                          LanguageManager::getSystemLanguage())
-                                                          .c_str());
-                }
+                activity.GetAssets().SetSmallImage("aghanims_scepter_2");
+                activity.GetAssets().SetSmallText(LanguageManager::getString(
+                                                      "APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER_AND_SHARD",
+                                                      LanguageManager::getSystemLanguage())
+                                                      .c_str());
                 break;
             case ItemStatusEffect::SCEPTER:
-                if (ConfigurationManager::showAghanim())
-                {
-                    activity.GetAssets().SetSmallImage("aghanims_scepter");
-                    activity.GetAssets().SetSmallText(LanguageManager::getString(
-                                                          "APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER",
-                                                          LanguageManager::getSystemLanguage())
-                                                          .c_str());
-                }
+                activity.GetAssets().SetSmallImage("aghanims_scepter");
+                activity.GetAssets().SetSmallText(LanguageManager::getString(
+                                                      "APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER",
+                                                      LanguageManager::getSystemLanguage())
+                                                      .c_str());
                 break;
             case ItemStatusEffect::SHARD:
-                if (ConfigurationManager::showAghanim())
-                {
-                    activity.GetAssets().SetSmallImage("aghanims_shard");
-                    activity.GetAssets().SetSmallText(LanguageManager::getString(
-                                                          "APP:ACTIVITY_MESSAGES:PLAYER:HAS_SHARD",
-                                                          LanguageManager::getSystemLanguage())
-                                                          .c_str());
-                }
+                activity.GetAssets().SetSmallImage("aghanims_shard");
+                activity.GetAssets().SetSmallText(LanguageManager::getString(
+                                                      "APP:ACTIVITY_MESSAGES:PLAYER:HAS_SHARD",
+                                                      LanguageManager::getSystemLanguage())
+                                                      .c_str());
                 break;
             case ItemStatusEffect::WITHOUT_ITEMS:
             default:
