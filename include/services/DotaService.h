@@ -56,6 +56,7 @@ private:
 private:
     static DotaService *instance;
     int64_t currentMatchTime = 0;
+    std::string currentLocale;
     std::map<std::string, std::string> WorkshopMapsCache;
 public:
     static DotaService *getInstance();

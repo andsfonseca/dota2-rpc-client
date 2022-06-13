@@ -33,7 +33,7 @@ PlayerStatus DotaService::getPlayerStatus(Json::Value data)
 
     if (activity != "playing")
     {
-        std::string message = LanguageManager::getString("APP:ERRORS:UNKNOWN_ACTIVITY", LanguageManager::getSystemLanguage());
+        std::string message = LanguageManager::getString("APP:ERRORS:UNKNOWN_ACTIVITY", currentLocale);
         StringExtensions::findAndReplaceAll(message, "{{ACTIVITY}}", activity);
         std::cout << message << "\n";
     }
@@ -67,7 +67,7 @@ GameState DotaService::getCurrentGameState(Json::Value data)
         return GameState::NONE;
     else
     {
-        std::string message = LanguageManager::getString("APP:ERRORS:UNKNOWN_GAMESTATE", LanguageManager::getSystemLanguage());
+        std::string message = LanguageManager::getString("APP:ERRORS:UNKNOWN_GAMESTATE", currentLocale);
         StringExtensions::findAndReplaceAll(message, "{{GAMESTATE}}", gamestate);
         std::cout << message << "\n";
         return GameState::NONE;
@@ -171,7 +171,7 @@ std::string DotaService::getHeroName(Json::Value data)
 
 std::string DotaService::resolveHeroName(std::string key)
 {
-    std::string name = LanguageManager::getString("DOTA_2:HEROES:" + key, LanguageManager::getSystemLanguage());
+    std::string name = LanguageManager::getString("DOTA_2:HEROES:" + key, currentLocale);
 
     if (name == "")
         return key;
@@ -229,7 +229,7 @@ long long DotaService::getMatchId(Json::Value data)
 
 std::string DotaService::getNeutralNameBasedOnMatchId(long long i)
 {
-    auto neutralNames = LanguageManager::getArray("DOTA_2:NEUTRALS", LanguageManager::getSystemLanguage());
+    auto neutralNames = LanguageManager::getArray("DOTA_2:NEUTRALS", currentLocale);
     size_t size = neutralNames.size();
     return neutralNames[i % size];
 }
@@ -241,10 +241,10 @@ std::string DotaService::getNetWorth(Json::Value data)
     int dire = 0;
 
     if (data["player"].isNull())
-        return LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH", LanguageManager::getSystemLanguage());
+        return LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH", currentLocale);
 
     if (data["player"]["team2"].isNull() || data["player"]["team3"].isNull())
-        return LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH", LanguageManager::getSystemLanguage());
+        return LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH", currentLocale);
 
     int i = 0;
 
@@ -279,15 +279,15 @@ std::string DotaService::getNetWorth(Json::Value data)
     if (radiant > dire)
     {
         value = (radiant - dire) / 1000;
-        status = LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH_RADIANT", LanguageManager::getSystemLanguage());
+        status = LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH_RADIANT", currentLocale);
     }
     else if (dire > radiant)
     {
         value = (dire - radiant) / 1000;
-        status = LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH_DIRE", LanguageManager::getSystemLanguage());
+        status = LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH_DIRE", currentLocale);
     }
     else
-        status = LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH", LanguageManager::getSystemLanguage());
+        status = LanguageManager::getString("APP:ACTIVITY_MESSAGES:MATCH:NET_WORTH", currentLocale);
 
     StringExtensions::findAndReplaceAll(status, "{{VALUE}}", std::to_string(value));
 
@@ -428,7 +428,7 @@ std::string DotaService::getMapName(Json::Value data)
     StringExtensions::findAndReplaceAll(mappath, "\\", "/");
     std::string mapName(mappath.substr(mappath.rfind("/") + 1));
 
-    std::string customMapName = LanguageManager::getString("DOTA_2:CUSTOM_MAP:" + mapName, LanguageManager::getSystemLanguage());
+    std::string customMapName = LanguageManager::getString("DOTA_2:CUSTOM_MAP:" + mapName, currentLocale);
 
     if (customMapName != "")
         return customMapName;
@@ -439,7 +439,7 @@ std::string DotaService::getMapName(Json::Value data)
     if (mapName == "")
         return mapName;
 
-    customMapName = LanguageManager::getString("DOTA_2:CUSTOM_MAP:WORKSHOP", LanguageManager::getSystemLanguage());
+    customMapName = LanguageManager::getString("DOTA_2:CUSTOM_MAP:WORKSHOP", currentLocale);
 
     StringExtensions::findAndReplaceAll(customMapName, "{{MAPNAME}}", mapName);
     return customMapName;
@@ -468,6 +468,12 @@ void DotaService::interpretJson(Json::Value data)
     auto now = std::chrono::system_clock::now();
 
     DiscordService *discordService = discordService->getInstance();
+
+    currentLocale = ConfigurationManager::getLocale();
+
+    if (currentLocale == "discord")
+        currentLocale = StringExtensions::toLowerCase(discordService->getLanguage());
+
     PlayerStatus playerStatus = getPlayerStatus(data);
 
     if (playerStatus == PlayerStatus::STAND_BY)
@@ -497,16 +503,16 @@ void DotaService::interpretJson(Json::Value data)
         {
             // Details Section
             std::string neutralImageKey =
-                LanguageManager::getArray("DOTA_2:NEUTRALS", LanguageManager::getSystemLanguage())[3];
+                LanguageManager::getArray("DOTA_2:NEUTRALS", currentLocale)[3];
             activity.SetDetails(const_cast<char *>(LanguageManager::getString(
                                                        "APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION_ALT",
-                                                       LanguageManager::getSystemLanguage())
+                                                       currentLocale)
                                                        .c_str()));
 
             // State Section
             activity.SetState(const_cast<char *>(LanguageManager::getString(
                                                      "APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION",
-                                                     LanguageManager::getSystemLanguage())
+                                                     currentLocale)
                                                      .c_str()));
 
             // Big Image
@@ -519,7 +525,7 @@ void DotaService::interpretJson(Json::Value data)
             std::string heroKey = getHeroName(data);
             std::string details = LanguageManager::getString(
                 "APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO",
-                LanguageManager::getSystemLanguage());
+                currentLocale);
 
             StringExtensions::findAndReplaceAll(details, "{{NAME}}", resolveHeroName(heroKey));
 
@@ -530,7 +536,7 @@ void DotaService::interpretJson(Json::Value data)
             {
                 std::string botPrefix = LanguageManager::getString(
                     "APP:ACTIVITY_MESSAGES:MATCH:BOT_PREFIX",
-                    LanguageManager::getSystemLanguage());
+                    currentLocale);
 
                 StringExtensions::findAndReplaceAll(botPrefix,
                                                     "{{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
@@ -544,7 +550,7 @@ void DotaService::interpretJson(Json::Value data)
             // State Section
             activity.SetState(const_cast<char *>(LanguageManager::getString(
                                                      "APP:ACTIVITY_MESSAGES:GAMESTATES:STRATEGY_TIME",
-                                                     LanguageManager::getSystemLanguage())
+                                                     currentLocale)
                                                      .c_str()));
 
             // Big Image
@@ -560,7 +566,7 @@ void DotaService::interpretJson(Json::Value data)
 
             std::string details = LanguageManager::getString(
                 "APP:ACTIVITY_MESSAGES:PLAYER:PLAYING_AS_HERO_WITH_LEVEL",
-                LanguageManager::getSystemLanguage());
+                currentLocale);
             StringExtensions::findAndReplaceAll(details,
                                                 {"{{NAME}}", "{{LEVEL}}"},
                                                 {resolveHeroName(heroKey), std::to_string(level)});
@@ -572,7 +578,7 @@ void DotaService::interpretJson(Json::Value data)
             {
                 std::string botPrefix = LanguageManager::getString(
                     "APP:ACTIVITY_MESSAGES:MATCH:BOT_PREFIX",
-                    LanguageManager::getSystemLanguage());
+                    currentLocale);
 
                 StringExtensions::findAndReplaceAll(botPrefix,
                                                     "{{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
@@ -596,7 +602,7 @@ void DotaService::interpretJson(Json::Value data)
                     getKillDeathAssists(data, kill, death, assist);
 
                     state = LanguageManager::getString("APP:ACTIVITY_MESSAGES:PLAYER:KDA",
-                                                       LanguageManager::getSystemLanguage());
+                                                       currentLocale);
                     StringExtensions::findAndReplaceAll(state, {"{{KILL}}", "{{DEATH}}", "{{ASSIST}}"},
                                                         {std::to_string(kill), std::to_string(death), std::to_string(assist)});
                 }
@@ -606,11 +612,11 @@ void DotaService::interpretJson(Json::Value data)
                     if (gameState == GameState::PRE_GAME)
                         state = LanguageManager::getString(
                             "APP:ACTIVITY_MESSAGES:GAMESTATES:PRE_GAME",
-                            LanguageManager::getSystemLanguage());
+                            currentLocale);
                     else
                         state = LanguageManager::getString(
                             "APP:ACTIVITY_MESSAGES:GAMESTATES:GAME",
-                            LanguageManager::getSystemLanguage());
+                            currentLocale);
                 }
             }
 
@@ -635,7 +641,7 @@ void DotaService::interpretJson(Json::Value data)
 
                 std::string bigImageDetails = LanguageManager::getString(
                     "APP:ACTIVITY_MESSAGES:PLAYER:GOLD_LH_DN",
-                    LanguageManager::getSystemLanguage());
+                    currentLocale);
 
                 StringExtensions::findAndReplaceAll(bigImageDetails,
                                                     {"{{GOLD}}", "{{LH}}", "{{DN}}"},
@@ -654,35 +660,35 @@ void DotaService::interpretJson(Json::Value data)
                 activity.GetAssets().SetSmallImage("smoke_of_deceit");
                 activity.GetAssets().SetSmallText(LanguageManager::getString(
                                                       "APP:ACTIVITY_MESSAGES:PLAYER:SMOKED",
-                                                      LanguageManager::getSystemLanguage())
+                                                      currentLocale)
                                                       .c_str());
                 break;
             case ItemStatusEffect::AEGIS:
                 activity.GetAssets().SetSmallImage("aegis_of_the_immortal");
                 activity.GetAssets().SetSmallText(LanguageManager::getString(
                                                       "APP:ACTIVITY_MESSAGES:PLAYER:AEGIS",
-                                                      LanguageManager::getSystemLanguage())
+                                                      currentLocale)
                                                       .c_str());
                 break;
             case ItemStatusEffect::SCEPTER_AND_SHARD:
                 activity.GetAssets().SetSmallImage("aghanims_scepter_2");
                 activity.GetAssets().SetSmallText(LanguageManager::getString(
                                                       "APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER_AND_SHARD",
-                                                      LanguageManager::getSystemLanguage())
+                                                      currentLocale)
                                                       .c_str());
                 break;
             case ItemStatusEffect::SCEPTER:
                 activity.GetAssets().SetSmallImage("aghanims_scepter");
                 activity.GetAssets().SetSmallText(LanguageManager::getString(
                                                       "APP:ACTIVITY_MESSAGES:PLAYER:HAS_SCEPTER",
-                                                      LanguageManager::getSystemLanguage())
+                                                      currentLocale)
                                                       .c_str());
                 break;
             case ItemStatusEffect::SHARD:
                 activity.GetAssets().SetSmallImage("aghanims_shard");
                 activity.GetAssets().SetSmallText(LanguageManager::getString(
                                                       "APP:ACTIVITY_MESSAGES:PLAYER:HAS_SHARD",
-                                                      LanguageManager::getSystemLanguage())
+                                                      currentLocale)
                                                       .c_str());
                 break;
             case ItemStatusEffect::WITHOUT_ITEMS:
@@ -709,7 +715,7 @@ void DotaService::interpretJson(Json::Value data)
         {
             activity.SetDetails(const_cast<char *>(LanguageManager::getString(
                                                        "APP:ACTIVITY_MESSAGES:SPECTATOR:WATCH",
-                                                       LanguageManager::getSystemLanguage())
+                                                       currentLocale)
                                                        .c_str()));
             activity.GetAssets().SetLargeImage(const_cast<char *>("watching_default"));
         }
@@ -717,7 +723,7 @@ void DotaService::interpretJson(Json::Value data)
         {
             activity.SetDetails(const_cast<char *>(LanguageManager::getString(
                                                        "APP:ACTIVITY_MESSAGES:SPECTATOR:COACH",
-                                                       LanguageManager::getSystemLanguage())
+                                                       currentLocale)
                                                        .c_str()));
             activity.GetAssets().SetLargeImage(const_cast<char *>("coaching_default"));
         }
@@ -728,14 +734,14 @@ void DotaService::interpretJson(Json::Value data)
             // State Section
             activity.SetState(const_cast<char *>(LanguageManager::getString(
                                                      "APP:ACTIVITY_MESSAGES:GAMESTATES:HERO_SELECTION",
-                                                     LanguageManager::getSystemLanguage())
+                                                     currentLocale)
                                                      .c_str()));
             break;
         case GameState::STRATEGY_TIME:
             // State Section
             activity.SetState(const_cast<char *>(LanguageManager::getString(
                                                      "APP:ACTIVITY_MESSAGES:GAMESTATES:STRATEGY_TIME",
-                                                     LanguageManager::getSystemLanguage())
+                                                     currentLocale)
                                                      .c_str()));
             break;
         case GameState::PRE_GAME:
@@ -753,12 +759,12 @@ void DotaService::interpretJson(Json::Value data)
                 if (gameState == GameState::PRE_GAME)
                     activity.SetState(const_cast<char *>(LanguageManager::getString(
                                                              "APP:ACTIVITY_MESSAGES:GAMESTATES:PRE_GAME",
-                                                             LanguageManager::getSystemLanguage())
+                                                             currentLocale)
                                                              .c_str()));
                 else
                     activity.SetState(const_cast<char *>(LanguageManager::getString(
                                                              "APP:ACTIVITY_MESSAGES:GAMESTATES:GAME",
-                                                             LanguageManager::getSystemLanguage())
+                                                             currentLocale)
                                                              .c_str()));
             }
 
@@ -775,7 +781,7 @@ void DotaService::interpretJson(Json::Value data)
             long long matchId = getMatchId(data);
             std::string matchIdText = LanguageManager::getString(
                 "APP:ACTIVITY_MESSAGES:MATCH:INFO_ID",
-                LanguageManager::getSystemLanguage());
+                currentLocale);
 
             StringExtensions::findAndReplaceAll(matchIdText, "{{ID}}", std::to_string(matchId));
             std::string neutralImageKey = getNeutralNameBasedOnMatchId(matchId);

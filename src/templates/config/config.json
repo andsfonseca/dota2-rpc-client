@@ -1,6 +1,7 @@
 {
     "HOST": "127.0.0.1",
     "PORT" : 52424,
+    "LOCALE" : "System",
     "DISPLAY_OPTIONS":
     {
         "AEGIS": true,
