@@ -1,6 +1,6 @@
 #include "Listener.h"
 
-#include "../src/services/DotaService.cpp"
+#include <services/DotaService.h>
 
 void Listener::asyncHandleHttpRequest(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback)
 {
@@ -8,7 +8,7 @@ void Listener::asyncHandleHttpRequest(const HttpRequestPtr& req, std::function<v
     auto date = req->getCreationDate();
 
     DotaService *dotaService = dotaService->getInstance();
-    dotaService->InterpretJsonFile(date, json);
+    dotaService->interpretJson(json);
     
     auto resp=HttpResponse::newHttpResponse();
     resp->setStatusCode(k200OK);

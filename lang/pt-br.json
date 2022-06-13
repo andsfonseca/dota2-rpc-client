@@ -10,6 +10,7 @@
                 "STRATEGY_TIME": "Tempo de estratégia"
             },
             "MATCH":{
+                "BOT_PREFIX": "Bots: {{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
                 "INFO_ID" : "Id da Partida: {{ID}}",
                 "NET_WORTH": "⛰️Radiant | Dire🌋",
                 "NET_WORTH_DIRE": "⛰️Radiant | {{VALUE}}k Dire🌋",

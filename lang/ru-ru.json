@@ -10,6 +10,7 @@
                 "STRATEGY_TIME": "Стадия планирования"
             },
             "MATCH":{
+                "BOT_PREFIX": "Bots: {{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
                 "INFO_ID" : "ID Матча: {{ID}}",
                 "NET_WORTH": "⛰️Свет | Тьма🌋",
                 "NET_WORTH_DIRE": "⛰️Свет | {{VALUE}}k Тьма🌋",
