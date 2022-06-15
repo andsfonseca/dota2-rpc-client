@@ -99,14 +99,14 @@ bool SteamManager::findDota2PathUsingVDF(const std::string vdfPath, std::string 
 
 void SteamManager::onInstall()
 {
-    std::cout << "Installing DotA 2 RPC..." << std::endl;
-    std::cout << "Finding Steam folder..." << std::endl;
+    std::cout << LanguageManager::getString("APP:INFO:INSTALLATION_IN_PROGRESS", LanguageManager::getSystemLanguage()) << std::endl;
+    std::cout << LanguageManager::getString("APP:ERRORS:FINDING_STEAM", LanguageManager::getSystemLanguage()) << std::endl;
 
     std::string steamPath(SteamManager::getSteamPath());
 
     if (steamPath.empty())
     {
-        std::cout << "Unable to find steam folder, please set the directory..." << std::endl;
+        std::cout << LanguageManager::getString("APP:ERRORS:STEAM_NOT_FOUND", LanguageManager::getSystemLanguage()) << std::endl;
 
         steamPath = showSelectFolderDialog();
         StringExtensions::findAndReplaceAll(steamPath, "\\", "/");
@@ -129,7 +129,7 @@ void SteamManager::onInstall()
     
     if(!findDota2PathUsingVDF(vdfPath, dota2Path))
     {
-        std::cout << "Unable to find 'dota 2 beta' folder using steam library, please set the directory..." << std::endl;
+        std::cout << LanguageManager::getString("APP:ERRORS:DOTA_NOT_FOUND", LanguageManager::getSystemLanguage()) << std::endl;
 
         dota2Path = showSelectFolderDialog();
         StringExtensions::findAndReplaceAll(dota2Path, "\\", "/");
@@ -151,5 +151,5 @@ void SteamManager::onInstall()
 
     FileLoader::save(dota2Path + "/gamestate_integration_rpc.cfg", generateDota2CFG());
     
-    std::cout << "Cfg file added successfully. The changes will take effect the next time you launch the game." << std::endl;
+    std::cout << LanguageManager::getString("APP:SUCCESS:INSTALL_CFG", LanguageManager::getSystemLanguage()) << std::endl;
 }

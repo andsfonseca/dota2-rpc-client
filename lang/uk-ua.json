@@ -1,46 +1,53 @@
 {
     "APP": {
         "ACTIVITY_MESSAGES": {
-            "GAMESTATES":{
+            "GAMESTATES": {
                 "GAME": "Йде гра",
-                "HERO_SELECTION":"Вибір героя",
-                "HERO_SELECTION_ALT":"Обирає героя",
+                "HERO_SELECTION": "Вибір героя",
+                "HERO_SELECTION_ALT": "Обирає героя",
                 "NONE": "",
                 "PRE_GAME": "Готується до гри",
                 "STRATEGY_TIME": "Стратегічна стадія"
             },
-            "MATCH":{
+            "MATCH": {
                 "BOT_PREFIX": "Bots: {{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
-                "INFO_ID" : "ID Матчу: {{ID}}",
+                "INFO_ID": "ID Матчу: {{ID}}",
                 "NET_WORTH": "⛰️Світло | Темряви🌋",
                 "NET_WORTH_DIRE": "⛰️Світло | {{VALUE}}k Темряви🌋",
                 "NET_WORTH_RADIANT": "⛰️Світло {{VALUE}}k | Темряви🌋"
             },
-            "PLAYER":{
+            "PLAYER": {
                 "AEGIS": "має Aegis of the Immortal",
                 "GOLD_LH_DN": "💰 {{GOLD}} | ДОБ: {{LH}} | НО: {{DN}}",
-                "HAS_SCEPTER":"має Aghanim's Scepter",
-                "HAS_SCEPTER_AND_SHARD":"має Aghanim's Scepter та Shard",
-                "HAS_SHARD":"має Aghanim's Shard",
-                "KDA" : "{{KILL}} / {{DEATH}} / {{ASSIST}}",
-                "PLAYING_AS_HERO" : "Грає на {{NAME}}",
-                "PLAYING_AS_HERO_WITH_LEVEL" : "Грає на {{NAME}} - Рів. {{LEVEL}}",
+                "HAS_SCEPTER": "має Aghanim's Scepter",
+                "HAS_SCEPTER_AND_SHARD": "має Aghanim's Scepter та Shard",
+                "HAS_SHARD": "має Aghanim's Shard",
+                "KDA": "{{KILL}} / {{DEATH}} / {{ASSIST}}",
+                "PLAYING_AS_HERO": "Грає на {{NAME}}",
+                "PLAYING_AS_HERO_WITH_LEVEL": "Грає на {{NAME}} - Рів. {{LEVEL}}",
                 "SMOKED": "У смоку"
             },
-            "SPECTATOR":{
+            "SPECTATOR": {
                 "COACH": "Тренує у матчі",
                 "WATCH": "Дивиться матч"
             }
         },
         "INFO": {
+            "FINDING_STEAM": "Finding Steam folder...",
+            "INSTALLATION_IN_PROGRESS": "Installing DotA 2 RPC...",
             "SERVER_HOW_TO_EXIT": "Натисніть Ctrl+C двічі, щоб вийти.",
             "SERVER_LISTENING": "Очікування сигналів на http://{{HOST}}:{{PORT}}.",
             "SERVER_LISTENING_LOCALHOST": "Очікування сигналів на http://localhost:{{PORT}} та http://{{HOST}}:{{PORT}}."
         },
         "ERRORS": {
             "CFG_NOT_FOUND": "Не вдалося знайти файли Dota 2! Будь ласка, створіть файл з ім'ям 'gamestate_integration_rpc.cfg' в папці '{{STEAM_LIBRARY_PATH}}/dota 2 beta/game/dota/cfg/gamestate_integration/'.",
+            "DOTA_NOT_FOUND": "Unable to find 'dota 2 beta' folder using steam library, please set the directory...",
+            "STEAM_NOT_FOUND": "Unable to find steam folder, please set the directory...",
             "UNKNOWN_ACTIVITY": "Невідома активність: {{ACTIVITY}}",
             "UNKNOWN_GAMESTATE": "Невідомий стан: {{GAMESTATE}}"
+        },
+        "SUCCESS": {
+            "INSTALL_CFG": "CFG file added successfully. The changes will take effect the next time you launch the game."
         }
     },
     "DOTA_2": {
@@ -203,8 +210,8 @@
             "npc_dota_hero_zuus": "Zeus",
             "npc_dota_hero_zuus_2": "Zeus"
         },
-        "CUSTOM_MAP":{
-            "hero_demo":"Демо-герой",
+        "CUSTOM_MAP": {
+            "hero_demo": "Демо-герой",
             "WORKSHOP": "Грає у «{{MAPNAME}}»"
         },
         "NEUTRALS": [

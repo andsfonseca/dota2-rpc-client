@@ -1,46 +1,53 @@
 {
     "APP": {
         "ACTIVITY_MESSAGES": {
-            "GAMESTATES":{
+            "GAMESTATES": {
                 "GAME": "Game in progress",
-                "HERO_SELECTION":"Hero selection",
-                "HERO_SELECTION_ALT":"Choosing a hero",
+                "HERO_SELECTION": "Hero selection",
+                "HERO_SELECTION_ALT": "Choosing a hero",
                 "NONE": "",
                 "PRE_GAME": "Pre-Game",
                 "STRATEGY_TIME": "Strategy time"
             },
-            "MATCH":{
+            "MATCH": {
                 "BOT_PREFIX": "Bots: {{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
-                "INFO_ID" : "Match Id: {{ID}}",
+                "INFO_ID": "Match Id: {{ID}}",
                 "NET_WORTH": "⛰️Radiant | Dire🌋",
                 "NET_WORTH_DIRE": "⛰️Radiant | {{VALUE}}k Dire🌋",
                 "NET_WORTH_RADIANT": "⛰️Radiant {{VALUE}}k | Dire🌋"
             },
-            "PLAYER":{
+            "PLAYER": {
                 "AEGIS": "has Aegis of the Immortal",
                 "GOLD_LH_DN": "💰 {{GOLD}} | LH: {{LH}} | DN: {{DN}}",
-                "HAS_SCEPTER":"has Aghanim's scepter",
-                "HAS_SCEPTER_AND_SHARD":"has Aghanim's scepter and shard",
-                "HAS_SHARD":"has Aghanim's shard",
-                "KDA" : "{{KILL}} / {{DEATH}} / {{ASSIST}}",
-                "PLAYING_AS_HERO" : "Playing as {{NAME}}",
-                "PLAYING_AS_HERO_WITH_LEVEL" : "Playing as {{NAME}} - Lvl. {{LEVEL}}",
+                "HAS_SCEPTER": "has Aghanim's scepter",
+                "HAS_SCEPTER_AND_SHARD": "has Aghanim's scepter and shard",
+                "HAS_SHARD": "has Aghanim's shard",
+                "KDA": "{{KILL}} / {{DEATH}} / {{ASSIST}}",
+                "PLAYING_AS_HERO": "Playing as {{NAME}}",
+                "PLAYING_AS_HERO_WITH_LEVEL": "Playing as {{NAME}} - Lvl. {{LEVEL}}",
                 "SMOKED": "Smoked"
             },
-            "SPECTATOR":{
+            "SPECTATOR": {
                 "COACH": "Coaching a match",
                 "WATCH": "Watching a match"
             }
         },
         "INFO": {
+            "FINDING_STEAM": "Finding Steam folder...",
+            "INSTALLATION_IN_PROGRESS": "Installing DotA 2 RPC...",
             "SERVER_HOW_TO_EXIT": "Press Ctrl+C twice to exit.",
             "SERVER_LISTENING": "Listening at http://{{HOST}}:{{PORT}}.",
             "SERVER_LISTENING_LOCALHOST": "Listening at http://localhost:{{PORT}} and http://{{HOST}}:{{PORT}}."
         },
         "ERRORS": {
             "CFG_NOT_FOUND": "Unable to find DotA 2 files! Please create the following file with the name 'gamestate_integration_rpc.cfg' and insert it into the folder '{{STEAM_LIBRARY_PATH}}/dota 2 beta/game/dota/cfg/gamestate_integration/'.",
+            "DOTA_NOT_FOUND": "Unable to find 'dota 2 beta' folder using steam library, please set the directory...",
+            "STEAM_NOT_FOUND": "Unable to find steam folder, please set the directory...",
             "UNKNOWN_ACTIVITY": "Unknown activity: {{ACTIVITY}}",
             "UNKNOWN_GAMESTATE": "Unknown gamestate: {{GAMESTATE}}"
+        },
+        "SUCCESS": {
+            "INSTALL_CFG": "CFG file added successfully. The changes will take effect the next time you launch the game."
         }
     },
     "DOTA_2": {
@@ -203,8 +210,8 @@
             "npc_dota_hero_zuus": "Zeus",
             "npc_dota_hero_zuus_2": "Zeus"
         },
-        "CUSTOM_MAP":{
-            "hero_demo":"Testing a hero",
+        "CUSTOM_MAP": {
+            "hero_demo": "Testing a hero",
             "WORKSHOP": "Playing {{MAPNAME}}"
         },
         "NEUTRALS": [
