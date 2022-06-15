@@ -33,14 +33,21 @@
             }
         },
         "INFO": {
+            "FINDING_STEAM": "Procurando a Steam...",
+            "INSTALLATION_IN_PROGRESS": "Instalando DotA 2 RPC...",
             "SERVER_HOW_TO_EXIT": "Pressione Ctrl+C duas vezes para sair.",
             "SERVER_LISTENING": "Escutando em http://{{HOST}}:{{PORT}}.",
             "SERVER_LISTENING_LOCALHOST": "Escutando em http://localhost:{{PORT}} e http://{{HOST}}:{{PORT}}."
         },
         "ERRORS": {
             "CFG_NOT_FOUND": "Não foi possível encontrar os arquivos do DotA 2! Por favor, crie um arquivo com o nome 'gamestate_integration_rpc.cfg' e insira na pasta '{{STEAM_LIBRARY_PATH}}/dota 2 beta/game/dota/cfg/gamestate_integration/'.",
+            "DOTA_NOT_FOUND": "Não foi possível encontrar a pasta 'dota 2 beta' usando a biblioteca da Steam. Por favor, selecione a pasta...",
+            "STEAM_NOT_FOUND": "Não foi possível encontrar a pasta de instalação da Steam. Por favor, selecione a pasta...",
             "UNKNOWN_ACTIVITY": "Atividade desconhecida: {{ACTIVITY}}",
             "UNKNOWN_GAMESTATE": "Estado de jogo desconhecido: {{GAMESTATE}}"
+        },
+        "SUCCESS": {
+            "INSTALL_CFG": "CFG adicionado com sucesso. As mudançãs terão efeitos na próxima inicialização do jogo."
         }
     },
     "DOTA_2": {

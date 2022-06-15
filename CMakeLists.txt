@@ -146,6 +146,26 @@ add_subdirectory(${THIRD_PARTY_BASE_DIR}/SrvLib)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE srvlib)
 
+#[[4.Native file dialog]]
+
+set(NFD_GIT "https://github.com/btzy/nativefiledialog-extended.git")
+set(NFD_GIT_HASH 28ade5a)
+
+if(NOT EXISTS ${THIRD_PARTY_BASE_DIR}/nativefiledialog-extended)
+
+execute_process(COMMAND ${GIT_EXECUTABLE} clone ${NFD_GIT}
+WORKING_DIRECTORY ${THIRD_PARTY_BASE_DIR}
+COMMAND_ERROR_IS_FATAL ANY)
+
+execute_process(COMMAND ${GIT_EXECUTABLE} checkout ${NFD_GIT_HASH}
+WORKING_DIRECTORY ${THIRD_PARTY_BASE_DIR}/nativefiledialog-extended
+COMMAND_ERROR_IS_FATAL ANY)
+
+endif()
+
+add_subdirectory(${THIRD_PARTY_BASE_DIR}/nativefiledialog-extended)
+target_link_libraries(${PROJECT_NAME} PRIVATE nfd)
+
 #Source Files
 
 #Source

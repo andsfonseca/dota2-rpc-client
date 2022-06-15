@@ -19,6 +19,14 @@ bool JsonLoader::load(const std::string path, Json::Value &output)
     return true;
 }
 
+bool JsonLoader::save(const std::string path, Json::Value output)
+{
+    Json::StreamWriterBuilder wbuilder;
+    wbuilder["indentation"] = "\t";
+    
+    return FileLoader::save(path, Json::writeString(wbuilder, output));
+}
+
 Json::Value JsonLoader::getNode(const Json::Value json, std::string key)
 {
 

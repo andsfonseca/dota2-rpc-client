@@ -45,6 +45,33 @@ unsigned int ConfigurationManager::getPort()
     return value.asUInt();
 }
 
+std::string ConfigurationManager::getSteamPath()
+{
+    if (configurations == NULL)
+        load();
+
+    Json::Value value = JsonLoader::getNode(configurations, "STEAM_FOLDER");
+
+    if (value.isNull())
+    {
+#ifdef __linux__
+        return "~/.steam/steam";
+#elif _WIN32
+        return "C:/Program Files (x86)/Steam";
+#else
+        return "~/Library/Application Support/Steam"
+#endif
+    }
+
+    return value.asString();
+}
+
+bool ConfigurationManager::setSteamPath(const std::string &path)
+{
+    configurations["STEAM_FOLDER"] = path;
+    return JsonLoader::save(JsonLoader::getApplicationFolder() + "/config.json", configurations);
+}
+
 bool ConfigurationManager::showAegis()
 {
     if (configurations == NULL)
@@ -126,11 +153,11 @@ std::string ConfigurationManager::getLocale()
 
     lang = StringExtensions::toLowerCase(lang);
 
-    //Update Settings
+    // Update Settings
     if (lang == "system" && configurations != NULL)
     {
         lang = LanguageManager::getSystemLanguage();
-        configurations["LOCALE"] = lang; 
+        configurations["LOCALE"] = lang;
     }
 
     return lang;

@@ -15,6 +15,7 @@ std::map<std::string, Json::Value> LanguageManager::dictionary = {};
 std::string LanguageManager::getSystemLanguage()
 {
 #if defined(_WIN32) || defined(_WIN64)
+    SetConsoleOutputCP(CP_UTF8);
     LCID lcid = GetThreadLocale();
     wchar_t localeName[LOCALE_NAME_MAX_LENGTH];
     if (LCIDToLocaleName(lcid, localeName, LOCALE_NAME_MAX_LENGTH, 0) == 0)

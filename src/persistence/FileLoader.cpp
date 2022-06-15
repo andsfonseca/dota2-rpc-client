@@ -29,6 +29,18 @@ bool FileLoader::load(const std::string path, std::string &output)
     return true;
 }
 
+bool FileLoader::save(const std::string path, const std::string &output)
+{
+    std::ofstream file(path);
+    if(file.is_open())
+    {
+        file << output;
+        file.close();
+        return true;
+    }
+    return false;
+}
+
 std::string FileLoader::getApplicationFolder()
 {
     std::string path;
