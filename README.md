@@ -107,7 +107,7 @@ This project mainly uses 4 libraries to work. Are they:
  * [Discord SDK](https://discord.com/developers/docs/intro) - A Library for Integration with the Discord application;
  * [Drogon C++](https://github.com/drogonframework/drogon) - A web framework written with C++;
  * [SrvLib](https://github.com/Tomenz/SrvLib) - A library for creating services in Windows and Linux created by [@tomenz](https://github.com/tomenz).
- * [NFD](https://github.com/btzy/nativefiledialog-extended) - A small C library with that portably invokes native file open, folder select and file save dialogs.  created by [@btzy](https://github.com/btzy) and [@mlabbe](https://github.com/mlabbe).
+ * [NFD](https://github.com/btzy/nativefiledialog-extended) - A small C library with that portably invokes native file open, folder select and file save dialogs.  Created by [@btzy](https://github.com/btzy) and [@mlabbe](https://github.com/mlabbe).
 
 This is a project made with *CMake*, these libraries are downloaded during the first compilation of the software and placed in a folder called `third_party`.
 
