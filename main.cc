@@ -13,7 +13,7 @@
 #include <managers/LanguageManager.h>
 #include <managers/SteamManager.h>
 #include <managers/WebServerManager.h>
-#include "third_party/srvlib/Service.h"
+#include "third_party/SrvLib/Service.h"
 
 
 enum ArgumentOptions
