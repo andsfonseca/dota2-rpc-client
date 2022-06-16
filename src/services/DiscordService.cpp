@@ -44,7 +44,7 @@ void DiscordService::loop()
         double seconds = std::difftime(t, lastUpdate);
 
         // With no updates in 10 seconds
-        if (seconds > 10)
+        if (seconds > 10 || !this->core)
         {
             breaked = true;
             break;
@@ -78,10 +78,11 @@ void DiscordService::updateActivity(discord::Activity activity)
 
     lastUpdate = std::time(0);
 
-    this->core->ActivityManager().UpdateActivity(activity, [](discord::Result result)
-                                                 {
-                                                         if(result != discord::Result::Ok)
-                                                         std::cout << "Failed updating activity!" << std::endl; });
+    if(this->core)
+        this->core->ActivityManager().UpdateActivity(activity, [](discord::Result result)
+                                                    {
+                                                            if(result != discord::Result::Ok)
+                                                            std::cout << "Failed updating activity!" << std::endl; });
 }
 
 void DiscordService::cleanActivity()

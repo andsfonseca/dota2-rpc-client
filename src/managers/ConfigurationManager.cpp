@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-Json::Value ConfigurationManager::configurations = NULL;
+Json::Value ConfigurationManager::configurations = static_cast<Json::Value>(NULL);
 
 void ConfigurationManager::load()
 {

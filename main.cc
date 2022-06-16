@@ -1,5 +1,6 @@
 #if defined(_WIN32) || defined(_WIN64)
 #include <Windows.h>
+#include "third_party/SrvLib/Service.h"
 #pragma comment(lib, "SrvLib.lib")
 #else
 #include <codecvt>
@@ -13,13 +14,11 @@
 #include <managers/LanguageManager.h>
 #include <managers/SteamManager.h>
 #include <managers/WebServerManager.h>
-#include "third_party/SrvLib/Service.h"
-
 
 enum ArgumentOptions
 {
     NONE,
-    INSTALL
+    INSTALL,
 };
 
 ArgumentOptions resolveArgumentOption(std::string input)
@@ -47,13 +46,13 @@ void readArgs(const int argc, const char *argv[])
 int main(int argc, const char *argv[])
 {
     readArgs(argc, argv);
-
+#if defined(_WIN32) || defined(_WIN64)
     SrvParam svParam;
 #if defined(_WIN32) || defined(_WIN64)
-    svParam.szDspName = L"Dota 2 RPC Client Service"; // Servicename in Service control manager of windows
-    svParam.szDescrip = L"Dota 2 RPC Client Service"; // Description in Service control manager of windows
+    svParam.szDspName = "Dota 2 RPC Client Service"; // Servicename in Service control manager of windows
+    svParam.szDescrip = "Dota 2 RPC Client Service"; // Description in Service control manager of windows
 #endif
-    svParam.szSrvName = L"dota2rpc"; // Service name (service id)
+    svParam.szSrvName = "dota2rpc"; // Service name (service id)
 
     svParam.fnStartCallBack = WebServerManager::start;
     svParam.fnStopCallBack = WebServerManager::stop;
@@ -69,4 +68,8 @@ int main(int argc, const char *argv[])
     // }
 
     return ServiceMain(argc, argv, svParam);
+#else
+    WebServerManager::onStart();
+    return 0;
+#endif
 }
