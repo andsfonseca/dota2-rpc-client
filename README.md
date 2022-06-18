@@ -67,6 +67,12 @@ Just as a warning it's just a experimental version. If you find any bugs in this
 
 Unfortunately, this service has not been adapted to work with `daemon`. So installing and running the application must be done manually from the terminal.
 
+Make the file executable
+
+```shell
+chmod +x dota2-rpc-client 
+```
+
 Use this command to install
 ```shell
 ./dota2-rpc-client -i
@@ -77,6 +83,17 @@ And run the application using
 ```shell
 ./dota2-rpc-client
 ```
+
+### Known bugs:
+
+  * A bug related to the discord SDK loop, sometimes returning a "panicked". Probably some problem related to threads. Still looking for a solution.
+
+    Temporary solution: Try running until it works.
+
+  * A failure to create files and folders, usually caused by missing permissions
+
+    Temporary solution: Give the necessary permissions.
+    
 ## Settings
 
 You can choose what can be displayed and other application settings.
