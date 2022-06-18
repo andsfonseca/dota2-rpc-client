@@ -30,7 +30,9 @@ Share real-time information about what happens in your game with everyone.
  | See your instructors.  | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/165002839-aa520877-e38a-40d5-984c-9bfc8b9dbd65.gif">        |
 | Multiple language support.       | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/165002139-5eb77c4c-e5a7-4bf8-9839-0b8b4cd794f7.gif"><img src="https://user-images.githubusercontent.com/7833466/165002140-78e3af75-ba13-487d-8895-fe60289dedb1.gif">        |
 
-## Installation
+## Installation (Windows only)
+
+> See instructions for Linux below
 
 Follow the step-by-step below to install your version of DotA 2 RPC
 
@@ -38,11 +40,43 @@ Follow the step-by-step below to install your version of DotA 2 RPC
  * Unzip the file in a folder of your preference. (There are many files, then be careful!🙃);
  * Open the file `install.windows.bat` and everything will be ready!
 
-## Uninstallation
+## Uninstallation (Windows only)
  
  * Open the `uninstall.windows.bat` file to remove the installation of your computer;
  * If you want, you can delete all the files.
 
+## Advanced Users (Windows Only)
+ 
+This software is registered as Windows service. If you are looking for other options, here are other ways to use the application.
+ 
+ ```shell
+dota2-rpc-client.exe <flag>
+```
+
+|        Flag               |                                    Description                                    |
+|:-------------------------:|:---------------------------------------------------------------------------------:|
+| `-i`                      | Install the DotA 2 RPC as a service.                                              |
+| `-r`                      | Uninstall the service, if installed.                                              |
+| `-s`                      | If installed, start the service.                                                  |
+| `-e`                      | If installed, stop the service.                                                   |
+| `-f`                      | Execute the DotA 2 RPC like a Console Application.                                |
+
+## Running on Linux (Experimental)
+
+Just as a warning it's just a experimental version. If you find any bugs in this version, please report them. The Discord API and other functions commonly used on Windows may not have the same effect on Linux.
+
+Unfortunately, this service has not been adapted to work with `daemon`. So installing and running the application must be done manually from the terminal.
+
+Use this command to install
+```shell
+./dota2-rpc-client -i
+```
+
+And run the application using
+
+```shell
+./dota2-rpc-client
+```
 ## Settings
 
 You can choose what can be displayed and other application settings.
@@ -61,7 +95,8 @@ Just modify the [config.json](src/templates/config/config.json) file.
         "GOLD_AND_LAST_HIT": true,
         "KILL_DEATH_ASSIST" : true,
         "SMOKE": true
-    }
+    },
+    "STEAM_FOLDER": ""
 }
 ```
 
@@ -78,24 +113,9 @@ Below is a brief description of each property.
 | `DISPLAY_OPTIONS:GOLD_AND_LAST_HIT`  | Whether or not to display the Gold, last hits and denies (Default: `true`)        |
 | `DISPLAY_OPTIONS:KILL_DEATH_ASSIST`  | Whether or not to display the K/D/A (Default: `true`)                             |
 | `DISPLAY_OPTIONS:SMOKE`              | Whether or not to display the smoke effect (Default: `true`)                      |
+| `STEAM_FOLDER`                       | Steam folder location (Optional, default: Default folder commonly used by steam)  |
 
 > If you installed the cfg file manually, when changing the `host` and `port` you will need to change them also in the `gamestate_integration_rpc.cfg` file. See this [issue #1](/../../issues/1).
-
-## Advanced Users
- 
-This software is registered as Windows service. If you are looking for other options, here are other ways to use the application.
- 
- ```shell
-dota2-rpc-client.exe <flag>
-```
-
-|        Flag               |                                    Description                                    |
-|:-------------------------:|:---------------------------------------------------------------------------------:|
-| `-i`                      | Install the DotA 2 RPC as a service.                                              |
-| `-r`                      | Uninstall the service, if installed.                                              |
-| `-s`                      | If installed, start the service.                                                  |
-| `-e`                      | If installed, stop the service.                                                   |
-| `-f`                      | Execute the DotA 2 RPC like a Console Application.                                |
 
 ## Compilation Instructions
 
