@@ -49,10 +49,10 @@ int main(int argc, const char *argv[])
 #if defined(_WIN32) || defined(_WIN64)
     SrvParam svParam;
 #if defined(_WIN32) || defined(_WIN64)
-    svParam.szDspName = "Dota 2 RPC Client Service"; // Servicename in Service control manager of windows
-    svParam.szDescrip = "Dota 2 RPC Client Service"; // Description in Service control manager of windows
+    svParam.szDspName = L"Dota 2 RPC Client Service"; // Servicename in Service control manager of windows
+    svParam.szDescrip = L"Dota 2 RPC Client Service"; // Description in Service control manager of windows
 #endif
-    svParam.szSrvName = "dota2rpc"; // Service name (service id)
+    svParam.szSrvName = L"dota2rpc"; // Service name (service id)
 
     svParam.fnStartCallBack = WebServerManager::start;
     svParam.fnStopCallBack = WebServerManager::stop;
