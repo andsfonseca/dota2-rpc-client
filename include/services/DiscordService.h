@@ -14,7 +14,7 @@ private:
 private:
     static DiscordService *instance;
     std::thread *threadHandler;
-    std::unique_ptr<discord::Core> core;
+    std::shared_ptr <discord::Core> core;
     volatile bool started{false};
     volatile bool interrupted{false};
     volatile std::time_t lastUpdate;
