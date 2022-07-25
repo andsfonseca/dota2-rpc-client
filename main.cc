@@ -21,7 +21,7 @@ enum ArgumentOptions
     INSTALL,
 };
 
-ArgumentOptions resolveArgumentOption(std::string input)
+ArgumentOptions resolveArgumentOption(const std::string input)
 {
     if (input == "-i" || input == "--install")
         return INSTALL;

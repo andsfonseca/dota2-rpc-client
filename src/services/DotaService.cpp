@@ -804,22 +804,3 @@ void DotaService::interpretJson(Json::Value data)
 
     discordService->updateActivity(activity);
 }
-
-// };
-
-// class DotaService
-// {
-//     static DotaService *instance;
-
-//     int64_t currentMatchTime = 0;
-//     std::map<std::string, std::string> WorkshopMapsCache;
-
-//
-
-//
-
-//
-
-// public:
-
-// DotaService *DotaService::instance = 0;

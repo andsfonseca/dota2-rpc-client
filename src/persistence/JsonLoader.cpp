@@ -38,7 +38,6 @@ Json::Value JsonLoader::getNode(const Json::Value json, std::string key)
     size_t aux = key.find(':');
     std::string token = key.substr(0, aux);
     key.erase(0, aux + 1);
-    std::string lastToken = "";
 
     while (key != "" && token != key)
     {
@@ -47,7 +46,6 @@ Json::Value JsonLoader::getNode(const Json::Value json, std::string key)
 
         child = child[token];
 
-        lastToken = token;
         aux = key.find(':');
         token = key.substr(0, aux);
         key.erase(0, aux + 1);
