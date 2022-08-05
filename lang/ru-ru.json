@@ -33,6 +33,8 @@
             }
         },
         "INFO": {
+            "CREATING_FILE": "Creating 'gamestate_integration_rpc.cfg' file...",
+            "CREATING_FOLDER": "Creating 'gamestate_integration' folder...",
             "FINDING_STEAM": "Finding Steam folder...",
             "INSTALLATION_IN_PROGRESS": "Installing DotA 2 RPC...",
             "SERVER_HOW_TO_EXIT": "Нажмите Ctrl+C дважды, чтобы выйти.",
@@ -41,12 +43,18 @@
         },
         "ERRORS": {
             "CFG_NOT_FOUND": "Не удалось найти файлы Dota 2! Пожалуйста, создайте файл с именем 'gamestate_integration_rpc.cfg' в папке '{{STEAM_LIBRARY_PATH}}/dota 2 beta/game/dota/cfg/gamestate_integration/'.",
+            "CREATION_FILE_FAILURE": "Could not create file '{{PATH}}'.",
+            "CREATION_FOLDER_FAILURE": "Could not create folder '{{PATH}}'.",
             "DOTA_NOT_FOUND": "Unable to find 'dota 2 beta' folder using steam library, please set the directory...",
             "STEAM_NOT_FOUND": "Unable to find steam folder, please set the directory...",
             "UNKNOWN_ACTIVITY": "Неизвестная активность: {{ACTIVITY}}",
             "UNKNOWN_GAMESTATE": "Неизвестное состояние: {{GAMESTATE}}"
         },
         "SUCCESS": {
+            "CREATED_FILE": "Created file.",
+            "CREATED_FOLDER": "Created folder.",
+            "FOUND_DOTA": "Found DotA folder.",
+            "FOUND_STEAM": "Found Steam folder.",
             "INSTALL_CFG": "CFG file added successfully. The changes will take effect the next time you launch the game."
         }
     },
