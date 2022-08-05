@@ -38,6 +38,18 @@ std::string StringExtensions::toLowerCase(std::string value)
     return value;
 }
 
+std::string StringExtensions::getValueAsANSIColourCodes(std::string value, const std::vector<ANSIColor::Code> codes)
+{
+    std::string output = "\033[1";
+
+    for (ANSIColor::Code code : codes)
+    {
+        output = output + ";" + std::to_string(code);
+    }
+    
+    return output + "m" + value + "\033[0m";
+}
+
 #if defined(_WIN32) || defined(_WIN64)
 #pragma warning(push)
 #pragma warning(disable : 4267)
