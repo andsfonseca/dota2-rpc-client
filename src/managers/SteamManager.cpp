@@ -86,7 +86,7 @@ bool SteamManager::findDota2PathUsingVDF(const std::string vdfPath, std::string 
             continue;
         }
 
-        auto pos1 = line.find("570", 0);
+        auto pos1 = line.find("\"570\"", 0);
         if (pos1 != std::string::npos)
         {
             StringExtensions::findAndReplaceAll(library_path, "\\\\", "/");
