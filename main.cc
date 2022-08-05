@@ -9,7 +9,6 @@
 #include <unistd.h>
 #endif
 
-#include <extensions/StringExtensions.h>
 #include <managers/ConfigurationManager.h>
 #include <managers/LanguageManager.h>
 #include <managers/SteamManager.h>
@@ -66,7 +65,7 @@ int main(int argc, const char *argv[])
     //     const char *args[] = {"", "-f"};
     //     return ServiceMain(2, args, svParam);
     // }
-
+    
     return ServiceMain(argc, argv, svParam);
 #else
     WebServerManager::onStart();
