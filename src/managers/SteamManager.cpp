@@ -38,8 +38,6 @@ std::string SteamManager::showSelectFolderDialog()
     {
         return "";
     }
-
-    return "";
 }
 
 std::string SteamManager::generateDota2CFG()
@@ -55,14 +53,25 @@ std::string SteamManager::generateDota2CFG()
 
 void SteamManager::showCannotCreateFileWarning()
 {
-    std::cout << LanguageManager::getString("APP:ERRORS:CFG_NOT_FOUND", LanguageManager::getSystemLanguage()) << "\n\n";
-    std::cout << "=========== gamestate_integration_rpc.cfg ================\n";
-    std::cout << generateDota2CFG() << "\n";
-    std::cout << "==========================================================\n\n";
+    std::cout << StringExtensions::getValueAsANSIColourCodes(
+                     LanguageManager::getString("APP:ERRORS:CFG_NOT_FOUND", LanguageManager::getSystemLanguage()),
+                     {ANSIColor::FG_RED})
+              << "\n\n"
+              << StringExtensions::getValueAsANSIColourCodes(
+                     "=========== gamestate_integration_rpc.cfg ================",
+                     {ANSIColor::FG_BLACK, ANSIColor::BG_WHITE})
+              << "\n"
+              << generateDota2CFG()
+              << "\n"
+              << StringExtensions::getValueAsANSIColourCodes(
+                     "==========================================================",
+                     {ANSIColor::FG_BLACK, ANSIColor::BG_WHITE})
+              << "\n\n";
 }
 
 bool SteamManager::findDota2PathUsingVDF(const std::string vdfPath, std::string &dota2path)
 {
+
     std::string data;
     if (!FileLoader::load(vdfPath, data))
         return false;
@@ -86,7 +95,7 @@ bool SteamManager::findDota2PathUsingVDF(const std::string vdfPath, std::string 
             continue;
         }
 
-        auto pos1 = line.find("570", 0);
+        auto pos1 = line.find("\"570\"", 0);
         if (pos1 != std::string::npos)
         {
             StringExtensions::findAndReplaceAll(library_path, "\\\\", "/");
@@ -100,13 +109,16 @@ bool SteamManager::findDota2PathUsingVDF(const std::string vdfPath, std::string 
 void SteamManager::onInstall()
 {
     std::cout << LanguageManager::getString("APP:INFO:INSTALLATION_IN_PROGRESS", LanguageManager::getSystemLanguage()) << std::endl;
-    std::cout << LanguageManager::getString("APP:ERRORS:FINDING_STEAM", LanguageManager::getSystemLanguage()) << std::endl;
+    std::cout << LanguageManager::getString("APP:INFO:FINDING_STEAM", LanguageManager::getSystemLanguage()) << std::endl;
 
     std::string steamPath(SteamManager::getSteamPath());
 
     if (steamPath.empty())
     {
-        std::cout << LanguageManager::getString("APP:ERRORS:STEAM_NOT_FOUND", LanguageManager::getSystemLanguage()) << std::endl;
+        std::cout << StringExtensions::getValueAsANSIColourCodes(
+                         LanguageManager::getString("APP:ERRORS:STEAM_NOT_FOUND", LanguageManager::getSystemLanguage()),
+                         {ANSIColor::FG_YELLOW})
+                  << std::endl;
 
         steamPath = showSelectFolderDialog();
         StringExtensions::findAndReplaceAll(steamPath, "\\", "/");
@@ -114,9 +126,16 @@ void SteamManager::onInstall()
         // Update config.json with new path
         ConfigurationManager::setSteamPath(steamPath);
     }
+    else
+    {
+        std::cout << StringExtensions::getValueAsANSIColourCodes(
+                         LanguageManager::getString("APP:SUCCESS:FOUND_STEAM", LanguageManager::getSystemLanguage()),
+                         {ANSIColor::FG_GREEN})
+                  << std::endl;
+    }
 
     // Cannot put CFG File, send warning
-    if (steamPath == "")
+    if (steamPath.empty())
     {
         showCannotCreateFileWarning();
         return;
@@ -126,13 +145,23 @@ void SteamManager::onInstall()
     std::string vdfPath = steamPath + "/SteamApps/libraryfolders.vdf";
 
     std::string dota2Path;
-    
-    if(!findDota2PathUsingVDF(vdfPath, dota2Path))
+
+    if (!findDota2PathUsingVDF(vdfPath, dota2Path))
     {
-        std::cout << LanguageManager::getString("APP:ERRORS:DOTA_NOT_FOUND", LanguageManager::getSystemLanguage()) << std::endl;
+        std::cout << StringExtensions::getValueAsANSIColourCodes(
+                         LanguageManager::getString("APP:ERRORS:DOTA_NOT_FOUND", LanguageManager::getSystemLanguage()),
+                         {ANSIColor::FG_YELLOW})
+                  << std::endl;
 
         dota2Path = showSelectFolderDialog();
         StringExtensions::findAndReplaceAll(dota2Path, "\\", "/");
+    }
+    else
+    {
+        std::cout << StringExtensions::getValueAsANSIColourCodes(
+                         LanguageManager::getString("APP:SUCCESS:FOUND_DOTA", LanguageManager::getSystemLanguage()),
+                         {ANSIColor::FG_GREEN})
+                  << std::endl;
     }
 
     if (dota2Path.empty())
@@ -146,10 +175,52 @@ void SteamManager::onInstall()
     // Check if directory is already exists
     if (!std::filesystem::is_directory(dota2Path) || !std::filesystem::exists(dota2Path))
     {
-        std::filesystem::create_directory(dota2Path);
+        try
+        {
+            std::cout << LanguageManager::getString("APP:INFO:CREATING_FOLDER", LanguageManager::getSystemLanguage())
+                      << std::endl;
+
+            std::filesystem::create_directory(dota2Path);
+
+            std::cout << StringExtensions::getValueAsANSIColourCodes(
+                             LanguageManager::getString("APP:SUCCESS:CREATED_FOLDER", LanguageManager::getSystemLanguage()),
+                             {ANSIColor::FG_GREEN})
+                      << std::endl;
+        }
+        catch (...)
+        {
+            std::string error = LanguageManager::getString("APP:ERRORS:CREATION_FOLDER_FAILURE", LanguageManager::getSystemLanguage());
+            StringExtensions::findAndReplaceAll(error, "{{PATH}}", dota2Path);
+            std::cout << StringExtensions::getValueAsANSIColourCodes(error, {ANSIColor::FG_YELLOW}) << std::endl;
+            showCannotCreateFileWarning();
+            return;
+        }
     }
 
-    FileLoader::save(dota2Path + "/gamestate_integration_rpc.cfg", generateDota2CFG());
-    
-    std::cout << LanguageManager::getString("APP:SUCCESS:INSTALL_CFG", LanguageManager::getSystemLanguage()) << std::endl;
+    try
+    {
+        std::cout << LanguageManager::getString("APP:INFO:CREATING_FILE", LanguageManager::getSystemLanguage())
+                  << std::endl;
+
+        FileLoader::save(dota2Path + "/gamestate_integration_rpc.cfg", generateDota2CFG());
+
+        std::cout << StringExtensions::getValueAsANSIColourCodes(
+                         LanguageManager::getString("APP:SUCCESS:CREATED_FILE", LanguageManager::getSystemLanguage()),
+                         {ANSIColor::FG_GREEN})
+                  << std::endl;
+    }
+    catch (...)
+    {
+        std::string error = LanguageManager::getString("APP:ERRORS:CREATION_FILE_FAILURE", LanguageManager::getSystemLanguage());
+        StringExtensions::findAndReplaceAll(error, "{{PATH}}", dota2Path + "/gamestate_integration_rpc.cfg");
+        std::cout << StringExtensions::getValueAsANSIColourCodes(error, {ANSIColor::FG_YELLOW}) << std::endl;
+        showCannotCreateFileWarning();
+        return;
+    }
+
+    std::cout << std::endl
+              << StringExtensions::getValueAsANSIColourCodes(
+                     LanguageManager::getString("APP:SUCCESS:INSTALL_CFG", LanguageManager::getSystemLanguage()),
+                     {ANSIColor::FG_GREEN})
+              << std::endl;
 }
