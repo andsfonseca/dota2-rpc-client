@@ -33,29 +33,29 @@
             }
         },
         "INFO": {
-            "CREATING_FILE": "Creating 'gamestate_integration_rpc.cfg' file...",
-            "CREATING_FOLDER": "Creating 'gamestate_integration' folder...",
-            "FINDING_STEAM": "Finding Steam folder...",
-            "INSTALLATION_IN_PROGRESS": "Installing DotA 2 RPC...",
+            "CREATING_FILE": "Создаю файл 'gamestate_integration_rpc.cfg'...",
+            "CREATING_FOLDER": "Создаю папку 'gamestate_integration'...",
+            "FINDING_STEAM": "Ищу папку Steam...",
+            "INSTALLATION_IN_PROGRESS": "Идет установка DotA 2 RPC...",
             "SERVER_HOW_TO_EXIT": "Нажмите Ctrl+C дважды, чтобы выйти.",
             "SERVER_LISTENING": "Ожидание сигналов на http://{{HOST}}:{{PORT}}.",
             "SERVER_LISTENING_LOCALHOST": "Ожидание сигналов на http://localhost:{{PORT}} и http://{{HOST}}:{{PORT}}."
         },
         "ERRORS": {
             "CFG_NOT_FOUND": "Не удалось найти файлы Dota 2! Пожалуйста, создайте файл с именем 'gamestate_integration_rpc.cfg' в папке '{{STEAM_LIBRARY_PATH}}/dota 2 beta/game/dota/cfg/gamestate_integration/'.",
-            "CREATION_FILE_FAILURE": "Could not create file '{{PATH}}'.",
-            "CREATION_FOLDER_FAILURE": "Could not create folder '{{PATH}}'.",
-            "DOTA_NOT_FOUND": "Unable to find 'dota 2 beta' folder using steam library, please set the directory...",
-            "STEAM_NOT_FOUND": "Unable to find steam folder, please set the directory...",
+            "CREATION_FILE_FAILURE": "Не удалось создать файл '{{PATH}}'.",
+            "CREATION_FOLDER_FAILURE": "Не удалось создать папку '{{PATH}}'.",
+            "DOTA_NOT_FOUND": "Не удалось найти папку 'dota 2 beta', используя библиотеку Steam. Пожалуйста, выберите директорию...",
+            "STEAM_NOT_FOUND": "Не удалось найти папку Steam. Пожалуйста, выберите директорию...",
             "UNKNOWN_ACTIVITY": "Неизвестная активность: {{ACTIVITY}}",
             "UNKNOWN_GAMESTATE": "Неизвестное состояние: {{GAMESTATE}}"
         },
         "SUCCESS": {
-            "CREATED_FILE": "Created file.",
-            "CREATED_FOLDER": "Created folder.",
-            "FOUND_DOTA": "Found DotA folder.",
-            "FOUND_STEAM": "Found Steam folder.",
-            "INSTALL_CFG": "CFG file added successfully. The changes will take effect the next time you launch the game."
+            "CREATED_FILE": "Файл создан.",
+            "CREATED_FOLDER": "Папка создана.",
+            "FOUND_DOTA": "Найдена папка DotA.",
+            "FOUND_STEAM": "Найдена папка Steam.",
+            "INSTALL_CFG": "CFG файл успешно добавлен. Изменения будут применены при следующем запуске игры."
         }
     },
     "DOTA_2": {
