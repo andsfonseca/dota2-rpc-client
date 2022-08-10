@@ -2,60 +2,60 @@
     "APP": {
         "ACTIVITY_MESSAGES": {
             "GAMESTATES": {
-                "GAME": "Game in progress",
-                "HERO_SELECTION": "Hero selection",
-                "HERO_SELECTION_ALT": "Choosing a hero",
+                "GAME": "ゲームが進行中",
+                "HERO_SELECTION": "ヒーロー選択",
+                "HERO_SELECTION_ALT": "ヒーローを選択中",
                 "NONE": "",
-                "PRE_GAME": "Pre-Game",
-                "STRATEGY_TIME": "Strategy time"
+                "PRE_GAME": "ゲーム前",
+                "STRATEGY_TIME": "戦略タイム"
             },
             "MATCH": {
-                "BOT_PREFIX": "Bots: {{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
-                "INFO_ID": "Match Id: {{ID}}",
+                "BOT_PREFIX": "ボット: {{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
+                "INFO_ID": "マッチID: {{ID}}",
                 "NET_WORTH": "⛰️Radiant | Dire🌋",
                 "NET_WORTH_DIRE": "⛰️Radiant | {{VALUE}}k Dire🌋",
                 "NET_WORTH_RADIANT": "⛰️Radiant {{VALUE}}k | Dire🌋"
             },
             "PLAYER": {
-                "AEGIS": "has Aegis of the Immortal",
+                "AEGIS": "はAegis of the Immortalを持っている",
                 "GOLD_LH_DN": "💰 {{GOLD}} | LH: {{LH}} | DN: {{DN}}",
-                "HAS_SCEPTER": "has Aghanim's scepter",
-                "HAS_SCEPTER_AND_SHARD": "has Aghanim's scepter and shard",
-                "HAS_SHARD": "has Aghanim's shard",
+                "HAS_SCEPTER": "はAghanim's Scepterを持っている",
+                "HAS_SCEPTER_AND_SHARD": "はAghanim's ScepterとShardを持っている",
+                "HAS_SHARD": "はAghanim's Shardを持っている",
                 "KDA": "{{KILL}} / {{DEATH}} / {{ASSIST}}",
-                "PLAYING_AS_HERO": "Playing as {{NAME}}",
-                "PLAYING_AS_HERO_WITH_LEVEL": "Playing as {{NAME}} - Lvl. {{LEVEL}}",
-                "SMOKED": "Smoked"
+                "PLAYING_AS_HERO": "プレイ中: {{NAME}}",
+                "PLAYING_AS_HERO_WITH_LEVEL": "プレイ中: {{NAME}} - Lv{{LEVEL}}",
+                "SMOKED": "Smoke中"
             },
             "SPECTATOR": {
-                "COACH": "Coaching a match",
-                "WATCH": "Watching a match"
+                "COACH": "試合をコーチ中",
+                "WATCH": "試合を観戦中"
             }
         },
         "INFO": {
-            "CREATING_FILE": "Creating 'gamestate_integration_rpc.cfg' file...",
-            "CREATING_FOLDER": "Creating 'gamestate_integration' folder...",
-            "FINDING_STEAM": "Finding Steam folder...",
-            "INSTALLATION_IN_PROGRESS": "Installing DotA 2 RPC...",
-            "SERVER_HOW_TO_EXIT": "Press Ctrl+C twice to exit.",
-            "SERVER_LISTENING": "Listening at http://{{HOST}}:{{PORT}}.",
-            "SERVER_LISTENING_LOCALHOST": "Listening at http://localhost:{{PORT}} and http://{{HOST}}:{{PORT}}."
+            "CREATING_FILE": "'gamestate_integration_rpc.cfg'ファイルを作成中...",
+            "CREATING_FOLDER": "'gamestate_integration'フォルダを作成中...",
+            "FINDING_STEAM": "Steamフォルダを探索中...",
+            "INSTALLATION_IN_PROGRESS": "DotA 2 RPCをインストール中...",
+            "SERVER_HOW_TO_EXIT": "Ctrl+C を二度押しで終了します。",
+            "SERVER_LISTENING": "http://{{HOST}}:{{PORT}} でリスニング中。",
+            "SERVER_LISTENING_LOCALHOST": "http://localhost:{{PORT}} と http://{{HOST}}:{{PORT}} でリスニング中。"
         },
         "ERRORS": {
-            "CFG_NOT_FOUND": "Unable to find DotA 2 files! Please create the following file with the name 'gamestate_integration_rpc.cfg' and insert it into the folder '{{STEAM_LIBRARY_PATH}}/dota 2 beta/game/dota/cfg/gamestate_integration/'.",
-            "CREATION_FILE_FAILURE": "Could not create file '{{PATH}}'.",
-            "CREATION_FOLDER_FAILURE": "Could not create folder '{{PATH}}'.",
-            "DOTA_NOT_FOUND": "Unable to find 'dota 2 beta' folder using steam library, please set the directory...",
-            "STEAM_NOT_FOUND": "Unable to find steam folder, please set the directory...",
-            "UNKNOWN_ACTIVITY": "Unknown activity: {{ACTIVITY}}",
-            "UNKNOWN_GAMESTATE": "Unknown gamestate: {{GAMESTATE}}"
+            "CFG_NOT_FOUND": "DotA 2のファイルが見つかりません! 以下のファイルを 'gamestate_integration_rpc.cfg' という名前で作成し、'{{STEAM_LIBRARY_PATH}}/dota 2 beta/game/dota/cfg/gamestate_integration/' フォルダに配置してください。",
+            "CREATION_FILE_FAILURE": "'{{PATH}}'ファイルを作成できません。",
+            "CREATION_FOLDER_FAILURE": "'{{PATH}}'フォルダを作成できません。",
+            "DOTA_NOT_FOUND": "'dota 2 beta'フォルダをSteamのライブラリから見つけられませんでした。フォルダを指定してください...",
+            "STEAM_NOT_FOUND": "Steamフォルダを見つけられませんでした。ォルダを指定してください...",
+            "UNKNOWN_ACTIVITY": "不明なアクティビティ: {{ACTIVITY}}",
+            "UNKNOWN_GAMESTATE": "不明なゲームステート: {{GAMESTATE}}"
         },
         "SUCCESS": {
-            "CREATED_FILE": "Created file.",
-            "CREATED_FOLDER": "Created folder.",
-            "FOUND_DOTA": "Found DotA folder.",
-            "FOUND_STEAM": "Found Steam folder.",
-            "INSTALL_CFG": "CFG file added successfully. The changes will take effect the next time you launch the game."
+            "CREATED_FILE": "ファイル作成済み。",
+            "CREATED_FOLDER": "フォルダ作成済み。",
+            "FOUND_DOTA": "DotAフォルダを発見。",
+            "FOUND_STEAM": "Steamフォルダを発見。",
+            "INSTALL_CFG": "CFGファイルの追加に成功。変更はゲームを次回起動したときに反映されます。"
         }
     },
     "DOTA_2": {
@@ -219,8 +219,8 @@
             "npc_dota_hero_zuus_2": "Zeus"
         },
         "CUSTOM_MAP": {
-            "hero_demo": "Testing a hero",
-            "WORKSHOP": "Playing {{MAPNAME}}"
+            "hero_demo": "ヒーローをデモ中",
+            "WORKSHOP": "{{MAPNAME}}をプレイ中"
         },
         "NEUTRALS": [
             "npc_dota_neutral_alpha_wolf",
