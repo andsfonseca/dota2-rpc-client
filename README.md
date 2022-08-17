@@ -1,6 +1,6 @@
 # DotA 2 RPC (dota2-rpc-client)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/andsfonseca/dota2-rpc-client)
-![GitHub milestone](https://img.shields.io/github/milestones/progress/andsfonseca/dota2-rpc-client/1)
+![GitHub milestone](https://img.shields.io/github/milestones/progress/andsfonseca/dota2-rpc-client/2)
  [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fandsfonseca%2Fdota2-rpc-client&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](#)
  [![Website](https://img.shields.io/website?label=Website&url=https%3A%2F%2Fandsfonseca.github.io%2Fdota2-rpc-client%2F)](https://andsfonseca.github.io/dota2-rpc-client/)
  ![GitHub](https://img.shields.io/github/license/andsfonseca/dota2-rpc-client)
