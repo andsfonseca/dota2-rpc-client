@@ -120,5 +120,7 @@
       }
     }
   },
-  "defaultProject": "dota2-rpc-client"
+  "cli": {
+    "analytics": false
+  }
 }
