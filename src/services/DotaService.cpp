@@ -137,6 +137,7 @@ std::string DotaService::getHeroName(Json::Value data)
             (name == "npc_dota_hero_crystal_maiden" && itemId == 7385) ||
             (name == "npc_dota_hero_drow_ranger" && itemId == 19090) ||
             (name == "npc_dota_hero_earthshaker" && itemId == 12692) ||
+            (name == "npc_dota_hero_faceless_void" && itemId == 18033) ||
             (name == "npc_dota_hero_wisp" && itemId == 9235) ||
             (name == "npc_dota_hero_juggernaut" && itemId == 9059) ||
             (name == "npc_dota_hero_legion_commander" && itemId == 5810) ||
