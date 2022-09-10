@@ -222,6 +222,7 @@
         },
         "CUSTOM_MAP": {
             "hero_demo": "Проба героя",
+            "holdout": "Играет в Новолуние",
             "WORKSHOP": "Играет в {{MAPNAME}}"
         },
         "NEUTRALS": [

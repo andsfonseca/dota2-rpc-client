@@ -222,6 +222,7 @@
         },
         "CUSTOM_MAP": {
             "hero_demo": "Testing a hero",
+            "holdout": "Playing Dark Moon",
             "WORKSHOP": "Playing {{MAPNAME}}"
         },
         "NEUTRALS": [
