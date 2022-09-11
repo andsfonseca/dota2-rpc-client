@@ -222,6 +222,7 @@
         },
         "CUSTOM_MAP": {
             "hero_demo": "Демо-герой",
+            "holdout": "Грає у «Dark Moon»",
             "WORKSHOP": "Грає у «{{MAPNAME}}»"
         },
         "NEUTRALS": [

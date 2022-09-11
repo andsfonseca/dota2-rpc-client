@@ -222,6 +222,7 @@
         },
         "CUSTOM_MAP":{
             "hero_demo":"Testando um herói",
+            "holdout": "Jogando Lua Sombria",
             "WORKSHOP": "Jogando {{MAPNAME}}"
         },
         "NEUTRALS": [
