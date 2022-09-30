@@ -129,6 +129,8 @@ std::string DotaService::getHeroName(Json::Value data)
             (name == "npc_dota_hero_mirana" && itemId == 18178) ||
             (name == "npc_dota_hero_invoker" && itemId == 13042))
             return name + "_2";
+        if (name == "npc_dota_hero_phantom_assassin" && itemId == 22723)
+            return name + "_3";
         if (name == "npc_dota_hero_pudge" && itemId == 13786)
             return name + "_4";
 
@@ -464,7 +466,6 @@ DotaService *DotaService::getInstance()
 
 void DotaService::interpretJson(Json::Value data)
 {
-
     // Retrieve time at start;
     auto now = std::chrono::system_clock::now();
 
