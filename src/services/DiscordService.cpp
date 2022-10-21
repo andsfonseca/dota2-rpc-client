@@ -17,7 +17,8 @@ bool DiscordService::initialize()
     this->core.reset(aux);
     if (!this->core)
     {
-        std::cout << "Failed to instantiate discord core! (err " << static_cast<int>(result)
+        std::cout << "Failed to instantiate discord core! (err "
+                  << static_cast<int>(result)
                   << ")" << std::endl;
         return false;
     }
@@ -77,12 +78,15 @@ void DiscordService::updateActivity(discord::Activity activity)
         return;
 
     lastUpdate = std::time(0);
-
-    if(this->core)
+    if (this->core)
         this->core->ActivityManager().UpdateActivity(activity, [](discord::Result result)
-                                                    {
-                                                            if(result != discord::Result::Ok)
-                                                            std::cout << "Failed updating activity!" << std::endl; });
+                                                     {
+                                                        if(result != discord::Result::Ok)
+                                                        {
+                                                            std::cout << "Failed updating activity! "
+                                                                        << static_cast<int>(result)
+                                                                        << ")" << std::endl;
+                                                        } });
 }
 
 void DiscordService::cleanActivity()
@@ -92,8 +96,12 @@ void DiscordService::cleanActivity()
 
     // Remove the activity
     this->core->ActivityManager().ClearActivity([](discord::Result result)
-                                                { if(result != discord::Result::Ok)
-                                                         std::cout << "Failed updating activity!\n"; });
+                                                {   if(result != discord::Result::Ok)
+                                                    {
+                                                        std::cout << "Failed updating activity! "
+                                                                    << static_cast<int>(result)
+                                                                    << ")" << std::endl;
+                                                    } });
     // Stop the instance
     stop();
 }
@@ -131,7 +139,8 @@ void DiscordService::stop()
     }
 }
 
-std::string DiscordService::getLanguage(){
+std::string DiscordService::getLanguage()
+{
     // Initialize
     if (!this->core)
     {
