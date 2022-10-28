@@ -154,7 +154,8 @@ std::string DotaService::getHeroName(Json::Value data)
             (name == "npc_dota_hero_spectre" && itemId == 9662) ||
             (name == "npc_dota_hero_terrorblade" && itemId == 5957) ||
             (name == "npc_dota_hero_windrunner" && itemId == 13806) ||
-            (name == "npc_dota_hero_skeleton_king" && itemId == 13456))
+            (name == "npc_dota_hero_skeleton_king" && itemId == 13456) ||
+            (name == "npc_dota_hero_zuus" && itemId == 6914))
         {
             // Second Style
             std::string style = "style" + std::to_string(i);
