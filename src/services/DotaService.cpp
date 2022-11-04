@@ -129,7 +129,8 @@ std::string DotaService::getHeroName(Json::Value data)
             (name == "npc_dota_hero_mirana" && itemId == 18178) ||
             (name == "npc_dota_hero_invoker" && itemId == 13042))
             return name + "_2";
-        if (name == "npc_dota_hero_phantom_assassin" && itemId == 22723)
+        if ((name == "npc_dota_hero_phantom_assassin" && itemId == 22723) ||
+           (name == "npc_dota_hero_crystal_maiden" && itemId == 13078))
             return name + "_3";
         if (name == "npc_dota_hero_pudge" && itemId == 13786)
             return name + "_4";
