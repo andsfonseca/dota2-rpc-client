@@ -225,6 +225,7 @@
         "CUSTOM_MAP": {
             "hero_demo": "Демо-герой",
             "holdout": "Грає у «Dark Moon»",
+            "winter2022": "Грає у «Diretide»",
             "WORKSHOP": "Грає у «{{MAPNAME}}»"
         },
         "NEUTRALS": [
