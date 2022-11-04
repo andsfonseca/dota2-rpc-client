@@ -225,6 +225,7 @@
         "CUSTOM_MAP": {
             "hero_demo": "Probando un héroe",
             "holdout": "Jugando Luna Oscura",
+            "winter2022": "Jugando Diretide",
             "WORKSHOP": "Jugando {{MAPNAME}}"
         },
         "NEUTRALS": [

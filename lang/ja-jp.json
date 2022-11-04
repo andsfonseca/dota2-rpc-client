@@ -225,6 +225,7 @@
         "CUSTOM_MAP": {
             "hero_demo": "ヒーローをデモ中",
             "holdout": "Dark Moonをプレイ中",
+            "winter2022": "Diretideをプレイ中",
             "WORKSHOP": "{{MAPNAME}}をプレイ中"
         },
         "NEUTRALS": [
