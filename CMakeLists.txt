@@ -66,7 +66,7 @@ set(FETCHCONTENT_BASE_DIR ${THIRD_PARTY_BASE_DIR} CACHE PATH "Missing descriptio
 set(CMAKE_TLS_VERIFY true)
 
 #[[1. Discord Game SDK]]
-set(DISCORD_SDK_URL "https://dl-game-sdk.discordapp.net/2.5.6/discord_game_sdk.zip")
+set(DISCORD_SDK_URL "https://dl-game-sdk.discordapp.net/3.2.1/discord_game_sdk.zip")
 
 if(NOT EXISTS ${THIRD_PARTY_BASE_DIR}/discord-sdk-src)
     FetchContent_Declare(
