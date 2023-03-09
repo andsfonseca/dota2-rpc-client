@@ -114,8 +114,6 @@ std::string DotaService::getHeroName(Json::Value data)
     if (data["wearables"].isNull())
         return name;
 
-    std::cout << data["wearables"] << std::endl;
-
     for (int i = 0;; i++)
     {
         std::string key = "wearable" + std::to_string(i);
