@@ -6,12 +6,12 @@
                 "HERO_SELECTION": "Selección de héroe",
                 "HERO_SELECTION_ALT": "Escogiendo un héroe",
                 "NONE": "",
-                "PRE_GAME": "Pre-Game",
-                "STRATEGY_TIME": "Tiempo de estrategia"
+                "PRE_GAME": "Prepartida",
+                "STRATEGY_TIME": "Tiempo de Estrategia"
             },
             "MATCH": {
                 "BOT_PREFIX": "Bots: {{PLAYING_AS_HERO | PLAYING_AS_HERO_WITH_LEVEL}}",
-                "INFO_ID": "Id de Partida: {{ID}}",
+                "INFO_ID": "ID de Partida: {{ID}}",
                 "NET_WORTH": "⛰️Radiant | Dire🌋",
                 "NET_WORTH_DIRE": "⛰️Radiant | {{VALUE}}k Dire🌋",
                 "NET_WORTH_RADIANT": "⛰️Radiant {{VALUE}}k | Dire🌋"
@@ -33,29 +33,29 @@
             }
         },
         "INFO": {
-            "CREATING_FILE": "Creating 'gamestate_integration_rpc.cfg' file...",
-            "CREATING_FOLDER": "Creating 'gamestate_integration' folder...",
-            "FINDING_STEAM": "Buscando la carpeta Steam...",
+            "CREATING_FILE": "Creando el archivo 'gamestate_integration_rpc.cfg'...",
+            "CREATING_FOLDER": "Creando la carpeta 'gamestate_integration'...",
+            "FINDING_STEAM": "Buscando la carpeta de Steam...",
             "INSTALLATION_IN_PROGRESS": "Instalando DotA 2 RPC...",
             "SERVER_HOW_TO_EXIT": "Presiona Ctrl+C dos veces para salir.",
             "SERVER_LISTENING": "Escuchando en http://{{HOST}}:{{PORT}}.",
             "SERVER_LISTENING_LOCALHOST": "Escuchando http://localhost:{{PORT}} y http://{{HOST}}:{{PORT}}."
         },
         "ERRORS": {
-            "CFG_NOT_FOUND": "¡No se encontró los archivos de DotA 2! Por favor crea un archivo con el siguiente nombre 'gamestate_integration_rpc.cfg' e insértalo en la carpeta '{{STEAM_LIBRARY_PATH}}/dota 2 beta/game/dota/cfg/gamestate_integration/'.",
-            "CREATION_FILE_FAILURE": "Could not create file '{{PATH}}'.",
-            "CREATION_FOLDER_FAILURE": "Could not create folder '{{PATH}}'.",
-            "DOTA_NOT_FOUND": "No se encontró la carpeta 'dota 2 beta' usando la libería de Steam, por favor selecciona el directorio...",
+            "CFG_NOT_FOUND": "¡No se encontraron los archivos de DotA 2! Por favor crea un archivo con el siguiente nombre 'gamestate_integration_rpc.cfg' e insértalo en la carpeta '{{STEAM_LIBRARY_PATH}}/dota 2 beta/game/dota/cfg/gamestate_integration/'.",
+            "CREATION_FILE_FAILURE": "No se pudo crear el archivo '{{PATH}}'.",
+            "CREATION_FOLDER_FAILURE": "No se pudo crear la carpeta '{{PATH}}'.",
+            "DOTA_NOT_FOUND": "No se encontró la carpeta 'dota 2 beta' usando la librería de Steam, por favor selecciona el directorio...",
             "STEAM_NOT_FOUND": "No se encontró la carpeta de Steam, por favor selecciona el directorio...",
             "UNKNOWN_ACTIVITY": "Actividad desconocida: {{ACTIVITY}}",
             "UNKNOWN_GAMESTATE": "Estado de juego desconocido: {{GAMESTATE}}"
         },
         "SUCCESS": {
-            "CREATED_FILE": "Created file.",
-            "CREATED_FOLDER": "Created folder.",
-            "FOUND_DOTA": "Found DotA folder.",
-            "FOUND_STEAM": "Found Steam folder.",
-            "INSTALL_CFG": "Archivo CFG añadido correctamente. Los cambios surtirán efecto la próxima vez que inicies el juego."
+            "CREATED_FILE": "Archivo creado.",
+            "CREATED_FOLDER": "Carpeta creada.",
+            "FOUND_DOTA": "Carpeta de Dota 2 encontrada.",
+            "FOUND_STEAM": "Carpeta de Steam encontrada.",
+            "INSTALL_CFG": "Archivo CFG añadido correctamente. Los cambios tendrán efecto la próxima vez que inicies el juego."
         }
     },
     "DOTA_2": {
