@@ -49,7 +49,7 @@ int main(int argc, const char *argv[])
     SrvParam svParam;
 #if defined(_WIN32) || defined(_WIN64)
     svParam.szDspName = L"Dota 2 RPC Client Service"; // Servicename in Service control manager of windows
-    svParam.szDescrip = L"Dota 2 RPC Client Service"; // Description in Service control manager of windows
+    svParam.szDescribe = L"Dota 2 RPC Client Service"; // Description in Service control manager of windows
 #endif
     svParam.szSrvName = L"dota2rpc"; // Service name (service id)
 
