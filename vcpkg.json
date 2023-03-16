@@ -1,7 +1,0 @@
-{
-    "name": "dota2-rpc-client",
-    "version-string": "1.0.5",
-    "dependencies": [
-        "drogon"
-    ]
-}

@@ -155,9 +155,9 @@ With the repository downloaded, run the command:
  cmake --build {folder} --config Debug --target dota2-rpc-client -j {threads}
 ```
  
-> If you choose not to use automatic compilation and want to download libraries on your own, you can use the `vcpkg` to install the *Discord SDK* and the *Drogon C++*.
+> This project uses Conan Package Manager to download [Drogon C++](https://github.com/drogonframework/drogon) and jsoncpp packages. If you use a package manager like `vcpkg` or libs and dlls externally, feel free to modify `CMakeLists.txt` (Just comment out the references to conan 😅). 
 > 
-> An installation guide for the *Drogon C++* dependencies can be found on [this page](https://drogon.docsforge.com/master/installation/).
+> An installation guide for the *Drogon C++* dependencies can be found on [this page](https://github.com/drogonframework/drogon/wiki/ENG-02-Installation).
 
 ## Web Page Compilation Instructions
 
