@@ -1,6 +1,6 @@
 name: Build
 
-on: [pull_request, push]
+on: [pull_request]
 
 jobs:
   build:
@@ -15,6 +15,11 @@ jobs:
             os: windows-latest,
             cc: "cl", cxx: "cl",
             environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
+        - {
+            name: "Ubuntu 20.04 GCC", artifact: "dota2-rpc-client-linux",
+            os: ubuntu-20.04,
+            build_type: "Release", cc: "gcc", cxx: "g++"
           }
     steps:
     - uses: actions/checkout@v3
@@ -41,6 +46,18 @@ jobs:
     - name: Build project
       run:   |
             cmake --build ./build --config Release --target dota2-rpc-client -j 10
+    - name: Preparing for upload
+      run:   |
+            if [ "$RUNNER_OS" == "Linux" ]; then
+              mkdir ./build/bin
+              mv ./build/lang ./build/bin/lang
+              mv ./build/templates ./build/bin/templates
+              mv ./build/config.json  ./build/bin/config.json 
+              mv ./build/dota2-rpc-client  ./build/bin/dota2-rpc-client
+            else
+              echo "$RUNNER_OS don't need this trick!"
+            fi
+      shell: bash
     - name: Upload
       uses: actions/upload-artifact@v3
       with:

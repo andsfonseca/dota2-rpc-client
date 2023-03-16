@@ -74,18 +74,32 @@ endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
-conan_cmake_run(CONFIGURATION_TYPES "Release;Debug")
+if(MSVC)
+    # Enable multi-config
+    conan_cmake_run(CONFIGURATION_TYPES "Release;Debug")
 
-foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
+    foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
+        conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
+        conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
+                            BUILD missing
+                            REMOTE conancenter
+                            SETTINGS ${settings})
+    endforeach()
+
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup(TARGETS)
+
+else()
+
+    # Detect current build type
     conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
     conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
-                        BUILD missing
-                        REMOTE conancenter
-                        SETTINGS ${settings})
-endforeach()
+                            BUILD missing
+                            REMOTE conancenter
+                            SETTINGS ${settings})
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
+endif()
+
 
 #[[External Libraries]]
 
@@ -148,7 +162,7 @@ if(OS STREQUAL "Windows")
 endif()
 
 #[[2. Drogon]]
-find_package(drogon CONFIG REQUIRED)
+find_package(Drogon CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
 
 #[[3. jsoncpp]]
@@ -191,7 +205,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE nfd)
 set(CMAKE_INCLUDE_PATH ${CMAKE_CURRENT_LIST_DIR}/include)
 add_subdirectory(src)
 
-# add_executable(${PROJECT_NAME} main.cc ${DISCORD_SRC_LIST})
 if(CMAKE_CXX_STANDARD LESS 17)
     # With C++14, use boost to support any, string_view and filesystem
     message(STATUS "use c++14")
