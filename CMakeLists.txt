@@ -7,6 +7,8 @@ include(FetchContent)
 
 find_package(Git REQUIRED)
 
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+
 # ## OS Requirements
 # ## - OS must contain an identifier corresponding to your current operating system: Windows, Macos, Linux.
 if(NOT OS) # If OS is not defined, it tries to find it.
@@ -60,7 +62,33 @@ endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# [[Conan]]
+
+# Download automatically, you can also just copy the conan.cmake file
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+  message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
+                "${CMAKE_BINARY_DIR}/conan.cmake"
+                TLS_VERIFY ON)
+endif()
+
+include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+conan_cmake_run(CONFIGURATION_TYPES "Release;Debug")
+
+foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
+    conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
+    conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
+                        BUILD missing
+                        REMOTE conancenter
+                        SETTINGS ${settings})
+endforeach()
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
+
 #[[External Libraries]]
+
 set(THIRD_PARTY_BASE_DIR ${PROJECT_SOURCE_DIR}/third_party)
 set(FETCHCONTENT_BASE_DIR ${THIRD_PARTY_BASE_DIR} CACHE PATH "Missing description." FORCE)
 set(CMAKE_TLS_VERIFY true)
@@ -120,27 +148,14 @@ if(OS STREQUAL "Windows")
 endif()
 
 #[[2. Drogon]]
-set(DROGON_GIT "https://github.com/drogonframework/drogon.git")
-set(DROGON_GIT_TAG "v1.7.5")
+find_package(drogon CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
 
-if(NOT EXISTS ${THIRD_PARTY_BASE_DIR}/drogon)
-    execute_process(COMMAND ${GIT_EXECUTABLE} clone -b ${DROGON_GIT_TAG} ${DROGON_GIT}
-        WORKING_DIRECTORY ${THIRD_PARTY_BASE_DIR}
-        OUTPUT_VARIABLE AUX)
+#[[3. jsoncpp]]
+find_package(jsoncpp CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE jsoncpp::jsoncpp)
 
-    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-        WORKING_DIRECTORY ${THIRD_PARTY_BASE_DIR}/drogon/
-        OUTPUT_VARIABLE AUX)
-endif()
-
-set(BUILD_ORM FALSE CACHE INTERNAL "")
-set(BUILD_EXAMPLES FALSE CACHE INTERNAL "")
-set(BUILD_CTL FALSE CACHE INTERNAL "")
-
-add_subdirectory(${THIRD_PARTY_BASE_DIR}/drogon)
-target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
-
-#[[3. SrvLib.git]]
+#[[4. SrvLib.git]]
 set(SRVLIB_GIT "https://github.com/andsfonseca/SrvLib.git")
 
 if(NOT EXISTS ${THIRD_PARTY_BASE_DIR}/SrvLib)
@@ -153,7 +168,7 @@ add_subdirectory(${THIRD_PARTY_BASE_DIR}/SrvLib)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE srvlib)
 
-#[[4.Native file dialog]]
+#[[5.Native file dialog]]
 set(NFD_GIT "https://github.com/btzy/nativefiledialog-extended.git")
 set(NFD_GIT_HASH 28ade5a)
 
@@ -193,9 +208,6 @@ aux_source_directory(filters FILTER_SRC)
 aux_source_directory(plugins PLUGIN_SRC)
 aux_source_directory(models MODEL_SRC)
 
-drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
-    ${CMAKE_CURRENT_BINARY_DIR})
-
 # use the following line to create views with namespaces.
 # drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
 # ${CMAKE_CURRENT_BINARY_DIR} TRUE)
@@ -221,17 +233,17 @@ target_sources(${PROJECT_NAME}
 if(MSVC)
     # Config Files
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/config" "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>"
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/config" "${CMAKE_CURRENT_BINARY_DIR}/bin"
     )
 
     # Language Files
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/lang" "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/lang"
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/lang" "${CMAKE_CURRENT_BINARY_DIR}/bin/lang"
     )
 
     # Template Files
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/templates" "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/templates"
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/templates" "${CMAKE_CURRENT_BINARY_DIR}/bin/templates"
     )
 else()
     # Config Files

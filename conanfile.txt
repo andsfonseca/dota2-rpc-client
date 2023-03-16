@@ -1,0 +1,11 @@
+[requires]
+drogon/1.8.3
+jsoncpp/1.9.5
+
+[generators]
+cmake_find_package
+cmake_find_package_multi
+
+[options]
+drogon:shared = False
+jsoncpp:shared = False
