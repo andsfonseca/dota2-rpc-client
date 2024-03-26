@@ -3,7 +3,7 @@
 #include <thread>
 #include <string>
 
-#include "../../third_party/discord-sdk-src/cpp/discord.h"
+#include <discord/discord.h>
 
 class DiscordService
 {

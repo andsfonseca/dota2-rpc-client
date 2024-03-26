@@ -1,4 +1,58 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.17)
+
+# Download conan-cmake automatically, you can also just copy the conan.cmake file
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+  message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
+                "${CMAKE_BINARY_DIR}/conan.cmake"
+                TLS_VERIFY ON)
+endif()
+
+include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+# No reason to set CMAKE_CONFIGURATION_TYPES if it's not a multiconfig generator
+get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+
+# Prepare conan before project inicialization
+if(isMultiConfig)
+    set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE) 
+    foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
+        conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}/conanfile.txt
+                            BUILD missing
+                            SETTINGS build_type=${TYPE})
+    endforeach()
+else()
+    if(NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+    endif()
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release")
+    conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}/conanfile.txt
+                        BUILD missing
+                        SETTINGS build_type=${CMAKE_BUILD_TYPE})
+endif()
+
+# Enable cmake_find_package and cmake_find_package_multi inside binary folder
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR})
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
+
+# Corrections to no-config/multi-config
+if(isMultiConfig)
+    # For multi-config builds (e.g. msvc)
+    foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+        string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_CURRENT_BINARY_DIR}/${OUTPUTCONFIG})
+    endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
+
+else()
+    if (WIN32)
+        # Generic, no-config when windows (e.g. with mingw)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+    else()
+        # Generic, no-config when linux (e.g. with mingw)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    endif()
+endif()
+
 project(dota2-rpc-client CXX)
 
 #[[Includes]]
@@ -6,43 +60,6 @@ include(CheckIncludeFileCXX)
 include(FetchContent)
 
 find_package(Git REQUIRED)
-
-list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
-
-# ## OS Requirements
-# ## - OS must contain an identifier corresponding to your current operating system: Windows, Macos, Linux.
-if(NOT OS) # If OS is not defined, it tries to find it.
-    if(WIN32)
-        set(OS Windows)
-    elseif(APPLE)
-        set(OS Macos)
-    elseif(UNIX)
-        set(OS Linux)
-    else()
-        message(FATAL_ERROR "Cannot detect operating system")
-    endif()
-
-    message(STATUS "OS was not defined, automatically set to ${OS}")
-elseif(NOT OS STREQUAL "Windows" AND NOT OS STREQUAL "Macos" AND NOT OS STREQUAL "Linux") # OS can only have following values: Windows, Macos, Linux.
-    message(FATAL_ERROR "OS has wrong value. Was: ${OS}, must be: Windows|Macos|Linux")
-endif()
-
-# ## ARCH Requirements
-# ## - ARCH must contain the processor architecture you want to use to build the SDK, possible values: x86_64, x86 (Window only).
-if(NOT ARCH)
-    message("ARCH not defined, automatically set to x86_64")
-    set(ARCH x86_64)
-endif()
-
-if(ARCH STREQUAL "x86" AND NOT OS STREQUAL "Windows") # ARCH can be x86 only on Windows
-    message(FATAL_ERROR "x86 is only possible on Windows")
-endif()
-
-if(ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64")
-    message(STATUS "ARCH is ${ARCH}")
-else()
-    message(FATAL_ERROR "ARCH has wrong value. Was: ${ARCH}, must be: x86_64|x86")
-endif()
 
 #[[CMAKE CXX]]
 check_include_file_cxx(any HAS_ANY)
@@ -62,45 +79,6 @@ endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# [[Conan]]
-
-# Download automatically, you can also just copy the conan.cmake file
-if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-  message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
-                "${CMAKE_BINARY_DIR}/conan.cmake"
-                TLS_VERIFY ON)
-endif()
-
-include(${CMAKE_BINARY_DIR}/conan.cmake)
-
-if(MSVC)
-    # Enable multi-config
-    conan_cmake_run(CONFIGURATION_TYPES "Release;Debug")
-
-    foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
-        conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
-        conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
-                            BUILD missing
-                            REMOTE conancenter
-                            SETTINGS ${settings})
-    endforeach()
-
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup(TARGETS)
-
-else()
-
-    # Detect current build type
-    conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
-    conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
-                            BUILD missing
-                            REMOTE conancenter
-                            SETTINGS ${settings})
-
-endif()
-
-
 #[[External Libraries]]
 
 set(THIRD_PARTY_BASE_DIR ${PROJECT_SOURCE_DIR}/third_party)
@@ -108,57 +86,21 @@ set(FETCHCONTENT_BASE_DIR ${THIRD_PARTY_BASE_DIR} CACHE PATH "Missing descriptio
 set(CMAKE_TLS_VERIFY true)
 
 #[[1. Discord Game SDK]]
-set(DISCORD_SDK_URL "https://dl-game-sdk.discordapp.net/3.2.1/discord_game_sdk.zip")
-
-if(NOT EXISTS ${THIRD_PARTY_BASE_DIR}/discord-sdk-src)
-    FetchContent_Declare(
-        discord-sdk
-        URL ${DISCORD_SDK_URL}
-    )
-
-    FetchContent_MakeAvailable(discord-sdk)
-endif()
 
 file(GLOB SRC_List
     "main.cc"
-    "${THIRD_PARTY_BASE_DIR}/discord-sdk-src/cpp/*.cpp"
 )
-
 add_executable(${PROJECT_NAME} ${SRC_List})
 
-set(DISCORD_GAME_SDK_PATH ${THIRD_PARTY_BASE_DIR}/discord-sdk-src)
+find_package(discord REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE discord::discord)
 
-if(OS STREQUAL "Windows")
-    if(ARCH STREQUAL "x86_64")
-        set(CMAKE_DISCORD_GAME_SDK_LIB_FOLDER ${DISCORD_GAME_SDK_PATH}/lib/x86_64)
-        set(CMAKE_DISCORD_GAME_SDK_LIB_PATH ${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}/discord_game_sdk.dll.lib)
-    else()
-        set(CMAKE_DISCORD_GAME_SDK_LIB_FOLDER ${DISCORD_GAME_SDK_PATH}/lib/x86)
-        set(CMAKE_DISCORD_GAME_SDK_LIB_PATH ${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}/discord_game_sdk.dll.lib)
-    endif()
-elseif(OS STREQUAL "Linux")
-    set(CMAKE_DISCORD_GAME_SDK_LIB_FOLDER ${DISCORD_GAME_SDK_PATH}/lib/x86_64)
-    set(CMAKE_DISCORD_GAME_SDK_LIB_PATH ${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}/libdiscord_game_sdk.so)
-elseif(OS STREQUAL "Macos")
-    set(CMAKE_DISCORD_GAME_SDK_LIB_FOLDER ${DISCORD_GAME_SDK_PATH}/lib/x86_64)
-    set(CMAKE_DISCORD_GAME_SDK_LIB_PATH ${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}/discord_game_sdk.dylib)
-endif()
-
-if(OS STREQUAL "Linux")
-    execute_process(COMMAND mv discord_game_sdk.so libdiscord_game_sdk.so
-            WORKING_DIRECTORY ${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}
-            OUTPUT_VARIABLE AUX)
-endif()
-
-target_link_directories(${PROJECT_NAME} PRIVATE "${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}")
-target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_DISCORD_GAME_SDK_LIB_PATH})
-
-if(OS STREQUAL "Windows")
+if(WIN32)
     # Move DLL File Automatically While Building
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD # Adds a post-build event to MyTest
         COMMAND ${CMAKE_COMMAND} -E copy_if_different # which executes "cmake - E copy_if_different..."
-        "${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}/discord_game_sdk.dll" # <--this is in-file
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>) # <--this is out-file path
+        "${CMAKE_CURRENT_BINARY_DIR}/lib/discord_game_sdk.dll" 
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>) 
 endif()
 
 #[[2. Drogon]]
@@ -246,17 +188,17 @@ target_sources(${PROJECT_NAME}
 if(MSVC)
     # Config Files
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/config" "${CMAKE_CURRENT_BINARY_DIR}/bin"
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/config" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
     )
 
     # Language Files
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/lang" "${CMAKE_CURRENT_BINARY_DIR}/bin/lang"
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/lang" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/lang"
     )
 
     # Template Files
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/templates" "${CMAKE_CURRENT_BINARY_DIR}/bin/templates"
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/templates" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/templates"
     )
 else()
     # Config Files

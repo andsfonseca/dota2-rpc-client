@@ -1,10 +1,14 @@
 [requires]
-drogon/1.8.3
+drogon/1.9.3
 jsoncpp/1.9.5
+discord-game-sdk/3.2.1
 
 [generators]
 cmake_find_package
 cmake_find_package_multi
+
+[imports]
+., lib/discord_game_sdk.dll -> .
 
 [options]
 drogon:shared = False
