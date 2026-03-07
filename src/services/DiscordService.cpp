@@ -4,11 +4,18 @@
 #include <iostream>
 
 DiscordService *DiscordService::instance = nullptr;
+std::mutex DiscordService::instanceMutex;
 
 DiscordService::DiscordService() {}
 
 bool DiscordService::initialize()
 {
+    
+    // Check if already initialized
+    if (core) {
+        return true;
+    }
+    
     // Instatiante Discord
     discord::Core *aux{};
     auto result = discord::Core::Create(963884877428711434, DiscordCreateFlags_NoRequireDiscord, &aux);
@@ -36,39 +43,51 @@ bool DiscordService::initialize()
 
 void DiscordService::loop()
 {
-    bool breaked{false};
-
     // Loop
-    do
+    while (!interrupted.load())
     {
-        std::time_t t = std::time(0);
-        double seconds = std::difftime(t, lastUpdate);
+        int64_t t = static_cast<int64_t>(std::time(0));
+        double seconds = static_cast<double>(t - lastUpdate.load());
 
-        // With no updates in 10 seconds
-        if (seconds > 10 || !this->core)
+        // With no updates in 10 seconds, stop the loop
+        if (seconds > 10)
         {
-            breaked = true;
             break;
         }
-
-        this->core->RunCallbacks();
+        
+        {
+            std::lock_guard<std::mutex> lock(coreMutex);
+            if (!this->core)
+            {
+                break;
+            }
+            
+            this->core->RunCallbacks();
+        }
+        
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
-
-    } while (!interrupted);
-
-    // If Stopped reset the values
-    if (breaked && !interrupted)
+    }
+    
+    // Clean up when loop ends
     {
-        interrupted = false;
-        started = false;
+        std::lock_guard<std::mutex> lock(coreMutex);
         this->core.reset();
     }
+    
+    // Mark as no longer running
+    started.store(false);
 }
 
 DiscordService *DiscordService::getInstance()
 {
     if (!instance)
-        instance = new DiscordService;
+    {
+        std::lock_guard<std::mutex> lock(instanceMutex);
+        if (!instance)
+        {
+            instance = new DiscordService;
+        }
+    }
     return instance;
 }
 
@@ -77,80 +96,130 @@ void DiscordService::updateActivity(discord::Activity activity)
     if (!start())
         return;
 
-    lastUpdate = std::time(0);
+    lastUpdate.store(static_cast<int64_t>(std::time(0)));
+    
+    std::lock_guard<std::mutex> lock(coreMutex);
     if (this->core)
+    {
         this->core->ActivityManager().UpdateActivity(activity, [](discord::Result result)
                                                      {
                                                         if(result != discord::Result::Ok)
                                                         {
-                                                            std::cout << "Failed updating activity! "
+                                                            std::cout << "Failed updating activity! ("
                                                                         << static_cast<int>(result)
                                                                         << ")" << std::endl;
                                                         } });
+    }
 }
 
 void DiscordService::cleanActivity()
 {
-    if (!started)
-        return;
-
-    // Remove the activity
-    this->core->ActivityManager().ClearActivity([](discord::Result result)
-                                                {   if(result != discord::Result::Ok)
-                                                    {
-                                                        std::cout << "Failed updating activity! "
-                                                                    << static_cast<int>(result)
-                                                                    << ")" << std::endl;
-                                                    } });
-    // Stop the instance
-    stop();
+    bool wasStarted = started.load();
+    
+    // Clear the activity if it's running
+    if (wasStarted)
+    {
+        {
+            std::lock_guard<std::mutex> lock(coreMutex);
+            if (this->core)
+            {
+                this->core->ActivityManager().ClearActivity([](discord::Result result)
+                                                            {   
+                                                                if(result != discord::Result::Ok)
+                                                                {
+                                                                    std::cout << "Failed clearing activity! ("
+                                                                                << static_cast<int>(result)
+                                                                                << ")" << std::endl;
+                                                                }
+                                                            });
+            }
+        }
+        
+        // Stop the Discord service
+        stop();
+    }
+    else
+    {
+        // Even if not started, clean up any leftover thread
+        if (threadHandler && threadHandler->joinable())
+        {
+            threadHandler->join();
+            threadHandler.reset();
+        }
+    }
 }
 
 bool DiscordService::start()
 {
-    // Initialize
-    if (!this->core)
+    // Check if we need to clean up a finished thread
+    if (!started.load() && threadHandler && threadHandler->joinable())
     {
-        if (!initialize())
-            return false;
+        threadHandler->join();
+        threadHandler.reset();
     }
-    // Start if not started
-    if (!started)
+    
+    // Initialize core if needed
     {
-        started = true;
-        threadHandler = new std::thread(&DiscordService::loop, this);
+        std::lock_guard<std::mutex> lock(coreMutex);
+        if (!this->core)
+        {
+            if (!initialize())
+                return false;
+        }
     }
+    
+    // Start thread if not already started
+    bool expected = false;
+    if (started.compare_exchange_strong(expected, true))
+    {
+        // Reset interrupted flag when starting new thread
+        interrupted.store(false);
+        lastUpdate.store(static_cast<int64_t>(std::time(0)));
+        threadHandler = std::make_unique<std::thread>(&DiscordService::loop, this);
+    }
+    
     return true;
 }
 
 void DiscordService::stop()
 {
-    // If start, can stop
-    if (started)
+    // Signal stop to the thread
+    interrupted.store(true);
+    
+    // Wait for thread to finish if it's running
+    if (threadHandler && threadHandler->joinable())
     {
-        // Send interrupted signal
-        interrupted = true;
         threadHandler->join();
-
-        // Reset the values
-        interrupted = false;
-        started = false;
-        this->core.reset();
     }
+    
+    // Clean up resources 
+    {
+        std::lock_guard<std::mutex> lock(coreMutex);
+        if (this->core)
+        {
+            this->core.reset();
+        }
+    }
+    
+    // Reset state
+    threadHandler.reset();
+    interrupted.store(false);
+    started.store(false);
 }
 
 std::string DiscordService::getLanguage()
 {
     // Initialize
-    if (!this->core)
     {
-        if (!initialize())
-            return "";
+        std::lock_guard<std::mutex> lock(coreMutex);
+        if (!this->core)
+        {
+            if (!initialize())
+                return "";
+        }
+
+        char locale[128];
+        this->core->ApplicationManager().GetCurrentLocale(locale);
+        return std::string(locale);
     }
-
-    char locale[128];
-
-    this->core->ApplicationManager().GetCurrentLocale(locale);
-
-    return std::string(locale);
 }
