@@ -42,6 +42,13 @@ jobs:
       uses: turtlebrowser/get-conan@main
       with:
         version: 2.26.2
+    - name: Cache Conan packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.conan2
+        key: ${{ runner.os }}-conan-${{ hashFiles('**/conanfile.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-conan-
     - name: Create Conan profile
       run:   |
             conan profile detect --force
@@ -68,10 +75,17 @@ jobs:
               mv ./build/config.json  ./build/bin/config.json 
               mv ./build/dota2-rpc-client  ./build/bin/dota2-rpc-client
             else
-              cp build/Release/dota2-rpc-client.exe build/bin/ || true
+              echo "Windows uses build/Release/ directory"
             fi
       shell: bash
-    - name: Upload
+    - name: Upload (Windows)
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v4
+      with:
+        path: ./build/Release
+        name: ${{ matrix.config.artifact }}
+    - name: Upload (Linux)
+      if: runner.os == 'Linux'
       uses: actions/upload-artifact@v4
       with:
         path: ./build/bin
