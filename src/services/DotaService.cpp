@@ -153,8 +153,10 @@ std::string DotaService::getHeroName(Json::Value data)
             (name == "npc_dota_hero_rubick" && itemId == 12451) ||
             (name == "npc_dota_hero_nevermore" && itemId == 6996) ||
             (name == "npc_dota_hero_razor" && itemId == 23095) ||
+            (name == "npc_dota_hero_skywrath_mage" && itemId == 18539) ||
             (name == "npc_dota_hero_spectre" && itemId == 9662) ||
             (name == "npc_dota_hero_terrorblade" && itemId == 5957) ||
+            (name == "npc_dota_hero_vengefulspirit" && itemId == 22718) ||
             (name == "npc_dota_hero_windrunner" && itemId == 13806) ||
             (name == "npc_dota_hero_skeleton_king" && itemId == 13456) ||
             (name == "npc_dota_hero_zuus" && itemId == 6914))
@@ -163,9 +165,8 @@ std::string DotaService::getHeroName(Json::Value data)
             std::string style = "style" + std::to_string(i);
             if (!data["wearables"][style].isNull())
             {
-                int numberStyle = data["wearables"][style].asInt();
-                if (numberStyle == 1)
-                    return name + "_3";
+                int numberStyle = data["wearables"][style].asInt() + 2;
+                return name + "_" + std::to_string(numberStyle);
             }
 
             return name + "_2";
