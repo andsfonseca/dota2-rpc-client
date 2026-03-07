@@ -63,7 +63,9 @@ dota2-rpc-client.exe <flag>
 
 ## Running on Linux (Experimental)
 
-Just as a warning it's just a experimental version. If you find any bugs in this version, please report them. The Discord API and other functions commonly used on Windows may not have the same effect on Linux.
+> **Note:** Linux builds are currently paused. Windows is the primary supported platform.
+
+Just as a warning it's an experimental version. If you find any bugs in this version, please report them. The Discord API and other functions commonly used on Windows may not have the same effect on Linux.
 
 Unfortunately, this service has not been adapted to work with `daemon`. So installing and running the application must be done manually from the terminal.
 
@@ -83,16 +85,6 @@ And run the application using
 ```shell
 ./dota2-rpc-client
 ```
-
-### Known bugs:
-
-  * A bug related to the discord SDK loop, sometimes returning a "panicked". Probably some problem related to threads. Still looking for a solution.
-
-    Temporary solution: Try running until it works.
-
-  * A failure to create files and folders, usually caused by missing permissions
-
-    Temporary solution: Give the necessary permissions.
     
 ## Settings
 
@@ -147,17 +139,31 @@ This project mainly uses 4 libraries to work. Are they:
  * [SrvLib](https://github.com/Tomenz/SrvLib) - A library for creating services in Windows and Linux created by [@tomenz](https://github.com/tomenz).
  * [NFD](https://github.com/btzy/nativefiledialog-extended) - A small C library with that portably invokes native file open, folder select and file save dialogs.  Created by [@btzy](https://github.com/btzy) and [@mlabbe](https://github.com/mlabbe).
 
-This is a project made with *CMake*, these libraries are downloaded during the first compilation of the software and placed in a folder called `third_party`.
+This is a project made with *CMake*. Some libraries are managed as Git submodules in the `third_party` folder, while others are downloaded via Conan package manager.
 
-With the repository downloaded, run the command:
+### Building the project
+
+After cloning the repository, initialize and update the Git submodules:
+
+```shell
+git submodule update --init --recursive
+```
+
+Then, configure the project:
+
+```shell
+cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug
+```
+
+Then build it:
 
 ```shell
  cmake --build {folder} --config Debug --target dota2-rpc-client -j {threads}
 ```
  
-> This project uses Conan Package Manager to download [Drogon C++](https://github.com/drogonframework/drogon) and jsoncpp packages. If you use a package manager like `vcpkg` or libs and dlls externally, feel free to modify `CMakeLists.txt` (Just comment out the references to conan 😅). 
-> 
-> An installation guide for the *Drogon C++* dependencies can be found on [this page](https://github.com/drogonframework/drogon/wiki/ENG-02-Installation).
+> This project uses Conan Package Manager to download some dependencies. The Conan provider is automatically downloaded via CMake on the first build.
+
+> If you prefer to use a different package manager like `vcpkg` or manage libs and dlls externally, feel free to modify `CMakeLists.txt`.
 
 ## Web Page Compilation Instructions
 

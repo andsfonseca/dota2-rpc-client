@@ -27,7 +27,7 @@ ArgumentOptions resolveArgumentOption(const std::string input)
     return NONE;
 }
 
-void readArgs(const int argc, const char *argv[])
+void readArgs(const int argc, char *argv[])
 {
     if (argc > 1)
     {
@@ -42,7 +42,7 @@ void readArgs(const int argc, const char *argv[])
     }
 }
 
-int main(int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
     readArgs(argc, argv);
 #if defined(_WIN32) || defined(_WIN64)
@@ -59,10 +59,10 @@ int main(int argc, const char *argv[])
     svParam.fnSignalCallBack = []() {
     };
 
-    // No option, run sync
+    // No option, run sync (running as normal application, personal use)
     // if (argc <= 1)
     // {
-    //     const char *args[] = {"", "-f"};
+    //     char *args[] = {argv[0], (char*)"-f"};
     //     return ServiceMain(2, args, svParam);
     // }
     
