@@ -44,28 +44,17 @@ void readArgs(const int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    readArgs(argc, argv);
 #if defined(_WIN32) || defined(_WIN64)
     SrvParam svParam;
-#if defined(_WIN32) || defined(_WIN64)
-    svParam.szDspName = L"Dota 2 RPC Client Service"; // Servicename in Service control manager of windows
-    svParam.szDescribe = L"Dota 2 RPC Client Service"; // Description in Service control manager of windows
-#endif
-    svParam.szSrvName = L"dota2rpc"; // Service name (service id)
+    svParam.szDspName = L"Dota 2 RPC Client Service";
+    svParam.szDescribe = L"Dota 2 RPC Client Service";
+    svParam.szSrvName = L"dota2rpc";
 
     svParam.fnStartCallBack = WebServerManager::start;
     svParam.fnStopCallBack = WebServerManager::stop;
 
-    svParam.fnSignalCallBack = []() {
-    };
+    svParam.fnSignalCallBack = []() {};
 
-    // No option, run sync (running as normal application, personal use)
-    // if (argc <= 1)
-    // {
-    //     char *args[] = {argv[0], (char*)"-f"};
-    //     return ServiceMain(2, args, svParam);
-    // }
-    
     return ServiceMain(argc, argv, svParam);
 #else
     WebServerManager::onStart();

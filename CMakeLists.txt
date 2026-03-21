@@ -64,18 +64,13 @@ else()
 endif()
 
 #[[CMAKE CXX]]
-check_include_file_cxx(any HAS_ANY)
-check_include_file_cxx(string_view HAS_STRING_VIEW)
 check_include_file_cxx(coroutine HAS_COROUTINE)
 
 if(NOT "${CMAKE_CXX_STANDARD}" STREQUAL "")
-# Do nothing
-elseif(HAS_ANY AND HAS_STRING_VIEW AND HAS_COROUTINE)
+elseif(HAS_COROUTINE)
     set(CMAKE_CXX_STANDARD 20)
-elseif(HAS_ANY AND HAS_STRING_VIEW)
-    set(CMAKE_CXX_STANDARD 17)
 else()
-    set(CMAKE_CXX_STANDARD 14)
+    set(CMAKE_CXX_STANDARD 17)
 endif()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -86,6 +81,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(THIRD_PARTY_BASE_DIR ${PROJECT_SOURCE_DIR}/third_party)
 set(FETCHCONTENT_BASE_DIR ${THIRD_PARTY_BASE_DIR} CACHE PATH "Missing description." FORCE)
 set(CMAKE_TLS_VERIFY true)
+
+if(OS STREQUAL "Linux")
+    find_package(Threads REQUIRED)
+    find_package(PkgConfig QUIET)
+endif()
 
 #[[1. Discord Game SDK]]
 set(DISCORD_SDK_URL "https://dl-game-sdk.discordapp.net/3.2.1/discord_game_sdk.zip")
@@ -106,6 +106,12 @@ file(GLOB SRC_List
 
 add_executable(${PROJECT_NAME} ${SRC_List})
 
+# Linux-specific compiler options for Discord SDK types
+if(OS STREQUAL "Linux")
+    target_compile_options(${PROJECT_NAME} PRIVATE -include cstdint)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+endif()
+
 set(DISCORD_GAME_SDK_PATH ${THIRD_PARTY_BASE_DIR}/discord-sdk-src)
 
 if(OS STREQUAL "Windows")
@@ -125,9 +131,10 @@ elseif(OS STREQUAL "Macos")
 endif()
 
 if(OS STREQUAL "Linux")
-    execute_process(COMMAND mv discord_game_sdk.so libdiscord_game_sdk.so
-            WORKING_DIRECTORY ${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}
-            OUTPUT_VARIABLE AUX)
+    # Rename discord_game_sdk.so to libdiscord_game_sdk.so if needed
+    if(EXISTS "${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}/discord_game_sdk.so" AND NOT EXISTS "${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}/libdiscord_game_sdk.so")
+        file(RENAME "${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}/discord_game_sdk.so" "${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}/libdiscord_game_sdk.so")
+    endif()
 endif()
 
 target_link_directories(${PROJECT_NAME} PRIVATE "${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}")
@@ -163,15 +170,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE nfd)
 set(CMAKE_INCLUDE_PATH ${CMAKE_CURRENT_LIST_DIR}/include)
 add_subdirectory(src)
 
-if(CMAKE_CXX_STANDARD LESS 17)
-    # With C++14, use boost to support any, string_view and filesystem
-    message(STATUS "use c++14")
-    find_package(Boost 1.61.0 REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PUBLIC Boost::boost)
-elseif(CMAKE_CXX_STANDARD LESS 20)
-    message(STATUS "use c++17")
+if(CMAKE_CXX_STANDARD EQUAL 20)
+    message(STATUS "Building with C++20 (coroutine support detected)")
 else()
-    message(STATUS "use c++20")
+    message(STATUS "Building with C++17")
 endif()
 
 aux_source_directory(controllers CTL_SRC)
@@ -216,6 +218,14 @@ if(MSVC)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/templates" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/templates"
     )
+
+    # Windows Installation Scripts
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_CURRENT_SOURCE_DIR}/scripts/install-windows.bat" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/"
+    )
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_CURRENT_SOURCE_DIR}/scripts/uninstall-windows.bat" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/"
+    )
 else()
     # Config Files
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -231,4 +241,17 @@ else()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/templates" "${CMAKE_CURRENT_BINARY_DIR}/templates"
     )
+
+    # Linux Service Scripts
+    if(OS STREQUAL "Linux")
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_CURRENT_SOURCE_DIR}/scripts/install-service.sh" "${CMAKE_CURRENT_BINARY_DIR}/"
+        )
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_CURRENT_SOURCE_DIR}/scripts/uninstall-service.sh" "${CMAKE_CURRENT_BINARY_DIR}/"
+        )
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_CURRENT_SOURCE_DIR}/scripts/service/dota2-rpc-client.service" "${CMAKE_CURRENT_BINARY_DIR}/"
+        )
+    endif()
 endif()
