@@ -1,0 +1,21 @@
+[Unit]
+Description=Dota 2 RPC Client Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/share/dota2-rpc-client
+ExecStart=%h/.local/share/dota2-rpc-client/dota2-rpc-client
+StandardOutput=journal
+StandardError=journal
+Environment=XDG_RUNTIME_DIR=/run/user/%U
+KillSignal=SIGTERM
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
+StartLimitInterval=600
+StartLimitBurst=3
+
+[Install]
+WantedBy=default.target
+
