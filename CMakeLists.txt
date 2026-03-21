@@ -105,7 +105,12 @@ file(GLOB SRC_List
 )
 
 add_executable(${PROJECT_NAME} ${SRC_List})
-target_compile_options(${PROJECT_NAME} PRIVATE -include cstdint)
+
+# Linux-specific compiler options for Discord SDK types
+if(OS STREQUAL "Linux")
+    target_compile_options(${PROJECT_NAME} PRIVATE -include cstdint)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+endif()
 
 set(DISCORD_GAME_SDK_PATH ${THIRD_PARTY_BASE_DIR}/discord-sdk-src)
 
@@ -134,10 +139,6 @@ endif()
 
 target_link_directories(${PROJECT_NAME} PRIVATE "${CMAKE_DISCORD_GAME_SDK_LIB_FOLDER}")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_DISCORD_GAME_SDK_LIB_PATH})
-
-if(OS STREQUAL "Linux")
-    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
-endif()
 
 if(OS STREQUAL "Windows")
     # Move DLL File Automatically While Building

@@ -85,7 +85,7 @@ jobs:
         run: cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build Project
-        run: cmake --build ./build --config Release --target dota2-rpc-client -j 4
+        run: cmake --build ./build --config Release --target dota2-rpc-client --parallel
 
       - name: Prepare Windows Package
         if: runner.os == 'Windows'
