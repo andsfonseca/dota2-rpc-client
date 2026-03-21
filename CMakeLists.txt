@@ -82,7 +82,6 @@ set(THIRD_PARTY_BASE_DIR ${PROJECT_SOURCE_DIR}/third_party)
 set(FETCHCONTENT_BASE_DIR ${THIRD_PARTY_BASE_DIR} CACHE PATH "Missing description." FORCE)
 set(CMAKE_TLS_VERIFY true)
 
-# Linux system libraries (must be before Drogon for proper dependency resolution)
 if(OS STREQUAL "Linux")
     find_package(Threads REQUIRED)
     find_package(PkgConfig QUIET)
@@ -106,6 +105,7 @@ file(GLOB SRC_List
 )
 
 add_executable(${PROJECT_NAME} ${SRC_List})
+target_compile_options(${PROJECT_NAME} PRIVATE -include cstdint)
 
 set(DISCORD_GAME_SDK_PATH ${THIRD_PARTY_BASE_DIR}/discord-sdk-src)
 

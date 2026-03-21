@@ -30,25 +30,27 @@ Share real-time information about what happens in your game with everyone.
  | See your instructors.  | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/165002839-aa520877-e38a-40d5-984c-9bfc8b9dbd65.gif">        |
 | Multiple language support.       | <p align="center"><img src="https://user-images.githubusercontent.com/7833466/165002139-5eb77c4c-e5a7-4bf8-9839-0b8b4cd794f7.gif"><img src="https://user-images.githubusercontent.com/7833466/165002140-78e3af75-ba13-487d-8895-fe60289dedb1.gif">        |
 
-## Installation (Windows only)
+## Instructions 
 
-> See instructions for Linux below
+### Windows
+
+#### Installation
 
 Follow the step-by-step below to install your version of DotA 2 RPC
 
  * Download the latest software version on the [Releases page](https://github.com/andsfonseca/dota2-rpc-client/releases/);
  * Unzip the file in a folder of your preference. (There are many files, then be careful!🙃);
- * Open the file `install.windows.bat` and everything will be ready!
+ * Open the file `install-windows.bat` and everything will be ready!
 
-## Uninstallation (Windows only)
- 
- * Open the `uninstall.windows.bat` file to remove the installation of your computer;
+#### Uninstallation
+
+ * Open the `uninstall-windows.bat` file to remove the installation of your computer;
  * If you want, you can delete all the files.
 
-## Advanced Users (Windows Only)
- 
+#### Additional Commands
+
 This software is registered as Windows service. If you are looking for other options, here are other ways to use the application.
- 
+
  ```shell
 dota2-rpc-client.exe <flag>
 ```
@@ -61,29 +63,48 @@ dota2-rpc-client.exe <flag>
 | `-e`                      | If installed, stop the service.                                                   |
 | `-f`                      | Execute the DotA 2 RPC like a Console Application.                                |
 
-## Running on Linux (Experimental)
+### Linux
 
-> **Note:** Linux builds are currently paused. Windows is the primary supported platform.
+#### Installation
 
-Just as a warning it's an experimental version. If you find any bugs in this version, please report them. The Discord API and other functions commonly used on Windows may not have the same effect on Linux.
+Follow the step-by-step below to install DotA 2 RPC as a systemd user service:
 
-Unfortunately, this service has not been adapted to work with `daemon`. So installing and running the application must be done manually from the terminal.
+ * Download the latest software version on the [Releases page](https://github.com/andsfonseca/dota2-rpc-client/releases/);
+ * Unzip the file in a folder of your preference. (There are many files, then be careful!🙃);
+ * Navigate to the extracted folder in terminal and execute:
 
-Make the file executable
-
-```shell
-chmod +x dota2-rpc-client 
+```bash
+chmod +x install-service.sh
+./install-service.sh
 ```
 
-Use this command to install
+#### Uninstallation
+
+* To remove the service:
 ```shell
-./dota2-rpc-client -i
+./uninstall-service.sh
 ```
+* You will be prompted whether to keep or remove the application data.
 
-And run the application using
+#### Additional Commands
+
+Once installed, you can manage the service with these commands:
 
 ```shell
-./dota2-rpc-client
+# View service status
+systemctl --user status dota2-rpc-client.service
+
+# View logs in real-time
+journalctl --user -u dota2-rpc-client.service -f
+
+# Stop the service
+systemctl --user stop dota2-rpc-client.service
+
+# Start the service
+systemctl --user start dota2-rpc-client.service
+
+# Restart the service
+systemctl --user restart dota2-rpc-client.service
 ```
     
 ## Settings
