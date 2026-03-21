@@ -10,83 +10,85 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - {
-            name: "Windows Latest MSVC", artifact: "dota2-rpc-client",
-            os: windows-latest,
-            cc: "cl", cxx: "cl",
-            environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-          }
+          - {
+              name: "Windows Latest MSVC",
+              artifact: "dota2-rpc-client",
+              os: windows-latest,
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+            }
         # - {
         #     name: "Ubuntu 20.04 GCC", artifact: "dota2-rpc-client-linux",
         #     os: ubuntu-20.04,
         #     build_type: "Release", cc: "gcc", cxx: "g++"
         #   }
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
-    - name: Download libgtk-3-dev
-      run:   |
-            if [ "$RUNNER_OS" == "Linux" ]; then
-              sudo apt install -y libgtk-3-dev
-            else
-              echo "$RUNNER_OS don't need this library!"
-            fi
-      shell: bash
-    - name: Fetch CMake
-      uses: lukka/get-cmake@latest
-      with:
-        cmakeVersion: 4.2.3 
-    - name: Install Conan
-      id: conan
-      uses: turtlebrowser/get-conan@main
-      with:
-        version: 2.26.2
-    - name: Cache Conan packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.conan2
-        key: ${{ runner.os }}-conan-${{ hashFiles('**/conanfile.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-conan-
-    - name: Create Conan profile
-      run:   |
-            conan profile detect --force
-    - name: Set C++17 in Conan profile (Windows)
-      if: runner.os == 'Windows'
-      run:   |
-            $profilePath = "$env:USERPROFILE\.conan2\profiles\default"
-            (Get-Content $profilePath) -replace 'compiler.cppstd=14', 'compiler.cppstd=17' | Set-Content $profilePath
-            Write-Host "Updated Conan profile:"
-            Get-Content $profilePath
-      shell: pwsh
-    - name: Configuring project
-      run:   |
-            cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release  
-    - name: Build project
-      run:   |
-            cmake --build ./build --config Release --target dota2-rpc-client -j 10
-    - name: Preparing for upload
-      run:   |
-            if [ "$RUNNER_OS" == "Linux" ]; then
-              mkdir ./build/bin
-              mv ./build/lang ./build/bin/lang
-              mv ./build/templates ./build/bin/templates
-              mv ./build/config.json  ./build/bin/config.json 
-              mv ./build/dota2-rpc-client  ./build/bin/dota2-rpc-client
-            else
-              echo "Windows uses build/Release/ directory"
-            fi
-      shell: bash
-    - name: Upload (Windows)
-      if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v4
-      with:
-        path: ./build/Release
-        name: ${{ matrix.config.artifact }}
-    - name: Upload (Linux)
-      if: runner.os == 'Linux'
-      uses: actions/upload-artifact@v4
-      with:
-        path: ./build/bin
-        name: ${{ matrix.config.artifact }}
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Download libgtk-3-dev
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            sudo apt install -y libgtk-3-dev
+          else
+            echo "$RUNNER_OS don't need this library!"
+          fi
+        shell: bash
+      - name: Fetch CMake
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: 4.2.3
+      - name: Install Conan
+        id: conan
+        uses: turtlebrowser/get-conan@main
+        with:
+          version: 2.26.2
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2
+          key: ${{ runner.os }}-conan-${{ hashFiles('**/conanfile.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-conan-
+      - name: Create Conan profile
+        run: |
+          conan profile detect --force
+      - name: Set C++17 in Conan profile (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $profilePath = "$env:USERPROFILE\.conan2\profiles\default"
+          (Get-Content $profilePath) -replace 'compiler.cppstd=14', 'compiler.cppstd=17' | Set-Content $profilePath
+          Write-Host "Updated Conan profile:"
+          Get-Content $profilePath
+        shell: pwsh
+      - name: Configuring project
+        run: |
+          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release
+      - name: Build project
+        run: |
+          cmake --build ./build --config Release --target dota2-rpc-client -j 10
+      - name: Preparing for upload
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            mkdir ./build/bin
+            mv ./build/lang ./build/bin/lang
+            mv ./build/templates ./build/bin/templates
+            mv ./build/config.json  ./build/bin/config.json 
+            mv ./build/dota2-rpc-client  ./build/bin/dota2-rpc-client
+          else
+            echo "Windows uses build/Release/ directory"
+          fi
+        shell: bash
+      - name: Upload (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./build/Release
+          name: ${{ matrix.config.artifact }}
+      - name: Upload (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./build/bin
+          name: ${{ matrix.config.artifact }}
