@@ -100,6 +100,7 @@ jobs:
 
           # Copy binary and data files
           cp ./build/dota2-rpc-client ./build/dota2-rpc-client-linux/
+          cp ./build/libdiscord_game_sdk.so ./build/dota2-rpc-client-linux/
           cp -r ./build/lang ./build/dota2-rpc-client-linux/
           cp -r ./build/templates ./build/dota2-rpc-client-linux/
           cp ./build/config.json ./build/dota2-rpc-client-linux/

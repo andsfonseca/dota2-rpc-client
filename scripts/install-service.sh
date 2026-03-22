@@ -33,6 +33,14 @@ mkdir -p "$INSTALL_DIR"
 cp "$SCRIPT_DIR/dota2-rpc-client" "$INSTALL_DIR/"
 chmod +x "$INSTALL_DIR/dota2-rpc-client"
 
+# Copy discord library
+if [ -f "$SCRIPT_DIR/libdiscord_game_sdk.so" ]; then
+    cp "$SCRIPT_DIR/libdiscord_game_sdk.so" "$INSTALL_DIR/"
+else
+    echo "Error: libdiscord_game_sdk.so not found in the same directory as this script."
+    exit 1
+fi
+
 # Copy configuration files
 if [ -f "$SCRIPT_DIR/config.json" ]; then
     cp "$SCRIPT_DIR/config.json" "$INSTALL_DIR/"

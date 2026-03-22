@@ -61,7 +61,6 @@ int main(int argc, char *argv[])
 
     return ServiceMain(argc, argv, svParam);
 #else
-    
     ArgumentOptions option = readArgs(argc, argv);
     if (option == ArgumentOptions::INSTALL)
         return 0;
