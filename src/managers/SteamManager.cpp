@@ -69,6 +69,30 @@ void SteamManager::showCannotCreateFileWarning()
               << "\n\n";
 }
 
+std::string SteamManager::findDota2InstallDirFromManifest(const std::string libraryPath)
+{
+    std::string manifestPath = libraryPath + "/steamapps/appmanifest_570.acf";
+    std::string data;
+
+    if (!FileLoader::load(manifestPath, data))
+        return "dota 2 beta";
+
+    std::regex installDirRegex("\"installdir\"\\s+\"([^\"]+)\"");
+    std::istringstream iss(data);
+    std::string line;
+
+    while (std::getline(iss, line))
+    {
+        std::smatch sm;
+        if (std::regex_search(line, sm, installDirRegex))
+        {
+            return sm[1];
+        }
+    }
+
+    return "dota 2 beta";
+}
+
 bool SteamManager::findDota2PathUsingVDF(const std::string vdfPath, std::string &dota2path)
 {
 
@@ -81,25 +105,29 @@ bool SteamManager::findDota2PathUsingVDF(const std::string vdfPath, std::string 
     std::istringstream iss(data);
     std::string line;
 
-    std::string library_path;
+    std::string libraryPath;
 
     while (std::getline(iss, line))
     {
         auto pos = line.find("path", 0);
         if (pos != std::string::npos)
         {
-            library_path = line.substr(pos + 5, line.size());
+            libraryPath = line.substr(pos + 5, line.size());
             std::smatch sm;
-            std::regex_search(library_path, sm, path_regex);
-            library_path = sm[1];
+            std::regex_search(libraryPath, sm, path_regex);
+            libraryPath = sm[1];
             continue;
         }
 
         auto pos1 = line.find("\"570\"", 0);
         if (pos1 != std::string::npos)
         {
-            StringExtensions::findAndReplaceAll(library_path, "\\\\", "/");
-            dota2path = library_path + "/steamapps/common/dota 2 beta";
+            StringExtensions::findAndReplaceAll(libraryPath, "\\\\", "/");
+
+            // Try to find Dota 2 path using manifest file
+            std::string installDir = findDota2InstallDirFromManifest(libraryPath);
+
+            dota2path = libraryPath + "/steamapps/common/" + installDir;
             return true;
         }
     }
@@ -142,7 +170,7 @@ void SteamManager::onInstall()
     }
 
     // Check folder and create first CFG
-    std::string vdfPath = steamPath + "/SteamApps/libraryfolders.vdf";
+    std::string vdfPath = steamPath + "/steamapps/libraryfolders.vdf";
 
     std::string dota2Path;
 

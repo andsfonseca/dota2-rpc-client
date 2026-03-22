@@ -64,6 +64,10 @@ cp "$SCRIPT_DIR/$SERVICE_NAME" "$SYSTEMD_DIR/"
 # Reload systemd daemon
 systemctl --user daemon-reload
 
+# Run installation
+echo "Running installation to configure Dota 2 gamestate integration..."
+"$INSTALL_DIR/dota2-rpc-client" -i
+
 # Start service
 systemctl --user enable dota2-rpc-client.service
 systemctl --user start dota2-rpc-client.service

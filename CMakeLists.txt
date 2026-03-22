@@ -106,7 +106,6 @@ file(GLOB SRC_List
 
 add_executable(${PROJECT_NAME} ${SRC_List})
 
-# Linux-specific compiler options for Discord SDK types
 if(OS STREQUAL "Linux")
     target_compile_options(${PROJECT_NAME} PRIVATE -include cstdint)
     target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
@@ -181,9 +180,6 @@ aux_source_directory(filters FILTER_SRC)
 aux_source_directory(plugins PLUGIN_SRC)
 aux_source_directory(models MODEL_SRC)
 
-# use the following line to create views with namespaces.
-# drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
-# ${CMAKE_CURRENT_BINARY_DIR} TRUE)
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_INCLUDE_PATH}
@@ -195,12 +191,6 @@ target_sources(${PROJECT_NAME}
     ${FILTER_SRC}
     ${PLUGIN_SRC}
     ${MODEL_SRC})
-
-# ##############################################################################
-# uncomment the following line for dynamically loading views
-# set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS ON)
-
-# ##############################################################################
 
 # Additional Files
 if(MSVC)

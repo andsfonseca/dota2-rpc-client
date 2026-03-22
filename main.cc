@@ -27,24 +27,28 @@ ArgumentOptions resolveArgumentOption(const std::string input)
     return NONE;
 }
 
-void readArgs(const int argc, char *argv[])
+ArgumentOptions readArgs(const int argc, char *argv[])
 {
     if (argc > 1)
     {
-        switch (resolveArgumentOption(argv[1]))
+        ArgumentOptions opt = resolveArgumentOption(argv[1]);
+        switch (opt)
         {
         case INSTALL:
             SteamManager::onInstall();
-            break;
+            return opt;
         default:
-            break;
+            return opt;
         }
     }
+    return ArgumentOptions::NONE;
 }
 
 int main(int argc, char *argv[])
 {
 #if defined(_WIN32) || defined(_WIN64)
+    readArgs(argc, argv);
+
     SrvParam svParam;
     svParam.szDspName = L"Dota 2 RPC Client Service";
     svParam.szDescribe = L"Dota 2 RPC Client Service";
@@ -57,6 +61,11 @@ int main(int argc, char *argv[])
 
     return ServiceMain(argc, argv, svParam);
 #else
+    
+    ArgumentOptions option = readArgs(argc, argv);
+    if (option == ArgumentOptions::INSTALL)
+        return 0;
+
     WebServerManager::onStart();
     return 0;
 #endif
