@@ -37,7 +37,7 @@
             "CREATING_FOLDER": "در حال ساختن پوشه‌ی  'gamestate_integration'...",
             "FINDING_STEAM": "در حال پیدا کردن پوشهء استیم...",
             "INSTALLATION_IN_PROGRESS": "راه اندازی فراخوان اطلاعات دوتا۲ (DotA2 RPC)...",
-            "SERVER_HOW_TO_EXIT": "برای خروج Ctrl+C را ۲ بار بفشارید.",
+            "SERVER_HOW_TO_EXIT": "برای خروج Ctrl+C را بفشارید.",
             "SERVER_LISTENING": "شنود کردن روی http://{{HOST}}:{{PORT}}.",
             "SERVER_LISTENING_LOCALHOST": "شنود کردن روی http://localhost:{{PORT}} و http://{{HOST}}:{{PORT}}."
         },

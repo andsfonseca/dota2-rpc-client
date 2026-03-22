@@ -37,7 +37,7 @@
             "CREATING_FOLDER": "Creating 'gamestate_integration' folder...",
             "FINDING_STEAM": "Finding Steam folder...",
             "INSTALLATION_IN_PROGRESS": "Installing DotA 2 RPC...",
-            "SERVER_HOW_TO_EXIT": "Press Ctrl+C twice to exit.",
+            "SERVER_HOW_TO_EXIT": "Press Ctrl+C to exit.",
             "SERVER_LISTENING": "Listening at http://{{HOST}}:{{PORT}}.",
             "SERVER_LISTENING_LOCALHOST": "Listening at http://localhost:{{PORT}} and http://{{HOST}}:{{PORT}}."
         },
