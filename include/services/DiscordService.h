@@ -14,6 +14,12 @@ class DiscordService
 {
 private:
     DiscordService();
+    ~DiscordService();
+#ifdef __linux__
+    std::string getXDGRuntimeDir();
+    std::vector<std::string> getIPCPaths(const std::string &runtimeDir, bool recursive = false);
+    bool setupDiscordIPC();
+#endif
     bool initialize();
     void loop();
 
@@ -29,6 +35,11 @@ private:
     std::atomic<bool> interrupted{false};
     std::atomic<int64_t> lastUpdate{0};
 
+#ifdef __linux__
+    bool ipcSymlinkCreated{false};
+    std::string ipcSymlinkPath;
+#endif
+
 public:
     static DiscordService *getInstance();
     void updateActivity(discord::Activity activity);
@@ -36,4 +47,7 @@ public:
     bool start();
     void stop();
     std::string getLanguage();
+#ifdef __linux__
+    void cleanupDiscordIPC();
+#endif
 };

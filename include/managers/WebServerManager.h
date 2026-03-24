@@ -5,11 +5,10 @@
 class WebServerManager
 {
 private:
-    static void onStop();
-private:
     static std::thread *webServerThread;
 public:
     static void onStart();
+    static void onStop();
     static void start();
     static void stop();
 };

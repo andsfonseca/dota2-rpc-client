@@ -34,6 +34,11 @@ void WebServerManager::onStart()
     // Set HTTP listener address and port
     drogon::app().addListener(host, port_number);
 
+    // Force immediate shutdown on first Ctrl+C
+    drogon::app().setTermSignalHandler([]() {
+        drogon::app().quit();
+    });
+
     drogon::app().run();
 }
 

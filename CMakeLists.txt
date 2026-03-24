@@ -107,6 +107,10 @@ file(GLOB SRC_List
 add_executable(${PROJECT_NAME} ${SRC_List})
 
 if(OS STREQUAL "Linux")
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        BUILD_RPATH "$ORIGIN"
+        INSTALL_RPATH "$ORIGIN"
+    )
     target_compile_options(${PROJECT_NAME} PRIVATE -include cstdint)
     target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 endif()
@@ -217,6 +221,11 @@ if(MSVC)
         COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_CURRENT_SOURCE_DIR}/scripts/uninstall-windows.bat" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/"
     )
 else()
+
+    # Copy Discord Game SDK library to output directory
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_DISCORD_GAME_SDK_LIB_PATH}" "${CMAKE_CURRENT_BINARY_DIR}"
+    )
     # Config Files
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/templates/config" "${CMAKE_CURRENT_BINARY_DIR}"

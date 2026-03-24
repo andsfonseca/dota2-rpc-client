@@ -37,7 +37,7 @@
             "CREATING_FOLDER": "กำลังสร้างโฟล์เดอร์ 'gamestate_integration'...",
             "FINDING_STEAM": "กำลังหาโฟล์เดอร์ Steam...",
             "INSTALLATION_IN_PROGRESS": "กำลังติดตั้ง DotA 2 RPC...",
-            "SERVER_HOW_TO_EXIT": "กด Ctrl+C สองครั้งเพื่อออก",
+            "SERVER_HOW_TO_EXIT": "กด Ctrl+C เพื่อออก",
             "SERVER_LISTENING": "Listening ที่ http://{{HOST}}:{{PORT}}.",
             "SERVER_LISTENING_LOCALHOST": "Listening ที่ http://localhost:{{PORT}} และ http://{{HOST}}:{{PORT}}."
         },

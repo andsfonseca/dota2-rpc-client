@@ -37,7 +37,7 @@
             "CREATING_FOLDER": "'gamestate_integration'フォルダを作成中...",
             "FINDING_STEAM": "Steamフォルダを探索中...",
             "INSTALLATION_IN_PROGRESS": "DotA 2 RPCをインストール中...",
-            "SERVER_HOW_TO_EXIT": "Ctrl+C を二度押しで終了します。",
+            "SERVER_HOW_TO_EXIT": "Ctrl+C で終了します。",
             "SERVER_LISTENING": "http://{{HOST}}:{{PORT}} でリスニング中。",
             "SERVER_LISTENING_LOCALHOST": "http://localhost:{{PORT}} と http://{{HOST}}:{{PORT}} でリスニング中。"
         },
