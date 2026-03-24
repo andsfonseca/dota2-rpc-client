@@ -3,7 +3,7 @@
 #include <extensions/StringExtensions.h>
 #include <persistence/JsonLoader.h>
 #include <services/DiscordService.h>
-
+#include <filesystem>
 #include <iostream>
 
 Json::Value ConfigurationManager::configurations = static_cast<Json::Value>(NULL);
@@ -52,18 +52,60 @@ std::string ConfigurationManager::getSteamPath()
 
     Json::Value value = JsonLoader::getNode(configurations, "STEAM_FOLDER");
 
-    if (value.isNull())
-    {
+    if (!value.isNull())
+        return value.asString();
+
 #ifdef __linux__
-        return "~/.steam/steam";
+    const char* home = std::getenv("HOME");
+
+    if (!home)
+        return "";
+    
+    std::vector<std::string> paths = {
+        std::string(home) + "/.local/share/Steam", // Debian/Ubuntu
+        std::string(home) + "/.steam/steam", // Old Steam path
+        std::string(home) + "/.var/app/com.valvesoftware.Steam/.local/share/Steam", // Flatpak
+        std::string(home) + "/snap/steam/common/.local/share/Steam" // Snap
+    };
+    
+    for (const auto& path : paths)
+    {
+        if (std::filesystem::exists(path))
+            return path;
+    }
+    
+    return "";
 #elif _WIN32
-        return "C:/Program Files (x86)/Steam";
-#else
-        return "~/Library/Application Support/Steam"
-#endif
+    HKEY hKey;
+
+    const char* subkeys[] = {
+        "SOFTWARE\\WOW6432Node\\Valve\\Steam",
+        "SOFTWARE\\Valve\\Steam"
+    };
+
+    for (const auto& subkey : subkeys)
+    {
+        if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+        {
+            char buffer[512];
+            DWORD bufferSize = sizeof(buffer);
+            DWORD type = 0;
+
+            if (RegQueryValueExA( hKey, "InstallPath", NULL, &type, reinterpret_cast<LPBYTE>(buffer), &bufferSize ) == ERROR_SUCCESS)
+            {
+                RegCloseKey(hKey);
+                std::string path(buffer);
+                StringExtensions::findAndReplaceAll(path, "\\\\", "/");
+                return path;
+            }
+            RegCloseKey(hKey);
+        }
     }
 
-    return value.asString();
+    return "C:/Program Files (x86)/Steam";
+#else
+    return "";
+#endif
 }
 
 bool ConfigurationManager::setSteamPath(const std::string &path)
