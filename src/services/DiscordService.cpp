@@ -50,9 +50,7 @@ std::vector<std::string> DiscordService::getIPCPaths(const std::string &runtimeD
 {
     std::vector<std::string> ipcList;
 
-    namespace fs = std::filesystem;
-
-    auto processEntry = [&](const fs::directory_entry &entry)
+    auto processEntry = [&](const std::filesystem::directory_entry &entry)
     {
         const auto &path = entry.path();
         std::string filename = path.filename().string();
@@ -66,7 +64,7 @@ std::vector<std::string> DiscordService::getIPCPaths(const std::string &runtimeD
     std::error_code ec;
     if (!recursive)
     {
-        for (const auto &entry : fs::directory_iterator(runtimeDir, ec))
+        for (const auto &entry : std::filesystem::directory_iterator(runtimeDir, ec))
         {
             if (ec)
             {
@@ -79,8 +77,8 @@ std::vector<std::string> DiscordService::getIPCPaths(const std::string &runtimeD
     }
     else
     {
-        for (const auto &entry : fs::recursive_directory_iterator(runtimeDir,
-                                                                  fs::directory_options::skip_permission_denied,
+        for (const auto &entry : std::filesystem::recursive_directory_iterator(runtimeDir,
+                                                                  std::filesystem::directory_options::skip_permission_denied,
                                                                   ec))
         {
             if (ec)

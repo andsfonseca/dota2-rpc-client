@@ -4,7 +4,6 @@
 #include <persistence/JsonLoader.h>
 #include <services/DiscordService.h>
 #include <filesystem>
-
 #include <iostream>
 
 Json::Value ConfigurationManager::configurations = static_cast<Json::Value>(NULL);
@@ -68,17 +67,41 @@ std::string ConfigurationManager::getSteamPath()
         std::string(home) + "/.var/app/com.valvesoftware.Steam/.local/share/Steam", // Flatpak
         std::string(home) + "/snap/steam/common/.local/share/Steam" // Snap
     };
-
-    namespace fs = std::filesystem;
     
     for (const auto& path : paths)
     {
-        if (fs::exists(path))
+        if (std::filesystem::exists(path))
             return path;
     }
     
     return "";
 #elif _WIN32
+    HKEY hKey;
+
+    const char* subkeys[] = {
+        "SOFTWARE\\WOW6432Node\\Valve\\Steam",
+        "SOFTWARE\\Valve\\Steam"
+    };
+
+    for (const auto& subkey : subkeys)
+    {
+        if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+        {
+            char buffer[512];
+            DWORD bufferSize = sizeof(buffer);
+            DWORD type = 0;
+
+            if (RegQueryValueExA( hKey, "InstallPath", NULL, &type, reinterpret_cast<LPBYTE>(buffer), &bufferSize ) == ERROR_SUCCESS)
+            {
+                RegCloseKey(hKey);
+                std::string path(buffer);
+                StringExtensions::findAndReplaceAll(path, "\\\\", "/");
+                return path;
+            }
+            RegCloseKey(hKey);
+        }
+    }
+
     return "C:/Program Files (x86)/Steam";
 #else
     return "";
