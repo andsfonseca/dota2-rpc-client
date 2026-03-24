@@ -3,6 +3,7 @@
 #include <extensions/StringExtensions.h>
 #include <persistence/JsonLoader.h>
 #include <services/DiscordService.h>
+#include <filesystem>
 
 #include <iostream>
 
@@ -52,18 +53,36 @@ std::string ConfigurationManager::getSteamPath()
 
     Json::Value value = JsonLoader::getNode(configurations, "STEAM_FOLDER");
 
-    if (value.isNull())
-    {
-#ifdef __linux__
-        return "~/.steam/steam";
-#elif _WIN32
-        return "C:/Program Files (x86)/Steam";
-#else
-        return "~/Library/Application Support/Steam"
-#endif
-    }
+    if (!value.isNull())
+        return value.asString();
 
-    return value.asString();
+#ifdef __linux__
+    const char* home = std::getenv("HOME");
+
+    if (!home)
+        return "";
+    
+    std::vector<std::string> paths = {
+        std::string(home) + "/.local/share/Steam", // Debian/Ubuntu
+        std::string(home) + "/.steam/steam", // Old Steam path
+        std::string(home) + "/.var/app/com.valvesoftware.Steam/.local/share/Steam", // Flatpak
+        std::string(home) + "/snap/steam/common/.local/share/Steam" // Snap
+    };
+
+    namespace fs = std::filesystem;
+    
+    for (const auto& path : paths)
+    {
+        if (fs::exists(path))
+            return path;
+    }
+    
+    return "";
+#elif _WIN32
+    return "C:/Program Files (x86)/Steam";
+#else
+    return "";
+#endif
 }
 
 bool ConfigurationManager::setSteamPath(const std::string &path)
