@@ -1,4 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CodeWithClipboardComponent } from 'src/app/components/code-with-clipboard/code-with-clipboard.component';
 
 @Component({
     selector: 'app-root',
@@ -7,7 +9,8 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
     host: {
         id: "wrapper"
     },
-    standalone: true
+    standalone: true,
+    imports: [CommonModule, CodeWithClipboardComponent]
 })
 
 export class IndexComponent implements AfterViewInit {
@@ -15,7 +18,7 @@ export class IndexComponent implements AfterViewInit {
   @ViewChild('intro') private introElement!: ElementRef;
   @ViewChild('next') private nextElement!: ElementRef;
 
-  private introContentDOM: any;
+  activeTab: string = 'windows';
 
   private lastPagePosition: number = -1;
   private isScrolling: boolean = false;
@@ -23,6 +26,23 @@ export class IndexComponent implements AfterViewInit {
   private pageSize: number = 0;
 
   private scrollingTimeout!: any;
+
+  setActiveTab(tab: string) {
+    switch (tab) {
+      case 'windows':
+      case 'linux':
+        this.activeTab = tab;
+        break;
+      default:
+        this.activeTab = 'windows';
+    }
+  }
+
+  detectOS() {
+    const platform = (navigator as any).userAgentData?.platform;
+    let detectedPlatform : string = platform || 'windows';
+    return detectedPlatform.toLowerCase()
+  }
 
   detectIntro() {
     let pos = window.scrollY;
@@ -109,7 +129,7 @@ export class IndexComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.introContentDOM = this.introElement.nativeElement.querySelector('.content')
+    this.setActiveTab(this.detectOS());
     this.onResize();
     this.onScrollChange();
   }
