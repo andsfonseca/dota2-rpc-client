@@ -7,7 +7,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
     host: {
         id: "wrapper"
     },
-    standalone: false
+    standalone: true
 })
 
 export class IndexComponent implements AfterViewInit {
