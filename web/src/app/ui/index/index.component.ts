@@ -1,12 +1,13 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './index.component.html',
-  styleUrls: ['./index.component.scss'],
-  host: {
-    id: "wrapper"
-  }
+    selector: 'app-root',
+    templateUrl: './index.component.html',
+    styleUrls: ['./index.component.scss'],
+    host: {
+        id: "wrapper"
+    },
+    standalone: false
 })
 
 export class IndexComponent implements AfterViewInit {
