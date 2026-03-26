@@ -1,12 +1,24 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
 
-import { AppModule } from './app/app.module';
+import { IndexComponent } from './app/ui/index/index.component';
 import { environment } from './environments/environment';
+
+import { provideHighlightOptions } from 'ngx-highlightjs';
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+bootstrapApplication(IndexComponent, {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+
+    provideHighlightOptions({
+      coreLibraryLoader: () => import('highlight.js/lib/core'),
+      languages: {
+        bash: () => import('highlight.js/lib/languages/bash')
+      }
+    })
+  ]
+}).catch(err => console.error(err));

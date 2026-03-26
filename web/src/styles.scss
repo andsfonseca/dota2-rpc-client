@@ -1,7 +1,63 @@
-/* You can add global styles to this file, and also import other style files */
+/* FontAwesome 7 icon mappings for pseudo-elements */
+.icon.fa-video::before {
+  content: "\f03d";
+  font-family: "Font Awesome 7 Free";
+  font-weight: 900;
+}
 
-/* Font-Awesome CSS */
-@import '~@fortawesome/fontawesome-free/css/all.min.css';
+.icon.fa-person-half-dress::before {
+  content: "\e548";
+  font-family: "Font Awesome 7 Free";
+  font-weight: 900;
+}
+
+.icon.fa-coins::before {
+  content: "\f51e";
+  font-family: "Font Awesome 7 Free";
+  font-weight: 900;
+}
+
+.icon.fa-magic-wand-sparkles::before {
+  content: "\e2ca";
+  font-family: "Font Awesome 7 Free";
+  font-weight: 900;
+}
+
+.icon.fa-mountain-sun::before {
+  content: "\e52f";
+  font-family: "Font Awesome 7 Free";
+  font-weight: 900;
+}
+
+.icon.fa-headset::before {
+  content: "\f590";
+  font-family: "Font Awesome 7 Free";
+  font-weight: 900;
+}
+
+.icon.fa-language::before {
+  content: "\f1ab";
+  font-family: "Font Awesome 7 Free";
+  font-weight: 900;
+}
+
+.icon.fa-1::before {
+  content: "\31 ";
+  font-family: "Font Awesome 7 Free";
+  font-weight: 900;
+}
+
+.icon.fa-2::before {
+  content: "\32 ";
+  font-family: "Font Awesome 7 Free";
+  font-weight: 900;
+}
+
+.icon.fa-3::before {
+  content: "\33 ";
+  font-family: "Font Awesome 7 Free";
+  font-weight: 900;
+}
 
 /* Dota 2 Reaver Font-Family */
 @font-face {

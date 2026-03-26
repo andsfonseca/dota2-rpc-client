@@ -47,7 +47,9 @@
             "outputPath": "dist/dota2-rpc-client",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -55,6 +57,8 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "node_modules/highlight.js/styles/github-dark.css",
               "src/styles.scss"
             ],
             "scripts": [
@@ -103,10 +107,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "dota2-rpc-client:build:production"
+              "buildTarget": "dota2-rpc-client:build:production"
             },
             "development": {
-              "browserTarget": "dota2-rpc-client:build:development"
+              "buildTarget": "dota2-rpc-client:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -114,7 +118,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "dota2-rpc-client:build"
+            "buildTarget": "dota2-rpc-client:build"
           }
         }
       }
@@ -122,5 +126,31 @@
   },
   "cli": {
     "analytics": false
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
+    }
   }
 }

@@ -1,0 +1,24 @@
+:host {
+  position: relative;
+  width: 100%;
+}
+
+.copy-btn {
+  position: absolute;
+  top: -15px;
+  right: 15px;
+  padding: 0;
+  height: 3em;
+  width: 3em;
+  line-height: 0;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #000000 !important;
+  background-color: white;
+}
+
+.copy-btn:active, .copy-btn.active {
+  background-color: #ff6046;
+}

@@ -159,3 +159,28 @@
 
 
 }
+
+.tabs {
+    display: flex;
+    flex-direction: row;
+}
+
+.tabs > .tab-button{
+    flex: 1;
+    color: #000000 !important;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: 0px !important;
+}
+
+.tabs > .tab-button:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0.325rem;
+    border-bottom-right-radius: 0.325rem;
+}
+
+.tabs > .tab-button.active {
+    background-color: #ff6046;
+    box-shadow: none;
+}

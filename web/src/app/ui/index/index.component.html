@@ -3,7 +3,7 @@
     <h1>DotA 2 RPC</h1>
     <p>An open source project to display the status of your matches on discord</p>
     <ul class="actions">
-      <li><a style="cursor: pointer" (click)="onClickDown()" class="arrow scrolly"><span class="label">Next</span></a>
+      <li><a style="cursor: pointer" (click)="scrollToElement('next')" class="arrow scrolly"><span class="label">Next</span></a>
       </li>
     </ul>
   </header>
@@ -18,9 +18,10 @@
         </div>
       </div>
       <div class="buttonsAvailable">
-        <a href="https://github.com/andsfonseca/dota2-rpc-client/releases/latest/download/dota2-rpc-client.zip"
-          class="button icon solid fa-download">Download</a>
-        <a href="https://github.com/andsfonseca/dota2-rpc-client" class="button icon brands fa-github">View Source</a>
+        <a (click)="onClickDownloadButton(); scrollToElement('install')"
+          class="button icon"><i class="fa-solid fa-download"></i> Download</a>
+        <a href="https://github.com/andsfonseca/dota2-rpc-client" class="button icon"><i
+            class="fa-brands fa-github"></i> View Source</a>
       </div>
     </span>
   </div>
@@ -46,7 +47,7 @@
       <header>
         <h5>
           <ul class="feature-icons feature-icons-full">
-            <li class="icon solid fa-video">See what your friends are watching</li>
+            <li class="icon fa-video">See what your friends are watching</li>
           </ul>
         </h5>
       </header>
@@ -60,7 +61,7 @@
       <header>
         <h5>
           <ul class="feature-icons feature-icons-full">
-            <li class="icon solid fa-person-half-dress">Show off your heroes with your favorite skins</li>
+            <li class="icon fa-person-half-dress">Show off your heroes with your favorite skins</li>
           </ul>
         </h5>
       </header>
@@ -76,7 +77,7 @@
       <header>
         <h5>
           <ul class="feature-icons feature-icons-full">
-            <li class="icon solid fa-coins">Show your skills of accumulating money in the game</li>
+            <li class="icon fa-coins">Show your skills of accumulating money in the game</li>
           </ul>
         </h5>
       </header>
@@ -90,7 +91,7 @@
       <header>
         <h5>
           <ul class="feature-icons feature-icons-full">
-            <li class="icon solid fa-magic-wand-sparkles">Show your items and your buffs</li>
+            <li class="icon fa-magic-wand-sparkles">Show your items and your buffs</li>
           </ul>
         </h5>
       </header>
@@ -107,7 +108,7 @@
       <header>
         <h5>
           <ul class="feature-icons feature-icons-full">
-            <li class="icon solid fa-mountain-sun">Modified map support*</li>
+            <li class="icon fa-mountain-sun">Modified map support*</li>
           </ul>
         </h5>
       </header>
@@ -122,7 +123,7 @@
       <header>
         <h5>
           <ul class="feature-icons feature-icons-full">
-            <li class="icon solid fa-headset">See your instructors</li>
+            <li class="icon fa-headset">See your instructors</li>
           </ul>
         </h5>
       </header>
@@ -136,7 +137,7 @@
       <header>
         <h5>
           <ul class="feature-icons feature-icons-full">
-            <li class="icon solid fa-language">Multiple language support*</li>
+            <li class="icon fa-language">Multiple language support*</li>
           </ul>
         </h5>
       </header>
@@ -150,37 +151,67 @@
   </div>
 </section>
 
-<section>
+<section #install>
   <header>
     <h2>How to install?</h2>
   </header>
   <div class="content">
+
     <p>Follow the <strong>step-by-step instructions</strong> for quick and easy installation.</p>
+
+    <div class="tabs">
+      <button [class.active]="activeTab === 'windows'" (click)="setActiveTab('windows')" class="tab-button">
+        <i class="fa-brands fa-windows"></i> Windows
+      </button>
+      <button [class.active]="activeTab === 'linux'" (click)="setActiveTab('linux')" class="tab-button">
+        <i class="fa-brands fa-linux"></i> Linux
+      </button>
+    </div>
 
     <section class="hide-1152">
       <div class="content content-spacer-half"></div>
     </section>
 
-    <section>
+    <!-- Windows -->
+    <!-- Step 1 -->
+    <section *ngIf="activeTab === 'windows'">
       <header>
         <h5>
           <ul class="feature-icons feature-icons-full step">
-            <li class="icon solid fa-1">Download the files</li>
+            <li class="icon fa-1">Download the files</li>
           </ul>
         </h5>
       </header>
       <div class="content feature-content">
         <p>Click the button below and download the file.</p>
         <a href="https://github.com/andsfonseca/dota2-rpc-client/releases/latest/download/dota2-rpc-client.zip"
-          class="button primary icon solid fa-download">Download</a>
+          class="button primary icon"><i class="fa-solid fa-download"></i> Download</a>
       </div>
     </section>
-
-    <section>
+    <section *ngIf="activeTab === 'linux'">
       <header>
         <h5>
           <ul class="feature-icons feature-icons-full step">
-            <li class="icon solid fa-2">Extract the files</li>
+            <li class="icon fa-1">Download the files</li>
+          </ul>
+        </h5>
+      </header>
+      <div class="content feature-content">
+        <p style="margin-bottom: 0;">
+          Download the file using the command below:
+        </p>
+        <code-with-clipboard
+          [text]="'wget https://github.com/andsfonseca/dota2-rpc-client/releases/latest/download/dota2-rpc-client-linux.zip'">
+        </code-with-clipboard>
+      </div>
+    </section>
+
+    <!-- Step 2 -->
+    <section *ngIf="activeTab === 'windows'">
+      <header>
+        <h5>
+          <ul class="feature-icons feature-icons-full step">
+            <li class="icon fa-2">Extract the files</li>
           </ul>
         </h5>
       </header>
@@ -189,18 +220,52 @@
         <img class="img-feature" src="assets/img/ExtractExample.png">
       </div>
     </section>
-
-    <section>
+    <section *ngIf="activeTab === 'linux'">
       <header>
         <h5>
           <ul class="feature-icons feature-icons-full step">
-            <li class="icon solid fa-3">Install the service</li>
+            <li class="icon fa-2">Extract the files</li>
+          </ul>
+        </h5>
+      </header>
+
+      <div class="content feature-content">
+        <p style="margin-bottom: 0;">Extract the files using the command below:</p>
+        <code-with-clipboard [text]="'unzip dota2-rpc-client-linux.zip'"></code-with-clipboard>
+      </div>
+
+    
+    </section>
+
+    <!-- Step 3 -->
+    <section *ngIf="activeTab === 'windows'">
+      <header>
+        <h5>
+          <ul class="feature-icons feature-icons-full step">
+            <li class="icon fa-3">Install the service</li>
           </ul>
         </h5>
       </header>
       <div class="content feature-content">
         <p>Click on the option "install.windows.bat" and that's it! Let's play!</p>
         <img class="img-feature" src="assets/img/InstallExample.png">
+      </div>
+    </section>
+    <section *ngIf="activeTab === 'linux'">
+      <header>
+        <h5>
+          <ul class="feature-icons feature-icons-full step">
+            <li class="icon fa-3">Install the service</li>
+          </ul>
+        </h5>
+      </header>
+      <div class="content feature-content">
+        <p style="margin-bottom: 0;">
+          Run the commands below to install the service:
+        </p>
+        <code-with-clipboard
+          [text]="'cd dota2-rpc-client-linux\nchmod +x install-service.sh\n./install-service.sh'">
+        </code-with-clipboard>
       </div>
     </section>
   </div>
@@ -214,10 +279,10 @@
     <p>Because it's <strong>open source</strong>, you can always add, modify and suggest more to the project.</p>
     <p>Create a suggestion, show your discord profile or report an issue by clicking the buttons below:</p>
     <div class="buttonsAvailable mb-1">
-      <a href="https://github.com/andsfonseca/dota2-rpc-client/discussions"
-        class="button primary icon solid fa-comments">See discussions</a>
-      <a href="https://github.com/andsfonseca/dota2-rpc-client/issues/new/choose"
-        class="button primary icon solid fa-dot-circle">Create a issue</a>
+      <a href="https://github.com/andsfonseca/dota2-rpc-client/discussions" class="button primary icon"><i
+          class="fa-solid fa-comments"></i> See discussions</a>
+      <a href="https://github.com/andsfonseca/dota2-rpc-client/issues/new/choose" class="button primary icon"><i
+          class="fa-solid fa-dot-circle"></i> Create a issue</a>
     </div>
     <p>This application is in no way associated with Discord, Valve, or any other related company. All images and fonts
       are available from the official DotA 2 website.</p>

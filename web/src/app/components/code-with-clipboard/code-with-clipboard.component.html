@@ -1,0 +1,5 @@
+<button class="copy-btn" [class.active]="copied" (click)="copy()">
+    <i class="fa-solid" [class.fa-copy]="!copied"
+    [class.fa-check]="copied" ></i>
+</button>
+<pre><code [highlight]="text" language="bash"></code></pre>
