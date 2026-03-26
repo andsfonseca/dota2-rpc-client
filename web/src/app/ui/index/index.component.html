@@ -3,7 +3,7 @@
     <h1>DotA 2 RPC</h1>
     <p>An open source project to display the status of your matches on discord</p>
     <ul class="actions">
-      <li><a style="cursor: pointer" (click)="onClickDown()" class="arrow scrolly"><span class="label">Next</span></a>
+      <li><a style="cursor: pointer" (click)="scrollToElement('next')" class="arrow scrolly"><span class="label">Next</span></a>
       </li>
     </ul>
   </header>
@@ -18,7 +18,7 @@
         </div>
       </div>
       <div class="buttonsAvailable">
-        <a href="#install"
+        <a (click)="onClickDownloadButton(); scrollToElement('install')"
           class="button icon"><i class="fa-solid fa-download"></i> Download</a>
         <a href="https://github.com/andsfonseca/dota2-rpc-client" class="button icon"><i
             class="fa-brands fa-github"></i> View Source</a>
@@ -151,7 +151,7 @@
   </div>
 </section>
 
-<section id="install">
+<section #install>
   <header>
     <h2>How to install?</h2>
   </header>
