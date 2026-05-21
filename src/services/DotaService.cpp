@@ -163,7 +163,9 @@ std::string DotaService::getHeroName(Json::Value data)
         {
             // Second Style
             std::string style = "style" + std::to_string(i);
-            if (!data["wearables"][style].isNull())
+            
+            //Note: Rubick doesn't have alternative portraits
+            if (!data["wearables"][style].isNull() && name != "npc_dota_hero_rubick")
             {
                 int numberStyle = data["wearables"][style].asInt() + 2;
                 return name + "_" + std::to_string(numberStyle);
