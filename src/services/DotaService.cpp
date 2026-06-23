@@ -127,7 +127,7 @@ std::string DotaService::getHeroName(Json::Value data)
         if (ConfigurationManager::showDarkCarnival())
         {
             if (name == "npc_dota_hero_axe")
-                return name + "_missing"
+                return name + "_missing";
         }
 
         // Personas
