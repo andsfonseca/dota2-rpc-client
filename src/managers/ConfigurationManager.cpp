@@ -181,6 +181,19 @@ bool ConfigurationManager::showSmoke()
     return value.asBool();
 }
 
+bool ConfigurationManager::showDarkCarnival()
+{
+    if (configurations == NULL)
+        load();
+
+    Json::Value value = JsonLoader::getNode(configurations, "EVENT:DARK_CARNIVAL");
+
+    if (value == NULL)
+        return true;
+
+    return value.asBool();
+}
+
 std::string ConfigurationManager::getLocale()
 {
     if (configurations == NULL)
