@@ -17,7 +17,6 @@ public:
     static bool showGoldAndLastHit();
     static bool showKillDeathAssist();
     static bool showSmoke();
-    static bool showDarkCarnival();
     static void load();
 
 protected:

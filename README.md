@@ -125,10 +125,6 @@ Just modify the [config.json](src/templates/config/config.json) file.
         "KILL_DEATH_ASSIST" : true,
         "SMOKE": true
     },
-    "EVENT":
-    {
-        "DARK_CARNIVAL": true
-    },
     "STEAM_FOLDER": ""
 }
 ```
@@ -146,8 +142,6 @@ Below is a brief description of each property.
 | `DISPLAY_OPTIONS:GOLD_AND_LAST_HIT`  | Whether or not to display the Gold, last hits and denies (Default: `true`)        |
 | `DISPLAY_OPTIONS:KILL_DEATH_ASSIST`  | Whether or not to display the K/D/A (Default: `true`)                             |
 | `DISPLAY_OPTIONS:SMOKE`              | Whether or not to display the smoke effect (Default: `true`)                      |
-| `EVENT`                              | Event-related options.                                                            |
-| `EVENT:DARK_CARNIVAL`                | Whether or not to enable the Dark Carnival event (Default: `true`)                |
 | `STEAM_FOLDER`                       | Steam folder location (Optional, default: Default folder commonly used by steam)  |
 
 > If you installed the cfg file manually, when changing the `host` and `port` you will need to change them also in the `gamestate_integration_rpc.cfg` file. See this [issue #1](/../../issues/1).

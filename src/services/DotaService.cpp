@@ -113,7 +113,7 @@ std::string DotaService::getHeroName(Json::Value data)
     // Weareables
     if (data["wearables"].isNull())
         return name;
-
+    
     for (int i = 0;; i++)
     {
         std::string key = "wearable" + std::to_string(i);
@@ -123,21 +123,19 @@ std::string DotaService::getHeroName(Json::Value data)
 
         int itemId = data["wearables"][key].asInt();
 
-        // Events Override
-        if (ConfigurationManager::showDarkCarnival())
-        {
-            if (name == "npc_dota_hero_axe")
-                return name + "_missing";
-        }
-
         // Personas
         if ((name == "npc_dota_hero_antimage" && itemId == 13783) ||
             (name == "npc_dota_hero_dragon_knight" && itemId == 18113) ||
             (name == "npc_dota_hero_mirana" && itemId == 18178) ||
-            (name == "npc_dota_hero_invoker" && itemId == 13042))
+            (name == "npc_dota_hero_invoker" && itemId == 13042) ||
+            (name == "npc_dota_hero_bristleback" && itemId == 36214) ||
+            (name == "npc_dota_hero_morphling" && itemId == 36193) ||
+            (name == "npc_dota_hero_oracle" && itemId == 31357))
             return name + "_2";
         if ((name == "npc_dota_hero_phantom_assassin" && itemId == 22723) ||
-           (name == "npc_dota_hero_crystal_maiden" && itemId == 13078))
+           (name == "npc_dota_hero_crystal_maiden" && itemId == 13078) ||
+           (name == "npc_dota_hero_axe" && itemId == 31367) ||
+           (name == "npc_dota_hero_legion_commander" && itemId == 36191))
             return name + "_3";
         if (name == "npc_dota_hero_pudge" && itemId == 13786)
             return name + "_4";

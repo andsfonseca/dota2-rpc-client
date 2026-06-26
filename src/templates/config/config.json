@@ -9,9 +9,5 @@
         "GOLD_AND_LAST_HIT": true,
         "KILL_DEATH_ASSIST" : true,
         "SMOKE": true
-    },
-    "EVENT":
-    {
-        "DARK_CARNIVAL": true
     }
 }
