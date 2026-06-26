@@ -42,10 +42,16 @@ jobs:
         with:
           cmakeVersion: 4.2.3
 
+      - name: Setup MSVC Developer Command Prompt
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Install Conan
-        uses: turtlebrowser/get-conan@main
+        uses: conan-io/setup-conan@v1
         with:
           version: 2.26.2
+          cache_packages: true
+          profile_detect: false
 
       - name: Detect and Configure Conan Profile
         run: |
@@ -69,20 +75,16 @@ jobs:
           echo "Updated Linux Conan profile:"
           cat "$profilePath"
 
-      - name: Cache Conan Packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.conan2/p
-          key: conan-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/conanfile.txt') }}
-          restore-keys: |
-            conan-${{ runner.os }}-${{ runner.arch }}-
-            conan-${{ runner.os }}-
+      - name: Install Conan Dependencies
+        run: conan install . --output-folder=./build/conan --settings=build_type=Release --build=missing
 
-      - name: Create ConanFile Lock
-        run: conan lock create conanfile.txt --lockfile-node-context=host 2>&1 || true
+      - name: Configure Project (Windows)
+        if: runner.os == 'Windows'
+        run: cmake -S . -B ./build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=./build/conan/conan_toolchain.cmake -DCMAKE_PREFIX_PATH=./build/conan
 
-      - name: Configure Project
-        run: cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release
+      - name: Configure Project (Linux)
+        if: runner.os == 'Linux'
+        run: cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=./build/conan/conan_toolchain.cmake -DCMAKE_PREFIX_PATH=./build/conan
 
       - name: Build Project
         run: cmake --build ./build --config Release --target dota2-rpc-client --parallel
@@ -90,7 +92,18 @@ jobs:
       - name: Prepare Windows Package
         if: runner.os == 'Windows'
         run: |
-          ls -la ./build/Release/
+          mkdir -p ./build/dota2-rpc-client-windows
+
+          cp ./build/dota2-rpc-client.exe ./build/dota2-rpc-client-windows/
+          cp ./build/discord_game_sdk.dll ./build/dota2-rpc-client-windows/
+          cp -r ./build/lang ./build/dota2-rpc-client-windows/
+          cp -r ./build/templates ./build/dota2-rpc-client-windows/
+          cp ./build/config.json ./build/dota2-rpc-client-windows/
+          cp ./build/install-windows.bat ./build/dota2-rpc-client-windows/
+          cp ./build/uninstall-windows.bat ./build/dota2-rpc-client-windows/
+
+          echo "Windows package prepared:"
+          ls -la ./build/dota2-rpc-client-windows/
         shell: bash
 
       - name: Prepare Linux Package
@@ -122,7 +135,7 @@ jobs:
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
-          path: ./build/Release
+          path: ./build/dota2-rpc-client-windows
           name: ${{ matrix.config.artifact }}
 
       - name: Upload Linux Artifact
