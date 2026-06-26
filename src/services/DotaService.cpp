@@ -123,13 +123,6 @@ std::string DotaService::getHeroName(Json::Value data)
 
         int itemId = data["wearables"][key].asInt();
 
-        // Events Override
-        if (ConfigurationManager::showDarkCarnival())
-        {
-            if (name == "npc_dota_hero_axe")
-                return name + "_missing";
-        }
-
         // Personas
         if ((name == "npc_dota_hero_antimage" && itemId == 13783) ||
             (name == "npc_dota_hero_dragon_knight" && itemId == 18113) ||
