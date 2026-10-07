@@ -2,6 +2,7 @@
 #include <managers/ConfigurationManager.h>
 
 #include <iostream>
+#include <algorithm>
 #ifdef __linux__
 #include <sys/stat.h>
 #include <unistd.h>
