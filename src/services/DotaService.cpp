@@ -164,6 +164,7 @@ std::string DotaService::getHeroName(Json::Value data)
             (name == "npc_dota_hero_vengefulspirit" && itemId == 22718) ||
             (name == "npc_dota_hero_windrunner" && itemId == 13806) ||
             (name == "npc_dota_hero_skeleton_king" && itemId == 13456) ||
+            (name == "npc_dota_hero_tidehunter" && itemId == 37143) ||
             (name == "npc_dota_hero_zuus" && itemId == 6914))
         {
             // Second Style
